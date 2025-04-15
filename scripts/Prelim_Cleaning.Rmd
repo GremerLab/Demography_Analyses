@@ -71,6 +71,26 @@ BH_23 <- BH_23 %>%
   rename(Num_total_branches=Num_total_branch)
 ```
 
+##### Combine all BH dataframes - WHAT IS A MORE EFFICIENT WAY TO DO THIS?
+
+```{r}
+#convert Quad column to character
+convert_Quad <- function(df) {
+  df %>% mutate(Quad = as.character(Quad))
+}
+
+convert_Date_entered <- function(df) {
+  df %>% mutate(Date_entered = as.date(Date_entered))
+}
+
+BH_18$Quad <- as.character(BH_18$Quad)
+BH_18$Date_entered <- as.Date(BH_18$Date_entered)
+BH_19$Date_entered <- as.Date(BH_19$Date_entered)
+
+
+BH <- bind_rows(BH_18, BH_19, BH_20, BH_21, BH_22, BH_23, BH_24)
+```
+
 #### CP2 2017-2023, abv 2024
 
 ```{r}
@@ -91,7 +111,7 @@ CP2_23 <- read_excel("../input/Annual census data/CP2_annualcensus_2023_finished
 CP2_24 <- read_excel("../input/Annual census data/CP2_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
-##### Check colnames are the same for all CP2 dataframes and update those that aren't - DOME
+##### Check colnames are the same for all CP2 dataframes and update those that aren't - DONE
 
 ```{r}
 CP2_col_check <- list(
@@ -127,6 +147,12 @@ CP2_19 <- CP2_19 %>%
 
 CP2_24 <- CP2_24 %>%
   rename(Num_repro_branches=Num_repro_branch)
+```
+
+##### Combine all CP2 dataframes
+
+```{r}
+CP2 <- bind_rows(CP2_17, CP2_18, CP2_19, CP2_20, CP2_21, CP2_22, CP2_23, CP2_24)
 ```
 
 #### TM2 2016-2023, abv 2024
