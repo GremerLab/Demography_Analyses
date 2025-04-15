@@ -1,0 +1,193 @@
+---
+title: "Prelim_Cleaning"
+output: html_document
+date: "2025-04-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+```
+
+### Merge all annual censuses for each pop
+
+#### BH 2018-2023, abv 2024
+
+```{r}
+BH18 <- read_excel("../input/Annual census data/Demog_BHR_Summer2018_8.12.2017_SLZ_cleaned.xlsx")
+
+BH19 <- read_excel("../input/Annual census data/BH_AnnualCensus_6.17.19_edited9.16.2019_EEB_cleaned.xlsx")
+
+BH20 <- read_excel("../input/Annual census data/BH_annualcensus_census 2020_finished_EC_cleaned.xlsx")
+
+BH21 <- read_excel("../input/Annual census data/BH_annualcensus_2021_verified_cleaned.xlsx")
+
+BH22 <- read_excel("../input/Annual census data/BH_annualcensus_2021_verified_cleaned.xlsx")
+
+BH23 <- read_excel("../input/Annual census data/BH_annualcensus_2023_finished_cleaned.xlsx")
+
+BH24 <- read_excel("../input/Annual census data/BH_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+#### CP2 2017-2023, abv 2024
+
+```{r}
+CP2_17 <- read_excel("../input/Annual census data/Demog_CP_17_20170920_SLZ_cleaned.xlsx")
+
+CP2_18 <- read_excel("../input/Annual census data/CP2_AnnualCensus_7.30.2018_9.7.2018_SLZ_cleaned.xlsx")
+
+CP2_19 <- read_excel("../input/Annual census data/CP2_FullCensus_8.7.19_edited9.13.19MM_cleaned.xlsx")
+
+CP2_20 <- read_excel("../input/Annual census data/CP2_annualcensus_2020_finished_cleaned.xlsx")
+
+CP2_21 <- read_excel("../input/Annual census data/CP2_annualcensus_2021_verified_cleaned.xlsx")
+
+CP2_22 <- read_excel("../input/Annual census data/CP2_annualcensus_20220729_verified_YHW_cleaned.xlsx")
+
+CP2_23 <- read_excel("../input/Annual census data/CP2_annualcensus_2023_finished_cleaned.xlsx")
+
+CP2_23 <- read_excel("../input/Annual census data/CP2_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+#### TM2 2016-2023, abv 2024
+
+```{r}
+TM2_16 <- read_excel("../input/Annual census data/Demog_TM2_spring_2016_foranalysis_cleaned.xlsx")
+
+TM2_17 <- read_excel("../input/Annual census data/TM2_annualcensus_2017_jrg_fixederrors_foranalysis_cleaned.xlsx")
+
+TM2_18 <- read_excel("../input/Annual census data/TM2_annualcensus_data_2018_foranalysis_cleaned.xlsx") #Check col names
+
+TM2_19 <- read_excel("../input/Annual census data/TM2_AnnualCensus_2019_all_edited6.30.21JRG_cleaned.xlsx")
+
+TM2_20 <- read_excel("../input/Annual census data/TM2_AnnualCensus_2020_foranalysis_cleaned.xlsx") #Check col names
+
+TM2_21 <- read_excel("../input/Annual census data/TM2_annualcensus_2021_finished_cleaned.xlsx")
+
+TM2_22 <- read_excel("../input/Annual census data/TM2_annual_census_2022_complete_YHW_Verified_cleaned.xlsx")
+
+TM2_23 <- read_excel("../input/Annual census data/TM2_annualcensus_2023_finished_cleaned.xlsx")
+
+TM2_24 <- read_excel("../input/Annual census data/TM2_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+#### WL1 2017-2023, abv 2024
+
+```{r}
+WL1_17 <- read_excel("../input/Annual census data/Demog_WL1_17_20170920_SLZ_cleaned.xlsx")
+
+WL1_18 <- read_excel("../input/Annual census data/WL1_AnnualCensus_7.06.2018_MM_cleaned.xlsx")
+
+WL1_19 <- read_excel("../input/Annual census data/WL1_FullCensus_8.7.19_edited9.13.19MM_cleaned.xlsx")
+
+WL1_20 <- read_excel("../input/Annual census data/WL1_annualcensus_2020_finished_cleaned.xlsx") 
+
+WL1_21 <- read_excel("../input/Annual census data/WL1_annualcensus_2021_verified_cleaned.xlsx")
+
+WL1_22 <- read_excel("../input/Annual census data/WL1_annualcensus_20220708_YHW_verified_cleaned.xlsx")
+
+WL1_23 <- read_excel("../input/Annual census data/WL1_annualcensus_2023_finished_cleaned.xlsx")
+
+WL1_24 <- read_excel("../input/Annual census data/WL1_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+#### WL2 2016-2024
+
+```{r}
+WL2_16 <- read_excel("../input/Annual census data/Demog_WL2_summer_2016_20170622_AJC_cleaned.xlsx")
+
+WL2_17 <- read_excel("../input/Annual census data/Demog_WL2_17_20170920_SLZ_cleaned.xlsx")
+
+WL2_18 <- read_excel("../input/Annual census data/WL2_AnnualCensus_7.25.18_20180819_SLZ_cleaned.xlsx")
+
+WL2_19 <- read_excel("../input/Annual census data/WL2_FullCensus_8.7.19_edited9.13.19MM_cleaned.xlsx")
+
+WL2_20 <- read_excel("../input/Annual census data/WL2_annualcensus_2020_finished_cleaned.xlsx") #Check col names
+
+WL2_21 <- read_excel("../input/Annual census data/WL2_annualcensus_2021_verified_cleaned.xlsx")
+
+WL2_22 <- read_excel("../input/Annual census data/WL2_Annual_Census_2022_Verified_cleaned.xlsx")
+
+WL2_23 <- read_excel("../input/Annual census data/WL2_annualcensus_2023_finished_cleaned.xlsx")
+
+WL2_24 <- read_excel("../input/Annual census data/WL2_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+#### WL3 2017-2023, abv 2024
+
+```{r}
+WL3_17 <- read_excel("../input/Annual census data/Demog_WL3_17_20170920_SLZ_cleaned.xlsx")
+
+WL3_18 <- read_excel("../input/Annual census data/WL3_annualcensus_data_2018_cleaned.xlsx")
+
+WL3_19 <- read_excel("../input/Annual census data/WL3_FullCensus_8.7.19_edited9.13.19MM_cleaned.xlsx")
+
+WL3_20 <- read_excel("../input/Annual census data/WL3_annualcensus_2020_finished_cleaned.xlsx") 
+
+WL3_21 <- read_excel("../input/Annual census data/WL3_annualcensus_2021_verified_cleaned.xlsx")
+
+WL3_22 <- read_excel("../input/Annual census data/WL3_annualcensus_20220727_complete_YHW_verified_cleaned.xlsx")
+
+WL3_23 <- read_excel("../input/Annual census data/WL3_annualcensus_2023_finished_cleaned.xlsx")
+
+WL3_24 <- read_excel("../input/Annual census data/WL3_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+#### YOSE1 2019-2023, abv 2024
+
+```{r}
+YOSE1_19 <- read_excel("../input/Annual census data/Yose1_AnnualCensus_7.29.19_edited9.10.19MM_cleaned.xlsx")
+
+YOSE1_20 <- read_excel("../input/Annual census data/YOSE1_annualcensus_2020_finished_not_checked_cleaned.xlsx")
+
+YOSE1_21 <- read_excel("../input/Annual census data/Yose1_annualcensus_2021_finished_cleaned.xlsx")
+
+YOSE1_22 <- read_excel("../input/Annual census data/YOSE1_annualcensus_2022_completed_verified_cleaned.xlsx")
+
+YOSE1_23 <- read_excel("../input/Annual census data/YOSE1_annualcensus_2023_finished_cleaned.xlsx")
+
+YOSE1_24 <- read_excel("../input/Annual census data/YOSE1_annualcensus_2024_verified_cleaned.xlsx")
+
+```
+
+#### YOSE7 2018-2023, abv 2024
+
+```{r}
+YOSE7_18 <- read_excel("../input/Annual census data/Yose8_2018_annualcensus_data_cleaned.xlsx")
+
+YOSE7_19 <- read_excel("../input/Annual census data/Yose8_AnnualCensus_7.30.19_edited9.10.19MM_cleaned.xlsx")
+
+YOSE7_20 <- read_excel("../input/Annual census data/YOSE7_annualcensus_2020_finished_cleaned.xlsx")
+
+YOSE7_21 <- read_excel("../input/Annual census data/YOSE7_annualcensus_2021_finished_cleaned.xlsx") #Check col names
+
+YOSE7_22 <- read_excel("../input/Annual census data/YOSE7_annualcensus_2022_completed_verified_cleaned.xlsx")
+
+YOSE7_23 <- read_excel("../input/Annual census data/YOSE7_annualcensus_2023_finished_cleaned.xlsx")
+
+YOSE7_24 <- read_excel("../input/Annual census data/YOSE7_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+#### YOSE8 2018-2023, abv 2024
+
+```{r}
+YOSE8_18 <- read_excel("../input/Annual census data/Yose8_2018_annualcensus_data_cleaned.xlsx")
+
+YOSE8_19 <- read_excel("../input/Annual census data/Yose8_AnnualCensus_7.30.19_edited9.10.19MM_cleaned.xlsx")
+
+YOSE8_20 <- read_excel("../input/Annual census data/YOSE8_annualcensus_2020_finished_cleaned.xlsx")
+
+YOSE8_21 <- read_excel("../input/Annual census data/YOSE8_annualcensus_2021_cleaned.xlsx") #Check col names
+
+YOSE8_22 <- read_excel("../input/Annual census data/YOSE8_annualcensus_2022_completed_verified_cleaned.xlsx")
+
+YOSE8_23 <- read_excel("../input/Annual census data/YOSE8_annualcensus_2023_finished_cleaned.xlsx")
+
+YOSE8_24 <- read_excel("../input/Annual census data/YOSE8_annualcensus_2024_verified_cleaned.xlsx")
+```
