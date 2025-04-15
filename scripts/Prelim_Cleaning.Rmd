@@ -177,7 +177,7 @@ TM2_23 <- read_excel("../input/Annual census data/TM2_annualcensus_2023_finished
 TM2_24 <- read_excel("../input/Annual census data/TM2_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
-##### Check colnames are the same for all TM2 dataframes and update those that aren't - NEED TO COME BACK TO
+##### Check colnames are the same for all TM2 dataframes and update those that aren't - Done
 
 ```{r}
 TM2_col_check <- list(
@@ -207,19 +207,28 @@ TM2_col_presence <- map_dfr(TM2_all_col, function(col) {
 
 print(TM2_col_presence)
 
+
 #update TM2_18, TM2_19, and TM2_20 to have matching colnames
-#NEED TO CHANGE Pick_color...25 and Sword_color...24 to Num_repro_branches and Num_total_branches but need numbers for those cols
+
+#Pick_color...25 and Sword_color...24 to Num_repro_branches and Num_total_branches but need numbers for those cols
 TM2_18 <- TM2_18 %>%
-  rename(Pick_color=Pick_color...13) %>% #TM2_18 has 2 Pick_color columns but Pick_color...13 is the column filled with colors, Pick_color...25 is filled with NAs
-  rename(Sword_color=Sword_color...14) #TM2_28 has 2 Sword_color columns but Sword_color...14 is the column filled with colors, Sword_color...24 is filled with NAs
+  #TM2_18 has 2 Pick_color columns but Pick_color...13 is the column filled with colors, Pick_color...25 is filled with NAs
+  rename(Pick_color=Pick_color...13) %>% 
+  #TM2_28 has 2 Sword_color columns but Sword_color...14 is the column filled with colors, Sword_color...24 is filled with NAs 
+  rename(Sword_color=Sword_color...14) %>%
+  #Changing pick_color...25 and Sword_color...24 to Num_repro_branches and Num_total_branches - verified using original data set that these cols were added in the initial cleaning and should be filled with NAs
+  rename(Num_repro_branches=Pick_color...25) %>%
+  rename(Num_total_branches=Sword_color...24)
   
 TM2_19 <- TM2_19 %>%
   rename(Leaf_thickness_mm=Leaf_thickness)
 
-#NEED TO CHANGE Category_herbivory...31 to Leaf_thickness_mm but need numbers for that col
 TM2_20 <- TM2_20 %>%
-  rename(Category_herbivory=Category_herbivory...23) %>% #TM2_20 has 2 Category_herbivory columns both filled with NAs so I'm renaming Category_herbivory...23
-  rename(Num_total_branches=Total_branches)
+  #TM2_20 has 2 Category_herbivory columns both filled with NAs so I'm renaming Category_herbivory...23
+  rename(Category_herbivory=Category_herbivory...23) %>% 
+  rename(Num_total_branches=Total_branches) %>%
+  #Changing Category_herbivory...31 to Leaf_thickness_mm - verified using origninal data set that these cols were added in the initial cleaning and should be filled with NAs
+  rename(Leaf_thickness_mm=Category_herbivory...31)
 ```
 
 #### WL1 2017-2023, abv 2024
