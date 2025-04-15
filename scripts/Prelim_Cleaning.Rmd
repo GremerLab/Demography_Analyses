@@ -13,6 +13,7 @@ library(dplyr)
 library(tidyverse)
 library(ggplot2)
 library(readxl)
+library(purrr)
 ```
 
 ### Merge all annual censuses for each pop
@@ -20,19 +21,54 @@ library(readxl)
 #### BH 2018-2023, abv 2024
 
 ```{r}
-BH18 <- read_excel("../input/Annual census data/Demog_BHR_Summer2018_8.12.2017_SLZ_cleaned.xlsx")
+BH_18 <- read_excel("../input/Annual census data/Demog_BHR_Summer2018_8.12.2017_SLZ_cleaned.xlsx")
 
-BH19 <- read_excel("../input/Annual census data/BH_AnnualCensus_6.17.19_edited9.16.2019_EEB_cleaned.xlsx")
+BH_19 <- read_excel("../input/Annual census data/BH_AnnualCensus_6.17.19_edited9.16.2019_EEB_cleaned.xlsx")
 
-BH20 <- read_excel("../input/Annual census data/BH_annualcensus_census 2020_finished_EC_cleaned.xlsx")
+BH_20 <- read_excel("../input/Annual census data/BH_annualcensus_census 2020_finished_EC_cleaned.xlsx")
 
-BH21 <- read_excel("../input/Annual census data/BH_annualcensus_2021_verified_cleaned.xlsx")
+BH_21 <- read_excel("../input/Annual census data/BH_annualcensus_2021_verified_cleaned.xlsx")
 
-BH22 <- read_excel("../input/Annual census data/BH_annualcensus_2021_verified_cleaned.xlsx")
+BH_22 <- read_excel("../input/Annual census data/BH_annualcensus_2021_verified_cleaned.xlsx")
 
-BH23 <- read_excel("../input/Annual census data/BH_annualcensus_2023_finished_cleaned.xlsx")
+BH_23 <- read_excel("../input/Annual census data/BH_annualcensus_2023_finished_cleaned.xlsx")
 
-BH24 <- read_excel("../input/Annual census data/BH_annualcensus_2024_verified_cleaned.xlsx")
+BH_24 <- read_excel("../input/Annual census data/BH_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+##### Check colnames are the same for all BH dataframes and update those that aren't - DONE
+
+```{r}
+BH_col_check <- list(
+  BH_18 = colnames(BH_18),
+  BH_19 = colnames(BH_19),
+  BH_20 = colnames(BH_20),
+  BH_21 = colnames(BH_21),
+  BH_22 = colnames(BH_22),
+  BH_23 = colnames(BH_23),
+  BH_24 = colnames(BH_24)
+)
+
+BH_all_col <- unique(unlist(BH_col_check))
+
+BH_col_presence <- map_dfr(BH_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(BH_col_check)[map_lgl(BH_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(BH_col_presence)
+
+#update BH_19 and BH_23 to have matching colnames
+BH_19 <- BH_19 %>%
+  rename(Num_total_branches='Num_total_ branches')
+BH_23 <- BH_23 %>%
+  rename(Num_total_branches=Num_total_branch)
 ```
 
 #### CP2 2017-2023, abv 2024
@@ -52,7 +88,45 @@ CP2_22 <- read_excel("../input/Annual census data/CP2_annualcensus_20220729_veri
 
 CP2_23 <- read_excel("../input/Annual census data/CP2_annualcensus_2023_finished_cleaned.xlsx")
 
-CP2_23 <- read_excel("../input/Annual census data/CP2_annualcensus_2024_verified_cleaned.xlsx")
+CP2_24 <- read_excel("../input/Annual census data/CP2_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+##### Check colnames are the same for all CP2 dataframes and update those that aren't - DOME
+
+```{r}
+CP2_col_check <- list(
+  CP2_17 = colnames(CP2_17),
+  CP2_18 = colnames(CP2_18),
+  CP2_19 = colnames(CP2_19),
+  CP2_20 = colnames(CP2_20),
+  CP2_21 = colnames(CP2_21),
+  CP2_22 = colnames(CP2_22),
+  CP2_23 = colnames(CP2_23),
+  CP2_24 = colnames(CP2_24)
+)
+
+CP2_all_col <- unique(unlist(CP2_col_check))
+
+CP2_col_presence <- map_dfr(CP2_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(CP2_col_check)[map_lgl(CP2_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(CP2_col_presence)
+
+#update CP2_19 and CP2_24 to have matching colnames
+CP2_19 <- CP2_19 %>%
+  rename(Height_cm = Height) %>%
+  rename(Num_fruits = Num_fruit)
+
+CP2_24 <- CP2_24 %>%
+  rename(Num_repro_branches=Num_repro_branch)
 ```
 
 #### TM2 2016-2023, abv 2024
@@ -77,6 +151,51 @@ TM2_23 <- read_excel("../input/Annual census data/TM2_annualcensus_2023_finished
 TM2_24 <- read_excel("../input/Annual census data/TM2_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
+##### Check colnames are the same for all TM2 dataframes and update those that aren't - NEED TO COME BACK TO
+
+```{r}
+TM2_col_check <- list(
+  TM2_16 = colnames(TM2_16),
+  TM2_17 = colnames(TM2_17),
+  TM2_18 = colnames(TM2_18),
+  TM2_19 = colnames(TM2_19),
+  TM2_20 = colnames(TM2_20),
+  TM2_21 = colnames(TM2_21),
+  TM2_22 = colnames(TM2_22),
+  TM2_23 = colnames(TM2_23),
+  TM2_24 = colnames(TM2_24)
+)
+
+TM2_all_col <- unique(unlist(TM2_col_check))
+
+TM2_col_presence <- map_dfr(TM2_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(TM2_col_check)[map_lgl(TM2_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(TM2_col_presence)
+
+#update TM2_18, TM2_19, and TM2_20 to have matching colnames
+#NEED TO CHANGE Pick_color...25 and Sword_color...24 to Num_repro_branches and Num_total_branches but need numbers for those cols
+TM2_18 <- TM2_18 %>%
+  rename(Pick_color=Pick_color...13) %>% #TM2_18 has 2 Pick_color columns but Pick_color...13 is the column filled with colors, Pick_color...25 is filled with NAs
+  rename(Sword_color=Sword_color...14) #TM2_28 has 2 Sword_color columns but Sword_color...14 is the column filled with colors, Sword_color...24 is filled with NAs
+  
+TM2_19 <- TM2_19 %>%
+  rename(Leaf_thickness_mm=Leaf_thickness)
+
+#NEED TO CHANGE Category_herbivory...31 to Leaf_thickness_mm but need numbers for that col
+TM2_20 <- TM2_20 %>%
+  rename(Category_herbivory=Category_herbivory...23) %>% #TM2_20 has 2 Category_herbivory columns both filled with NAs so I'm renaming Category_herbivory...23
+  rename(Num_total_branches=Total_branches)
+```
+
 #### WL1 2017-2023, abv 2024
 
 ```{r}
@@ -95,6 +214,59 @@ WL1_22 <- read_excel("../input/Annual census data/WL1_annualcensus_20220708_YHW_
 WL1_23 <- read_excel("../input/Annual census data/WL1_annualcensus_2023_finished_cleaned.xlsx")
 
 WL1_24 <- read_excel("../input/Annual census data/WL1_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+##### Check colnames are the same for all WL1 dataframes and update those that aren't - DONE
+
+```{r}
+WL1_col_check <- list(
+  WL1_17 = colnames(WL1_17),
+  WL1_18 = colnames(WL1_18),
+  WL1_19 = colnames(WL1_19),
+  WL1_20 = colnames(WL1_20),
+  WL1_21 = colnames(WL1_21),
+  WL1_22 = colnames(WL1_22),
+  WL1_23 = colnames(WL1_23),
+  WL1_24 = colnames(WL1_24)
+)
+
+WL1_all_col <- unique(unlist(WL1_col_check))
+
+WL1_col_presence <- map_dfr(WL1_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(WL1_col_check)[map_lgl(WL1_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(WL1_col_presence)
+
+#update WL1_18, WL1_20, WL1_21, WL1_22, WL1_23, WL1_24
+WL1_20 <- WL1_20 %>%
+  rename(Band_num=Band_number)
+
+WL1_18 <- WL1_18 %>%
+  rename(Canopy_width_cm=Canopy_width)
+
+WL1_22 <- WL1_22 %>%
+  rename(Stem_diam_mm=Stem_Diam_mm) %>%
+  rename(Xcoord=X_coord) %>%
+  rename(Ycoord=Y_coord)
+
+WL1_24 <- WL1_24 %>%
+  rename(Year_marked='Year _marked') %>%
+  rename(Phenology=Pheno)
+
+WL1_23 <- WL1_23 %>%
+  rename(Phenology=Pheno)
+
+WL1_21 <- WL1_21 %>%
+  rename(Xcoord=X_coord) %>%
+  rename(Ycoord=Y_coord)
 ```
 
 #### WL2 2016-2024
@@ -119,6 +291,49 @@ WL2_23 <- read_excel("../input/Annual census data/WL2_annualcensus_2023_finished
 WL2_24 <- read_excel("../input/Annual census data/WL2_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
+##### Check colnames are the same for all WL2 dataframes and update those that aren't - DONE
+
+```{r}
+WL2_col_check <- list(
+  WL2_16 = colnames(WL2_16),
+  WL2_17 = colnames(WL2_17),
+  WL2_18 = colnames(WL2_18),
+  WL2_19 = colnames(WL2_19),
+  WL2_20 = colnames(WL2_20),
+  WL2_21 = colnames(WL2_21),
+  WL2_22 = colnames(WL2_22),
+  WL2_23 = colnames(WL2_23),
+  WL2_24 = colnames(WL2_24)
+)
+
+WL2_all_col <- unique(unlist(WL2_col_check))
+
+WL2_col_presence <- map_dfr(WL2_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(WL2_col_check)[map_lgl(WL2_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(WL2_col_presence)
+
+#update WL2_16, WL2_20, WL2_22
+WL2_16 <- WL2_16 %>%
+  rename(Height_cm=Plant_height_cm)
+
+WL2_20 <- WL2_20 %>%
+  rename(Band_num=Band_number) %>%
+  rename(Num_leaves=Num_leaves...34) %>% #WL2_20 has 2 Num_leaves columns, both filled with NA so I will rename Num_leaves...34 
+  select(-Num_leaves...35)
+
+WL2_22 <- WL2_22 %>%
+  rename(Phenology=Pheno)
+```
+
 #### WL3 2017-2023, abv 2024
 
 ```{r}
@@ -139,6 +354,46 @@ WL3_23 <- read_excel("../input/Annual census data/WL3_annualcensus_2023_finished
 WL3_24 <- read_excel("../input/Annual census data/WL3_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
+##### Check colnames are the same for all WL3 dataframes and update those that aren't - DONE
+
+```{r}
+WL3_col_check <- list(
+  WL3_17 = colnames(WL3_17),
+  WL3_18 = colnames(WL3_18),
+  WL3_19 = colnames(WL3_19),
+  WL3_20 = colnames(WL3_20),
+  WL3_21 = colnames(WL3_21),
+  WL3_22 = colnames(WL3_22),
+  WL3_23 = colnames(WL3_23),
+  WL3_24 = colnames(WL3_24)
+)
+
+WL3_all_col <- unique(unlist(WL3_col_check))
+
+WL3_col_presence <- map_dfr(WL3_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(WL3_col_check)[map_lgl(WL3_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(WL3_col_presence)
+
+#update WL3_18, WL3_20, WL2_24
+WL3_18 <- WL3_18 %>%
+  rename(Longest_leaf_cm=Longest_leaf)
+
+WL3_20 <- WL3_20 %>%
+  rename(Band_num=Band_number)
+
+WL3_24 <- WL3_24 %>%
+  rename(Num_repro_branches=Num_repro_branch)
+```
+
 #### YOSE1 2019-2023, abv 2024
 
 ```{r}
@@ -154,6 +409,38 @@ YOSE1_23 <- read_excel("../input/Annual census data/YOSE1_annualcensus_2023_fini
 
 YOSE1_24 <- read_excel("../input/Annual census data/YOSE1_annualcensus_2024_verified_cleaned.xlsx")
 
+```
+
+##### Check colnames are the same for all YOSE1 dataframes and update those that aren't - DONE
+
+```{r}
+YOSE1_col_check <- list(
+  YOSE1_19 = colnames(YOSE1_19),
+  YOSE1_20 = colnames(YOSE1_20),
+  YOSE1_21 = colnames(YOSE1_21),
+  YOSE1_22 = colnames(YOSE1_22),
+  YOSE1_23 = colnames(YOSE1_23),
+  YOSE1_24 = colnames(YOSE1_24)
+)
+
+YOSE1_all_col <- unique(unlist(YOSE1_col_check))
+
+YOSE1_col_presence <- map_dfr(YOSE1_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(YOSE1_col_check)[map_lgl(YOSE1_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(YOSE1_col_presence)
+
+#update YOSE1_19
+YOSE1_19 <- YOSE1_19 %>%
+  rename(Num_fruits=Num_fruit)
 ```
 
 #### YOSE7 2018-2023, abv 2024
@@ -174,6 +461,41 @@ YOSE7_23 <- read_excel("../input/Annual census data/YOSE7_annualcensus_2023_fini
 YOSE7_24 <- read_excel("../input/Annual census data/YOSE7_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
+##### Check colnames are the same for all YOSE7 dataframes and update those that aren't - NEED TO COME BACK TO
+
+```{r}
+YOSE7_col_check <- list(
+  YOSE7_18 = colnames(YOSE7_18),
+  YOSE7_19 = colnames(YOSE7_19),
+  YOSE7_20 = colnames(YOSE7_20),
+  YOSE7_21 = colnames(YOSE7_21),
+  YOSE7_22 = colnames(YOSE7_22),
+  YOSE7_23 = colnames(YOSE7_23),
+  YOSE7_24 = colnames(YOSE7_24)
+)
+
+YOSE7_all_col <- unique(unlist(YOSE7_col_check))
+
+YOSE7_col_presence <- map_dfr(YOSE7_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(YOSE7_col_check)[map_lgl(YOSE7_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(YOSE7_col_presence)
+
+#update YOSE7_21
+#NEED TO CHANGE Leaf_thickness_mm...35 to Year_marked but need data
+YOSE7_21 <- YOSE7_21 %>%
+  rename(Num_total_branches=Total_num_branches) %>%
+  rename(Leaf_thickness_mm=Leaf_thickness_mm...28) #YOSE7_21 has 2 Leaf_thickness_mm columns, both filled with NAs
+```
+
 #### YOSE8 2018-2023, abv 2024
 
 ```{r}
@@ -190,4 +512,37 @@ YOSE8_22 <- read_excel("../input/Annual census data/YOSE8_annualcensus_2022_comp
 YOSE8_23 <- read_excel("../input/Annual census data/YOSE8_annualcensus_2023_finished_cleaned.xlsx")
 
 YOSE8_24 <- read_excel("../input/Annual census data/YOSE8_annualcensus_2024_verified_cleaned.xlsx")
+```
+
+##### Check colnames are the same for all YOSE7 dataframes and update those that aren't - DONE
+
+```{r}
+YOSE8_col_check <- list(
+  YOSE8_18 = colnames(YOSE8_18),
+  YOSE8_19 = colnames(YOSE8_19),
+  YOSE8_20 = colnames(YOSE8_20),
+  YOSE8_21 = colnames(YOSE8_21),
+  YOSE8_22 = colnames(YOSE8_22),
+  YOSE8_23 = colnames(YOSE8_23),
+  YOSE8_24 = colnames(YOSE8_24)
+)
+
+YOSE8_all_col <- unique(unlist(YOSE8_col_check))
+
+YOSE8_col_presence <- map_dfr(YOSE8_all_col, function(col) {
+  tibble(
+    column = col,
+    dataframes = names(YOSE8_col_check)[map_lgl(YOSE8_col_check, ~ col %in% .x)]
+  )
+}, .id = "col_id") %>%
+  group_by(column) %>%
+  summarise(dataframes = paste(dataframes, collapse = ", "),
+            count = n()) %>%
+  arrange(count)
+
+print(YOSE8_col_presence)
+
+#update YOSE8_24
+YOSE8_24 <- YOSE8_24 %>%
+  rename(Num_repro_branches=Num_repro_branch)
 ```
