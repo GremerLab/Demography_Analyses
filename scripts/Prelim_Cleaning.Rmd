@@ -284,7 +284,9 @@ BH_list <- list(BH_18, BH_19, BH_20, BH_21, BH_22, BH_23, BH_24)
 #Loop over each dataset in BH_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
 for(i in seq_along(BH_list)) {
   BH_list[[i]] <- BH_list[[i]] %>%
-    mutate(Stem_diam_mm_UFA = case_when(
+    mutate(
+      Stem_diam_mm = as.character(Stem_diam_mm),
+      Stem_diam_mm_UFA = case_when(
       Stem_diam_mm == "<1" ~ 0.5,
       Stem_diam_mm < 1 ~ 0.5,
       Stem_diam_mm == "~1" ~ 1,
@@ -393,6 +395,12 @@ CP2_24 <- CP2_24 %>%
 
 ```{r}
 #CP2_18 has notes Pink TP for some rows - need to look at paper datsheets
+#CP2_17 <- CP2_17 %>%
+ # mutate(Height_cm = case_when(
+  #  Height_cm == "<1" ~ 0.5,
+   # Height_cm == "~1" ~ 1,
+   # TRUE ~ as.numeric(Height_cm)))
+
 CP2_18 <- CP2_18 %>% #one entry has Num_total_branches that is "2*" with note that says "*one branch broken, used to be 3". Decided to use intact branch count
   mutate(
     Notes = ifelse(Num_total_branches == "2*" & !is.na(Notes) & Notes != "",
@@ -405,7 +413,20 @@ CP2_18 <- CP2_18 %>% #one entry has Num_total_branches that is "2*" with note th
   
 CP2_23 <- CP2_23 %>%
   mutate(Census_date = lubridate::mdy(Census_date)) %>% #change Census_date from a character to a date 
-  mutate(Date_entered = lubridate::mdy(Date_entered))
+  mutate(Date_entered = lubridate::mdy(Date_entered)) %>%
+  mutate(Stem_diam_mm = ifelse(
+    Stem_diam_mm == "2/64", "2.64", Stem_diam_mm
+  )) #%>%
+ # mutate(Height_cm = case_when(
+   # Height_cm == "<1" ~ 0.5,
+   # Height_cm == "~1" ~ 1,
+   # TRUE ~ as.numeric(Height_cm)))
+
+#CP2_24 <- CP2_24 %>%
+  #mutate(Height_cm = case_when(
+  #  Height_cm == "<1" ~ 0.5,
+   # Height_cm == "~1" ~ 1,
+   # TRUE ~ as.numeric(Height_cm)))
 ```
 
 ##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
@@ -417,7 +438,9 @@ CP2_list <- list(CP2_17, CP2_18, CP2_19, CP2_20, CP2_21, CP2_22, CP2_23, CP2_24)
 #Loop over each dataset in CP2_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
 for(i in seq_along(CP2_list)) {
   CP2_list[[i]] <- CP2_list[[i]] %>%
-    mutate(Stem_diam_mm_UFA = case_when(
+    mutate(
+      Stem_diam_mm = as.character(Stem_diam_mm),
+      Stem_diam_mm_UFA = case_when(
       Stem_diam_mm == "<1" ~ 0.5,
       Stem_diam_mm < 1 ~ 0.5,
       Stem_diam_mm == "~1" ~ 1,
@@ -878,6 +901,26 @@ WL2_22 <- WL2_22 %>%
 ##### Address individual rows/cells preventing datasets from merging
 
 ```{r}
+#WL2_18 204D 1.0 23 34 Stem_diam_mm = HA Height = 2cm
+#2641     8 a double           2 cm                              C:/Users/marik/R/Demography_Analyses/i…
+
+#WL2_20 201B 3.5 15 40 <1 1.5 Num_fruits = A
+#4206    13 a double           A                                 C:/Users/marik/R/Demography_Analyses/i…
+
+#WL2_20 201D 1.5 <1 Height= 3.`
+#4336     8 a double           3.`                               C:/Users/marik/R/Demography_Analyses/i…
+
+#WL2_21 201C 0 Band_num = 60 Height_cm= >15
+#4613     8 a double           >15                               C:/Users/marik/R/Demography_Analyses/i…
+
+#this is the column for buds
+#4663    24 1/0/T/F/TRUE/FALSE 2 extra blues; added at end       C:/Users/marik/R/Demography_Analyses/i…
+#4666    24 1/0/T/F/TRUE/FALSE 1 fruit dehisced;dying; dried out C:/Users/marik/R/Demography_Analyses/i…
+#4669    24 1/0/T/F/TRUE/FALSE dying; dried out                  C:/Users/marik/R/Demography_Analyses/i…
+
+#Height = .1.2
+#5115     8 a double           .1.2                              C:/Users/marik/R/Demography_Analyses/i…
+
 WL2_16 <- WL2_16 %>%
   mutate(Phenology = case_when(
     Phenology == "5.0" ~ "S",
