@@ -14,9 +14,193 @@ library(tidyverse)
 library(ggplot2)
 library(readxl)
 library(purrr)
+library(lubridate)
+library(stringr)
 ```
 
-### Merge all annual censuses for each pop
+### Merge all annual censuses for each pop (but keep 2024 separate but able to merge in)
+
+```{r}
+#create functions that convert the colnames to the right structure type
+convert_Census_date <- function(df) {
+  df %>% mutate(Census_date = lubridate::ymd(as.character(Census_date)))
+}
+
+convert_Site <- function(df) {
+  df %>% mutate(Site = as.character(Site))
+}
+
+convert_Transect_plot <- function(df) {
+  df %>% mutate(Transect_plot = as.character(Transect_plot))
+}
+
+convert_Quad <- function(df) {
+  df %>% mutate(Quad = as.numeric(Quad)) #if I want to combine TM2, this need to be as a character
+}
+
+convert_Phenology <- function(df) {
+  df %>% mutate(Phenology = as.character(Phenology))
+}
+
+convert_Xcoord <- function(df) {
+  df %>% mutate(Xcoord = as.numeric(Xcoord))
+}
+
+convert_Ycoord <- function(df) {
+  df %>% mutate(Ycoord = as.numeric(Ycoord))
+}
+
+convert_Stem_diam_mm <- function(df) {
+  df %>% mutate(Stem_diam_mm = as.character(Stem_diam_mm)) #want to be numeric eventually but need to deal with <1 and ~1 entries
+}
+
+convert_Height_cm <- function(df) {
+  df %>% mutate(Height_cm = as.character(Height_cm)) #want to be numeric eventually but need to deal with <1 and ~1 entries
+}
+
+convert_Num_total_branches <- function(df) {
+  df %>% mutate(Num_total_branches = as.numeric(Num_total_branches))
+}
+
+convert_Longest_leaf_cm <- function(df) {
+  df %>% mutate(Longest_leaf_cm = as.character(Longest_leaf_cm)) #want to be numeric enventually but need to deal with <0.5 in CP2_23
+}
+
+convert_Num_flowers <- function(df) {
+  df %>% mutate(Num_flowers = as.character(Num_flowers)) #want to be numeric but need to deal with character entries in BH_18 and check the different NA in BH_20
+}
+
+convert_Num_fruits <- function(df) {
+  df %>% mutate(Num_fruits = as.character(Num_fruits)) #want to be numeric but need to deal with character entries
+} 
+
+convert_Longest_fruit_cm <- function(df) {
+  df %>% mutate(Longest_fruit_cm = as.numeric(Longest_fruit_cm))
+}
+
+convert_Num_repro_branches <- function(df) {
+  df %>% mutate(Num_repro_branches = as.numeric(Num_repro_branches))
+}
+
+convert_Notes <- function(df) {
+  df %>% mutate(Notes = as.character(Notes))
+}
+
+convert_Census_year <- function(df) {
+  df %>% mutate(Census_year = as.numeric(Census_year))
+}
+
+convert_Year_marked <- function(df) {
+  df %>% mutate(Year_marked = as.numeric(Year_marked))
+}
+
+convert_Collected_by <-  function(df) {
+  df %>% mutate(Collected_by = as.character(Collected_by))
+}
+
+convert_Entered_by <- function(df) {
+  df %>% mutate(Entered_by = as.character(Entered_by))
+}
+
+convert_Date_entered <- function(df) {
+  df %>% mutate(Date_entered = as.Date(Date_entered))
+}
+
+convert_Band <- function(df) {
+  df %>% mutate(Band = as.character(Band))
+}
+
+convert_Band_num <- function(df) {
+  df %>% mutate(Band_num = as.numeric(Band_num))
+}
+
+convert_Band_color <- function(df) {
+  df %>% mutate(Band_color = as.character(Band_color))
+}
+
+convert_Pick_color <- function(df) {
+  df %>% mutate(Pick_color = as.character(Pick_color))
+}
+
+convert_Sword_color <- function(df) {
+  df %>% mutate(Sword_color = as.character(Sword_color))
+}
+
+convert_Tag <- function(df) {
+  df %>% mutate(Tag = as.character(Tag))
+}
+
+convert_2018Tag <- function(df) {
+  df %>% mutate(`2018tag` = as.character(`2018tag`))
+}
+
+convert_2019Tag <- function(df) {
+  df %>% mutate(`2019tag` = as.character(`2019tag`))
+}
+
+convert_Buds <- function(df) {
+  df %>% mutate(Buds = as.character(Buds))
+}
+
+convert_Herbivory <- function(df) {
+  df %>% mutate(Herbivory = as.character(Herbivory))
+}
+
+convert_Category_herbivory <- function(df) {
+  df %>% mutate(Category_herbivory = as.character(Category_herbivory))
+}
+
+convert_Leaf_thickness_mm <- function(df) {
+  df %>% mutate(Leaf_thickness_mm = as.numeric(Leaf_thickness_mm))
+}
+
+convert_Num_leaves <- function(df) {
+  df %>% mutate(Num_leaves = as.numeric(Num_leaves))
+}
+
+convert_Canopy_width_cm <- function(df) {
+  df %>% mutate(Canopy_width_cm = as.numeric(Canopy_width_cm))
+}
+
+convert_all_columns <- function(df) {
+  df %>%
+    convert_Census_date() %>%
+    convert_Site() %>%
+    convert_Transect_plot() %>%
+    convert_Quad() %>%
+    convert_Phenology() %>%
+    convert_Xcoord() %>%
+    convert_Ycoord() %>%
+    convert_Stem_diam_mm() %>%
+    convert_Height_cm() %>%
+    convert_Num_total_branches() %>%
+    convert_Longest_leaf_cm() %>%
+    convert_Num_flowers() %>%
+    convert_Num_fruits() %>%
+    convert_Longest_fruit_cm() %>%
+    convert_Num_repro_branches() %>%
+    convert_Notes() %>%
+    convert_Census_year() %>%
+    convert_Year_marked() %>%
+    convert_Collected_by() %>%
+    convert_Entered_by() %>%
+    convert_Date_entered() %>%
+    convert_Band() %>%
+    convert_Band_num() %>%
+    convert_Band_color() %>%
+    convert_Pick_color() %>%
+    convert_Sword_color() %>%
+    convert_Tag() %>%
+    convert_2018Tag() %>%
+    convert_2019Tag() %>%
+    convert_Buds() %>%
+    convert_Herbivory() %>%
+    convert_Category_herbivory() %>%
+    convert_Leaf_thickness_mm() %>%
+    convert_Num_leaves() %>%
+    convert_Canopy_width_cm()
+}
+```
 
 #### BH 2018-2023, abv 2024
 
@@ -29,7 +213,7 @@ BH_20 <- read_excel("../input/Annual census data/BH_annualcensus_census 2020_fin
 
 BH_21 <- read_excel("../input/Annual census data/BH_annualcensus_2021_verified_cleaned.xlsx")
 
-BH_22 <- read_excel("../input/Annual census data/BH_annualcensus_2021_verified_cleaned.xlsx")
+BH_22 <- read_excel("../input/Annual census data/BH_annualcensus_20220613_verified_cleaned.xlsx")
 
 BH_23 <- read_excel("../input/Annual census data/BH_annualcensus_2023_finished_cleaned.xlsx")
 
@@ -39,6 +223,7 @@ BH_24 <- read_excel("../input/Annual census data/BH_annualcensus_2024_verified_c
 ##### Check colnames are the same for all BH dataframes and update those that aren't - DONE
 
 ```{r}
+#make a df of the colnames from each dataset, which datasets have those names, and a count 
 BH_col_check <- list(
   BH_18 = colnames(BH_18),
   BH_19 = colnames(BH_19),
@@ -48,9 +233,7 @@ BH_col_check <- list(
   BH_23 = colnames(BH_23),
   BH_24 = colnames(BH_24)
 )
-
 BH_all_col <- unique(unlist(BH_col_check))
-
 BH_col_presence <- map_dfr(BH_all_col, function(col) {
   tibble(
     column = col,
@@ -61,34 +244,89 @@ BH_col_presence <- map_dfr(BH_all_col, function(col) {
   summarise(dataframes = paste(dataframes, collapse = ", "),
             count = n()) %>%
   arrange(count)
-
 print(BH_col_presence)
+```
 
+#####  Update colnames for those that are different
+
+```{r}
 #update BH_19 and BH_23 to have matching colnames
 BH_19 <- BH_19 %>%
   rename(Num_total_branches='Num_total_ branches')
 BH_23 <- BH_23 %>%
   rename(Num_total_branches=Num_total_branch)
+BH_22 <- BH_22 %>%
+  rename(Phenology=Pheno)
 ```
 
-##### Combine all BH dataframes - WHAT IS A MORE EFFICIENT WAY TO DO THIS?
+##### Address individual rows preventing datasets from merging
 
 ```{r}
-#convert Quad column to character
-convert_Quad <- function(df) {
-  df %>% mutate(Quad = as.character(Quad))
-}
+#make sure All NA's are recognized - verified these should be NA 
+BH_22 <- BH_22 %>% #change "Na" to NA
+  mutate(Band_num = na_if(Band_num, "Na")) %>%
+  filter(!is.na(Census_year)) #there is 1 row that is all empty so filter out using Census_year because that is NA
 
-convert_Date_entered <- function(df) {
-  df %>% mutate(Date_entered = as.date(Date_entered))
-}
+BH_21 <- BH_21 %>%
+  mutate(Band_num = na_if(Band_num, "Na"))
 
-BH_18$Quad <- as.character(BH_18$Quad)
-BH_18$Date_entered <- as.Date(BH_18$Date_entered)
-BH_19$Date_entered <- as.Date(BH_19$Date_entered)
+#update Quad to NA for rows in BH_20 where Transect_plot is "DP"
+BH_20 <- BH_20 %>%
+  mutate(Quad = ifelse(Quad == "DP", NA, Quad))
+```
 
+##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
 
-BH <- bind_rows(BH_18, BH_19, BH_20, BH_21, BH_22, BH_23, BH_24)
+```{r}
+#make a list with all of the BH datasets
+BH_list <- list(BH_18, BH_19, BH_20, BH_21, BH_22, BH_23, BH_24)
+
+#Loop over each dataset in BH_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
+for(i in seq_along(BH_list)) {
+  BH_list[[i]] <- BH_list[[i]] %>%
+    mutate(Stem_diam_mm_UFA = case_when(
+      Stem_diam_mm == "<1" ~ 0.5,
+      Stem_diam_mm < 1 ~ 0.5,
+      Stem_diam_mm == "~1" ~ 1,
+      TRUE ~ as.numeric(Stem_diam_mm)
+    ))
+} #there are some NA coersion warnings but verified no new NAs were introduced unexpectedly
+```
+
+##### Convert all "NA" strings to NA's
+
+```{r}
+#convert all strings of NA to be recognized as NA's
+BH_list <- map(BH_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+```
+
+##### Combine all BH dataframes and write csv
+
+```{r}
+#convert all of the columns and bind all of the BH datasets together
+BH_all <- BH_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows() 
+
+#save cleaned dataset as a csv
+write.csv(BH_all, "../input/Cleaned/BH_cleaned_all.csv", row.names = FALSE)
+```
+
+##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
+
+```{r}
+#create csv for BH years 2018-2023
+BH_18_23 <- BH_all %>%
+  filter(Census_year != 2024)
+
+write.csv(BH_18_23, "../input/Cleaned/BH_cleaned_18_23.csv", row.names = FALSE)
+
+#create csv for BH 2024
+BH_cleaned_24 <- BH_all %>%
+  filter(Census_year == 2024)
+
+write.csv(BH_cleaned_24, "../input/Cleaned/BH_cleaned_24.csv", row.names = FALSE)
 ```
 
 #### CP2 2017-2023, abv 2024
@@ -111,9 +349,10 @@ CP2_23 <- read_excel("../input/Annual census data/CP2_annualcensus_2023_finished
 CP2_24 <- read_excel("../input/Annual census data/CP2_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
-##### Check colnames are the same for all CP2 dataframes and update those that aren't - DONE
+##### Check colnames are the same for all CP2 dataframes
 
 ```{r}
+#make a df of the colnames from each dataset, which datasets have those names, and a count 
 CP2_col_check <- list(
   CP2_17 = colnames(CP2_17),
   CP2_18 = colnames(CP2_18),
@@ -124,9 +363,7 @@ CP2_col_check <- list(
   CP2_23 = colnames(CP2_23),
   CP2_24 = colnames(CP2_24)
 )
-
 CP2_all_col <- unique(unlist(CP2_col_check))
-
 CP2_col_presence <- map_dfr(CP2_all_col, function(col) {
   tibble(
     column = col,
@@ -137,9 +374,12 @@ CP2_col_presence <- map_dfr(CP2_all_col, function(col) {
   summarise(dataframes = paste(dataframes, collapse = ", "),
             count = n()) %>%
   arrange(count)
-
 print(CP2_col_presence)
+```
 
+#####  Update colnames for those that are different
+
+```{r}
 #update CP2_19 and CP2_24 to have matching colnames
 CP2_19 <- CP2_19 %>%
   rename(Height_cm = Height) %>%
@@ -149,10 +389,77 @@ CP2_24 <- CP2_24 %>%
   rename(Num_repro_branches=Num_repro_branch)
 ```
 
-##### Combine all CP2 dataframes
+##### Address individual rows/cells preventing datasets from merging
 
 ```{r}
-CP2 <- bind_rows(CP2_17, CP2_18, CP2_19, CP2_20, CP2_21, CP2_22, CP2_23, CP2_24)
+#CP2_18 has notes Pink TP for some rows - need to look at paper datsheets
+CP2_18 <- CP2_18 %>% #one entry has Num_total_branches that is "2*" with note that says "*one branch broken, used to be 3". Decided to use intact branch count
+  mutate(
+    Notes = ifelse(Num_total_branches == "2*" & !is.na(Notes) & Notes != "",
+                   paste(Notes, "4/29/25 MMA updated Num_total_branches to intact count of 2"),
+                   ifelse(Num_total_branches == "2*",
+                          "4/29 MMA updated Num_total_branches to intact count of 2",
+                          Notes)),
+    Num_total_branches = ifelse(Num_total_branches == "2*", "2", Num_total_branches)
+  )
+  
+CP2_23 <- CP2_23 %>%
+  mutate(Census_date = lubridate::mdy(Census_date)) %>% #change Census_date from a character to a date 
+  mutate(Date_entered = lubridate::mdy(Date_entered))
+```
+
+##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
+
+```{r}
+#make a list with all of the BH datasets
+CP2_list <- list(CP2_17, CP2_18, CP2_19, CP2_20, CP2_21, CP2_22, CP2_23, CP2_24)
+
+#Loop over each dataset in CP2_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
+for(i in seq_along(CP2_list)) {
+  CP2_list[[i]] <- CP2_list[[i]] %>%
+    mutate(Stem_diam_mm_UFA = case_when(
+      Stem_diam_mm == "<1" ~ 0.5,
+      Stem_diam_mm < 1 ~ 0.5,
+      Stem_diam_mm == "~1" ~ 1,
+      TRUE ~ as.numeric(Stem_diam_mm)
+    ))
+} #there are some NA coersion warnings but verified no new NAs were introduced unexpectedly
+```
+
+##### Convert all "NA" strings to NA's
+
+```{r}
+#convert all strings of NA to be recognized as NA's
+CP2_list <- map(CP2_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+```
+
+##### Combine all CP2 dataframes and write csv
+
+```{r}
+#convert all of the columns and bind all of the CP2 datasets together
+CP2_all <- CP2_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
+
+#save cleaned dataset as a csv
+write.csv(CP2_all, "../input/Cleaned/CP2_cleaned_all.csv", row.names = FALSE)
+```
+
+##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
+
+```{r}
+#create csv for CP2 years 2017-2023
+CP2_17_23 <- CP2_all %>%
+  filter(Census_year != 2024)
+
+write.csv(CP2_17_23, "../input/Cleaned/CP2_cleaned_17_23.csv", row.names = FALSE)
+
+#create csv for CP2 2024
+CP2_cleaned_24 <- CP2_all %>%
+  filter(Census_year == 2024)
+
+write.csv(CP2_cleaned_24, "../input/Cleaned/CP2_cleaned_24.csv", row.names = FALSE)
 ```
 
 #### TM2 2016-2023, abv 2024
@@ -177,7 +484,7 @@ TM2_23 <- read_excel("../input/Annual census data/TM2_annualcensus_2023_finished
 TM2_24 <- read_excel("../input/Annual census data/TM2_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
-##### Check colnames are the same for all TM2 dataframes and update those that aren't - Done
+##### Check colnames are the same for all TM2 dataframes and update those that aren't 
 
 ```{r}
 TM2_col_check <- list(
@@ -191,9 +498,7 @@ TM2_col_check <- list(
   TM2_23 = colnames(TM2_23),
   TM2_24 = colnames(TM2_24)
 )
-
 TM2_all_col <- unique(unlist(TM2_col_check))
-
 TM2_col_presence <- map_dfr(TM2_all_col, function(col) {
   tibble(
     column = col,
@@ -204,10 +509,12 @@ TM2_col_presence <- map_dfr(TM2_all_col, function(col) {
   summarise(dataframes = paste(dataframes, collapse = ", "),
             count = n()) %>%
   arrange(count)
-
 print(TM2_col_presence)
+```
 
+##### Update colnames for those that are different
 
+```{r}
 #update TM2_18, TM2_19, and TM2_20 to have matching colnames
 
 #Pick_color...25 and Sword_color...24 to Num_repro_branches and Num_total_branches but need numbers for those cols
@@ -231,6 +538,146 @@ TM2_20 <- TM2_20 %>%
   rename(Leaf_thickness_mm=Category_herbivory...31)
 ```
 
+##### Address individual rows/cells preventing datasets from merging
+
+```{r}
+TM2_17 <- TM2_17 %>% #change dead in Xcoord and Ycoord to NA
+  mutate(Xcoord = na_if(Xcoord, "dead")) %>%
+  mutate(Ycoord = na_if(Ycoord, "dead"))
+
+TM2_18 <- TM2_18 %>%
+  mutate( #Longest_fruit_cm has numbers followed by "LL" or "*"
+    move_leaf = grepl("\\d+\\s*(LL|\\*)", Longest_fruit_cm), #identify cells with LL or * next to longest fruit length
+    Longest_leaf_cm = ifelse( #move just the numbers to Longest_leaf_cm
+      move_leaf,
+      as.numeric(str_extract(Longest_fruit_cm, "\\d+(\\.\\d+)?")),
+      Longest_leaf_cm
+    ),
+    Longest_fruit_cm = ifelse(move_leaf, NA, Longest_fruit_cm) #change Longest_fruit_cm to NA if there was a value added to Longest_fruit_cm
+  ) %>%
+  select(-move_leaf) %>% #Delete the move_leaf column
+  mutate(Longest_fruit_cm = case_when( #Longest_fruit_cm has one row with "<0.5", change to 0.4
+    Longest_fruit_cm == "<0.5" ~ 0.4,
+    TRUE ~ as.numeric(Longest_fruit_cm) #NA coersion warnings but verified there are the expected number of NA's still
+  )) 
+
+TM2_22 <- TM2_22 %>%
+  mutate(Band_num = case_when( #change Band_name from a string to a numeric value that has not been used before
+    Band_num == "O4" ~ 999,
+    TRUE ~ as.numeric(Band_num)
+  )) %>% #NA coersion warning but this is changing "NA" to NAs
+ mutate(#Num_flowers was not entered so columns to the right were shifted: updating row where Num_repro_branches was "N"
+    Num_flowers = ifelse(Num_repro_branches == "N", 0, Num_flowers),
+    Num_fruits = ifelse(Num_repro_branches == "N", 2, Num_fruits),
+    Longest_fruit_cm = ifelse(Num_repro_branches == "N", 3.6, Longest_fruit_cm),
+    Herbivory = ifelse(Num_repro_branches == "N", "N", Herbivory),
+    Num_repro_branches = ifelse(Num_repro_branches == "N", 1, Num_repro_branches),
+  ) %>% 
+  mutate(#Num_flowers was not entered so columns to the right were shifted: updating rows where Num_repro_branches was "Y"
+    Num_flowers = case_when(
+      (is.na(Band_num) & Stem_diam_mm == "0.94" & Height_cm == "9.1") | 
+      Band_num %in% c("805", "814") ~ "0",
+      TRUE ~ Num_flowers
+    ),
+    Num_fruits = case_when(
+      is.na(Band_num) & Stem_diam_mm == "0.94" & Height_cm == "9.1" ~ "1",
+      Band_num == "805" ~ "5",
+      Band_num == "814" ~ "2",
+      TRUE ~ Num_fruits
+    ),
+    Longest_fruit_cm = case_when(
+      is.na(Band_num) & Stem_diam_mm == "0.94" & Height_cm == "9.1" ~ "2.4",
+      Band_num == "805" ~ "4.8",
+      Band_num == "814" ~ "5.0",
+      TRUE ~ Longest_fruit_cm
+    ),
+    Num_repro_branches = case_when(
+      (is.na(Band_num) & Stem_diam_mm == "0.94" & Height_cm == "9.1") |
+      Band_num %in% c("805", "814") ~ "1",
+      TRUE ~ Num_repro_branches
+    ),
+    Herbivory = case_when(
+      (is.na(Band_num) & Stem_diam_mm == "0.94" & Height_cm == "9.1") |
+      Band_num %in% c("805", "814") ~ "Y",
+      TRUE ~ Herbivory
+    )
+  ) %>%
+  mutate(#data from paper datasheet missing in original dataframe for 1 row, adding missing data here
+    Num_flowers = case_when(
+      Stem_diam_mm == "1.7" & Height_cm == "15.4" ~ "0",
+      TRUE ~ Num_flowers
+    ),
+    Num_fruits = case_when(
+      Stem_diam_mm == "1.7" & Height_cm == "15.4" ~ "11",
+      TRUE ~ Num_fruits
+    ),
+    Longest_fruit_cm = case_when(
+      Stem_diam_mm == "1.7" & Height_cm == "15.4" ~ "4.6",
+      TRUE ~ Longest_fruit_cm
+    ),
+    Num_repro_branches = case_when(
+      Stem_diam_mm == "1.7" & Height_cm == "15.4" ~ "1",
+      TRUE ~ Num_repro_branches
+    ),
+    Herbivory = case_when(
+      Stem_diam_mm == "1.7" & Height_cm == "15.4" ~ "Y",
+      TRUE ~ Herbivory
+    )
+  )
+
+#STILL NEED TO FIGURE OUT HOW TO CONVERT QUAD TO NUMERIC GIVEN THERE ARE CHARACTERS
+```
+
+##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
+
+```{r}
+TM2_list <- list(TM2_16, TM2_17, TM2_18, TM2_19, TM2_20, TM2_21, TM2_22, TM2_23, TM2_24)
+
+#Loop over each dataset in TM2_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
+for(i in seq_along(TM2_list)) {
+  TM2_list[[i]] <- TM2_list[[i]] %>%
+    mutate(Stem_diam_mm_UFA = case_when(
+      Stem_diam_mm == "<1" ~ 0.5,
+      Stem_diam_mm < 1 ~ 0.5,
+      Stem_diam_mm == "~1" ~ 1,
+      TRUE ~ as.numeric(Stem_diam_mm)
+    ))
+} #there are some NA coersion warnings but verified no new NAs were introduced unexpectedly
+```
+
+##### Convert all "NA" strings to NA's
+
+```{r}
+TM2_list <- map(TM2_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+```
+
+##### Combine all TM2 dataframes and write csv
+
+```{r}
+TM2_all <- TM2_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
+
+write.csv(TM2_all, "../input/Cleaned/TM2_cleaned_all.csv")
+```
+
+##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
+
+```{r}
+#create csv for TM2 years 2016-2023
+TM2_16_23 <- TM2_all %>%
+  filter(Census_year != 2024)
+
+write.csv(TM2_16_23, "../input/Cleaned/TM2_cleaned_16_23.csv", row.names = FALSE)
+
+#create csv for TM2 2024
+TM2_cleaned_24 <- TM2_all %>%
+  filter(Census_year == 2024)
+
+write.csv(TM2_cleaned_24, "../input/Cleaned/TM2_cleaned_24.csv", row.names = FALSE)
+```
+
 #### WL1 2017-2023, abv 2024
 
 ```{r}
@@ -251,7 +698,7 @@ WL1_23 <- read_excel("../input/Annual census data/WL1_annualcensus_2023_finished
 WL1_24 <- read_excel("../input/Annual census data/WL1_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
-##### Check colnames are the same for all WL1 dataframes and update those that aren't - DONE
+##### Check colnames are the same for all WL1 dataframes
 
 ```{r}
 WL1_col_check <- list(
@@ -264,9 +711,7 @@ WL1_col_check <- list(
   WL1_23 = colnames(WL1_23),
   WL1_24 = colnames(WL1_24)
 )
-
 WL1_all_col <- unique(unlist(WL1_col_check))
-
 WL1_col_presence <- map_dfr(WL1_all_col, function(col) {
   tibble(
     column = col,
@@ -277,9 +722,12 @@ WL1_col_presence <- map_dfr(WL1_all_col, function(col) {
   summarise(dataframes = paste(dataframes, collapse = ", "),
             count = n()) %>%
   arrange(count)
-
 print(WL1_col_presence)
+```
 
+##### Update colnames for those that are different
+
+```{r}
 #update WL1_18, WL1_20, WL1_21, WL1_22, WL1_23, WL1_24
 WL1_20 <- WL1_20 %>%
   rename(Band_num=Band_number)
@@ -304,6 +752,63 @@ WL1_21 <- WL1_21 %>%
   rename(Ycoord=Y_coord)
 ```
 
+##### Address individual rows/cells preventing datasets from merging
+
+```{r}
+WL1_23 <- WL1_23 %>%
+  mutate(Date_entered = ifelse(Date_entered == "45315.0", as.character("01/24/2024"), Date_entered)) %>% #confirmed with original datasheet that there were exactly 60 rows where Date_entered was 01/24/2024 which matches the number of rows where Date_entered was 45315.0
+  mutate(Date_entered = ifelse(Date_entered == "45322.0", as.character("01/31/2024"), Date_entered)) %>% #confirmed with original datasheet that there were exactly 97 rows where Date_entered was 01/31/2024 which matches the number of rows where Date_entered was 45322.0
+  mutate(Date_entered = lubridate::mdy(Date_entered)) #change col from character to date
+```
+
+##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
+
+```{r}
+WL1_list <- list(WL1_17, WL1_18, WL1_19, WL1_20, WL1_21, WL1_22, WL1_23, WL1_24)
+
+#Loop over each dataset in WL1_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
+for(i in seq_along(WL1_list)) {
+  WL1_list[[i]] <- WL1_list[[i]] %>%
+    mutate(Stem_diam_mm_UFA = case_when(
+      Stem_diam_mm == "<1" ~ 0.5,
+      Stem_diam_mm < 1 ~ 0.5,
+      Stem_diam_mm == "~1" ~ 1,
+      TRUE ~ as.numeric(Stem_diam_mm)
+    ))
+} #there are some NA coersion warnings but verified no new NAs were introduced unexpectedly
+```
+
+##### Convert all "NA" strings to NA's
+
+```{r}
+WL1_list <- map(WL1_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+```
+
+##### Combine all WL1 dataframes and write csv
+
+```{r}
+WL1_all <- WL1_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
+
+write.csv(WL1_all, "../input/Cleaned/WL1_cleaned.csv")
+```
+
+##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
+
+```{r}
+#create csv for WL1 years 2017-2023 
+WL1_17_23 <- WL1_all %>%   filter(Census_year != 2024)  
+
+write.csv(WL1_17_23, "../input/Cleaned/WL1_cleaned_17_23.csv", row.names = FALSE) 
+
+#create csv for WL1 2024 
+WL1_cleaned_24 <- WL1_all %>%   filter(Census_year == 2024)  
+
+write.csv(WL1_cleaned_24, "../input/Cleaned/WL1_cleaned_24.csv", row.names = FALSE)
+```
+
 #### WL2 2016-2024
 
 ```{r}
@@ -326,7 +831,7 @@ WL2_23 <- read_excel("../input/Annual census data/WL2_annualcensus_2023_finished
 WL2_24 <- read_excel("../input/Annual census data/WL2_annualcensus_2024_verified_cleaned.xlsx")
 ```
 
-##### Check colnames are the same for all WL2 dataframes and update those that aren't - DONE
+##### Check colnames are the same for all WL2 dataframes
 
 ```{r}
 WL2_col_check <- list(
@@ -340,9 +845,7 @@ WL2_col_check <- list(
   WL2_23 = colnames(WL2_23),
   WL2_24 = colnames(WL2_24)
 )
-
 WL2_all_col <- unique(unlist(WL2_col_check))
-
 WL2_col_presence <- map_dfr(WL2_all_col, function(col) {
   tibble(
     column = col,
@@ -353,9 +856,12 @@ WL2_col_presence <- map_dfr(WL2_all_col, function(col) {
   summarise(dataframes = paste(dataframes, collapse = ", "),
             count = n()) %>%
   arrange(count)
-
 print(WL2_col_presence)
+```
 
+##### Update colnames for those that are different
+
+```{r}
 #update WL2_16, WL2_20, WL2_22
 WL2_16 <- WL2_16 %>%
   rename(Height_cm=Plant_height_cm)
@@ -367,6 +873,80 @@ WL2_20 <- WL2_20 %>%
 
 WL2_22 <- WL2_22 %>%
   rename(Phenology=Pheno)
+```
+
+##### Address individual rows/cells preventing datasets from merging
+
+```{r}
+#WL2_17 one row of Xcoord is X
+#WL2_17 has one row where Num_total_branches is "2*" and note "looks like meristem cut off" 
+#WL2_18 has one row where Num_repro_branches is "1?" with note "bolted, no gruites or flwrs we see"
+#WL2_23 has a Longest_fruit_cm value of 3.83.9 - need to figure out what this should be
+#WL2_16 has Phenology value of 5.0 - need to figure out what this should be
+#WL2_17 has Phenology values of "none" (change to NA?) and "*F" with note "*top chopped" 
+#WL2_18 Phenology has missing data and "NO PLANTS"
+
+WL2_18 <- WL2_18 %>%
+  mutate(Xcoord = na_if(Xcoord, "NA")) %>% #WL2_18 missing data for Xcoord - need to confirm they should be NA's
+  mutate(Num_total_branches = na_if(Num_total_branches, "NA")) %>% #WL2_18 missing data for Num_total_brances - need to confirm they should be NA's same rows missing Xcoord data
+  mutate(Longest_fruit_cm = ifelse(Longest_fruit_cm == "3 cm", as.numeric(3.0), Longest_fruit_cm)) %>% #change row where Longest_fruit_cm is "3 cm"
+  mutate(Longest_fruit_cm = na_if(Longest_fruit_cm, "NA")) #missing Longest_fruit_cm data - need to confirm they should be NA's 
+
+WL2_22 <- WL2_22 %>%
+  mutate(Num_total_branches = na_if(Num_total_branches, "NA")) %>% #1 row missing data
+  mutate(Num_repro_branches = na_if(Num_repro_branches, "NA")) #3 rows missing data
+
+WL2_23 <- WL2_23 %>%
+  mutate(Num_repro_branches = na_if(Num_repro_branches, "NA")) %>% #1 row missing data
+  mutate(Longest_fruit_cm = na_if(Longest_fruit_cm, "NA")) #1 row missing data
+```
+
+##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
+
+```{r}
+WL2_list <- list(WL2_16, WL2_17, WL2_18, WL2_19, WL2_20, WL2_21, WL2_22, WL2_23, WL2_24)
+
+#Loop over each dataset in WL2_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
+for(i in seq_along(WL2_list)) {
+  WL2_list[[i]] <- WL2_list[[i]] %>%
+    mutate(Stem_diam_mm_UFA = case_when(
+      Stem_diam_mm == "<1" ~ 0.5,
+      Stem_diam_mm < 1 ~ 0.5,
+      Stem_diam_mm == "~1" ~ 1,
+      TRUE ~ as.numeric(Stem_diam_mm)
+    ))
+} #there are some NA coersion warnings but verified no new NAs were introduced unexpectedly
+```
+
+##### Convert all "NA" strings to NA's
+
+```{r}
+WL2_list <- map(WL2_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+```
+
+##### Combine all WL2 dataframes and write csv
+
+```{r}
+WL2_all <- WL2_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
+
+write.csv(WL2_all, "../input/Cleaned/WL2_cleaned_all.csv")
+```
+
+##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
+
+```{r}
+#create csv for WL2 years 2016-2023 
+WL2_16_23 <- WL2_all %>%   filter(Census_year != 2024)  
+
+write.csv(WL2_16_23, "../input/Cleaned/WL2_cleaned_16_23.csv", row.names = FALSE) 
+
+#create csv for WL2 2024 
+WL2_cleaned_24 <- WL2_all %>%   filter(Census_year == 2024)  
+
+write.csv(WL2_cleaned_24, "../input/Cleaned/WL2_cleaned_24.csv", row.names = FALSE)
 ```
 
 #### WL3 2017-2023, abv 2024
@@ -418,7 +998,7 @@ WL3_col_presence <- map_dfr(WL3_all_col, function(col) {
 
 print(WL3_col_presence)
 
-#update WL3_18, WL3_20, WL2_24
+#update WL3_18, WL3_20, WL3_24
 WL3_18 <- WL3_18 %>%
   rename(Longest_leaf_cm=Longest_leaf)
 
@@ -427,6 +1007,24 @@ WL3_20 <- WL3_20 %>%
 
 WL3_24 <- WL3_24 %>%
   rename(Num_repro_branches=Num_repro_branch)
+```
+
+```{r}
+#WL3_17 Num_repro_branches has one row with "2*" and note "*one branch broken off"
+WL3_17 <- WL3_17 %>%
+  mutate() #update row with Longest_fruit_cm "4.5cm" to 4.5
+
+#WL3_22 has an N in Num_total_branches - need to check if this should be an NA or 0
+
+
+WL3_list <- list(WL3_17, WL3_18, WL3_19, WL3_20, WL3_21, WL3_22, WL3_23, WL3_24)
+
+WL3_list <- map(WL3_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+
+WL3 <- WL3_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
 ```
 
 #### YOSE1 2019-2023, abv 2024
@@ -478,6 +1076,23 @@ YOSE1_19 <- YOSE1_19 %>%
   rename(Num_fruits=Num_fruit)
 ```
 
+```{r}
+#YOSE1_20 doesn't have any Census_dates
+#YOSE1_21 Census_date are messed up, Ycoord has missing data and "<1"
+#YOSE1_22 has missing Ycoord data
+
+
+
+YOSE1_list <- list(YOSE1_19, YOSE1_20, YOSE1_21, YOSE1_22, YOSE1_23, YOSE1_24)
+
+YOSE1_list <- map(YOSE1_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+
+YOSE1 <- YOSE1_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
+```
+
 #### YOSE7 2018-2023, abv 2024
 
 ```{r}
@@ -525,10 +1140,32 @@ YOSE7_col_presence <- map_dfr(YOSE7_all_col, function(col) {
 print(YOSE7_col_presence)
 
 #update YOSE7_21
-#NEED TO CHANGE Leaf_thickness_mm...35 to Year_marked but need data
 YOSE7_21 <- YOSE7_21 %>%
   rename(Num_total_branches=Total_num_branches) %>%
-  rename(Leaf_thickness_mm=Leaf_thickness_mm...28) #YOSE7_21 has 2 Leaf_thickness_mm columns, both filled with NAs
+  #YOSE7_21 has 2 Leaf_thickness_mm columns, both filled with NAs
+  rename(Leaf_thickness_mm=Leaf_thickness_mm...28) %>%
+  #Changing Leaf_thickness_mm...35 to Year_marked - verified with the original dataset that the column should be filled with NAs
+  rename(Year_marked=Leaf_thickness_mm...35)
+```
+
+```{r}
+#YOSE7_18 has "N/A" in Xcoord and Ycoord, Longest_fruit_cm, Num_repro_branches
+#YOSE7_22 has "-" in Xcoord
+#YOSE7_23 has missing data for Longest_fruit_cm
+#YOSE7_21 has "500/607" for Band_num
+#YOSE7_22 has "500/607" for Band_num
+
+
+
+
+YOSE7_list <- list(YOSE7_18, YOSE7_19, YOSE7_20, YOSE7_21, YOSE7_22, YOSE7_23, YOSE7_24)
+
+YOSE7_list <- map(YOSE7_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+
+YOSE7 <- YOSE7_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
 ```
 
 #### YOSE8 2018-2023, abv 2024
@@ -580,4 +1217,20 @@ print(YOSE8_col_presence)
 #update YOSE8_24
 YOSE8_24 <- YOSE8_24 %>%
   rename(Num_repro_branches=Num_repro_branch)
+```
+
+```{r}
+#YOSE8_18 has "N/A" in Xcoord and Ycoord and Longest_fruit_cm and Num_repro_branches
+#YOSE8_21 has missing data in Xcoord and Ycoord and Longest_fruit_cm and Num_repro_branches
+
+
+
+YOSE8_list <- list(YOSE8_18, YOSE8_19, YOSE8_20, YOSE8_21, YOSE8_22, YOSE8_23, YOSE8_24)
+
+YOSE8_list <- map(YOSE8_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+
+YOSE8 <- YOSE8_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
 ```
