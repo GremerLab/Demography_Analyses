@@ -918,7 +918,7 @@ WL2_22 <- WL2_22 %>%
 #4666    24 1/0/T/F/TRUE/FALSE 1 fruit dehisced;dying; dried out C:/Users/marik/R/Demography_Analyses/i…
 #4669    24 1/0/T/F/TRUE/FALSE dying; dried out                  C:/Users/marik/R/Demography_Analyses/i…
 
-#Height = .1.2
+# WL2_22 201C 2 Height = .1.2
 #5115     8 a double           .1.2                              C:/Users/marik/R/Demography_Analyses/i…
 
 WL2_16 <- WL2_16 %>%
@@ -937,11 +937,8 @@ WL2_17 <- WL2_17 %>%
     TRUE ~ as.character(Phenology)
   )) %>%
    mutate(
-    Notes = ifelse(Num_total_branches == "2*" & !is.na(Notes) & Notes != "",
-                   paste(Notes, "5/9/25 MMA updated Num_total_branches to intact count of 2"),
-                   ifelse(Num_total_branches == "2*",
-                          "4/29/25 MMA updated Num_total_branches to intact count of 2",
-                          Notes)),
+    Notes = ifelse(Num_total_branches == "2*",
+                   paste(Notes, "5/9/25 MMA updated Num_total_branches to intact count of 2"), Notes),
     Num_total_branches = ifelse(Num_total_branches == "2*", "2", Num_total_branches)
   ) %>%
   mutate(
@@ -972,10 +969,37 @@ WL2_18 <- WL2_18 %>%
   mutate(Phenology = case_when(
     Phenology == "PF" ~ "P",
     TRUE ~ as.character(Phenology)
-  ))
+  )) %>%
+  mutate(Height_cm = ifelse(Height_cm == "2 cm", 2, Height_cm)) %>%
+  mutate(Stem_diam_mm = ifelse(Stem_diam_mm == "HA", "NA", Stem_diam_mm))
 
 WL2_20 <- WL2_20 %>%
-  mutate(Longest_fruit_cm = ifelse(Longest_fruit_cm == "2,6", "2.6", Longest_fruit_cm))
+  mutate(Longest_fruit_cm = ifelse(Longest_fruit_cm == "2,6", "2.6", Longest_fruit_cm)) %>%
+  mutate(Num_fruits = ifelse(Num_fruits == "A", "NA", Num_fruits)) %>%
+  mutate(Height_cm = ifelse(Height_cm == "3.`", "3.1", Height_cm))
+
+WL2_21 <- WL2_21 %>%
+  mutate(
+    Notes = ifelse(Height_cm == ">15",
+                   paste(Notes, "5/12/25 MMA updated Height_cm from >15 to 15 so col is numeric"), Notes),
+    Height_cm = ifelse(Height_cm == ">15", "15", Height_cm)
+  ) %>%
+  mutate(
+  Notes = ifelse(
+    Buds %in% c(
+      "2 extra blues; added at end",
+      "1 fruit dehisced;dying; dried out",
+      "dying; dried out"),
+    paste0("5/12/25 MMA moved from Num_buds: ", Buds),
+    Notes),
+  Buds = ifelse(
+    Buds %in% c(
+      "2 extra blues; added at end",
+      "1 fruit dehisced;dying; dried out",
+      "dying; dried out"), NA, Buds))
+
+WL2_22 <- WL2_22 %>%
+  mutate(Height_cm = ifelse(Height_cm == ".1.2", "1.2", Height_cm))
 
 WL2_23 <- WL2_23 %>%
  mutate(Longest_fruit_cm = ifelse(Longest_fruit_cm == "3.83.9", "3.8", Longest_fruit_cm)) %>%
