@@ -457,13 +457,26 @@ m2_Germ_year <- lmer(Flw_days_since_Sept1 ~ Germ_days_since_Sept1 + (1 |Census_y
 summary(m2_Germ_year) #year explains some of the variance
 Anova(m2_Germ_year) #Germ day is still significant but now slightly positive
 
-#compare random to fixed effect model
-ICtab(m1_Germ, m2_Germ_year)
-
 #testing random effects of year, transect, and quad
 m3_Germ_year_transect_plot <- lmer(Flw_days_since_Sept1 ~ Germ_days_since_Sept1 + (1|Census_year) + (1|Transect_plot) +(1|Quad), data = TM2_prob_surv_repro)
 summary(m3_Germ_year_transect_plot) #year explains some of the variance
 
+#compare random to fixed effect model
+ICtab(m1.25_log_Germ, m1.5_Germ_year_int, m2_Germ_year, m3_Germ_year_transect_plot)
+```
+
+#### Predicted vs Observed Flw time \~ Germ time
+
+```{r}
+TM2_prob_surv_repro$germ_flw_model <- predict(m1.5_Germ_year_int, newdata = TM2_prob_surv_repro, type = "response")
+
+ggplot(TM2_prob_surv_repro, aes(x = log_germ_time, y = log_flw_time)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(aes(y = germ_flw_model), method = "glm", se = FALSE, linetype = "solid") +
+  labs(
+    x = "Log Germination Time",
+    y = "Log Flowering Time",) +
+  theme_minimal()
 ```
 
 #### Visualize germ time and prob of surviving to reproduction and prob of reproducing
