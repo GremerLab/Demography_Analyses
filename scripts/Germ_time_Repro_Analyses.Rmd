@@ -1,0 +1,632 @@
+---
+title: "Prelim_Visualization"
+output: html_document
+date: "2025-04-23"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(purrr)
+library(lubridate)
+library(lmtest)
+library(lme4)
+library(car)
+library(bbmle)
+```
+
+### Read in pop data and look-up table
+
+```{r}
+#BH <- read_csv("../input/Cleaned/BH_cleaned_18_23.csv")
+CP2 <- read_csv(
+  "../input/Cleaned/CP2_cleaned_17_23.csv",
+  col_types = cols(Longest_leaf_cm = col_character())
+)  %>% #need to do this so <0.5 in Longest_leaf_cm is kept as.character when read in
+  mutate(Num_flowers = as.character(Num_flowers)) %>%
+  mutate(Num_fruits = as.character(Num_fruits))
+WL1 <- read_csv("../input/Cleaned/WL1_cleaned_17_23.csv") %>%
+  mutate(Transect_plot = as.character(Transect_plot)) %>%
+  mutate(Quad = as.character(Quad)) %>%
+  mutate(Height_cm = as.character(Height_cm)) %>%
+  mutate(Num_flowers = as.character(Num_flowers)) %>%
+  mutate(Num_fruits = as.character(Num_fruits))
+WL2 <- read_csv("../input/Cleaned/WL2_cleaned_16_23.csv") %>%
+  mutate(Height_cm = as.character(Height_cm)) %>%
+  mutate(Longest_leaf_cm = as.character(Longest_leaf_cm)) %>%
+  mutate(Num_fruits = as.character(Num_fruits))
+WL3 <- read_csv("../input/Cleaned/WL3_cleaned_17_23.csv") %>%
+  mutate(Transect_plot = as.character(Transect_plot)) %>%
+  mutate(Height_cm = as.character(Height_cm)) %>%
+  mutate(Num_flowers = as.character(Num_flowers)) %>%
+  mutate(Num_fruits = as.character(Num_fruits))
+TM2 <- read_csv("../input/Cleaned/TM2_cleaned_16_23.csv") %>%
+  mutate(Longest_leaf_cm = as.character(Longest_leaf_cm))
+
+lookuptable <- read_excel("../input/STTO germination and reproductive phenology lookup table.xlsx")
+```
+
+### Merge pops
+
+```{r}
+germ_repro_pops <- bind_rows(CP2, WL1, WL2, WL3, TM2)
+```
+
+### Prep look-up table to merge
+
+```{r}
+#rename cols for germ survey and update pick colors
+germ_dates <- lookuptable %>%
+  filter(Survey_type == "germination survey") %>%
+  rename(Pick_color = toothpick_color) %>%
+  rename(Germ_date = Date) %>%
+  rename(Census_year = Growing_season) %>%
+  mutate(Pick_color = ifelse(
+    Pick_color == "large_blue", "blue", Pick_color
+  )) %>%
+  mutate(Pick_color = ifelse(
+    Pick_color == "large_yellow", "yellow", Pick_color
+  ))
+#filter to keep germ related cols
+germ_dates <- germ_dates[,c(1:3, 5, 7, 12)] %>%
+  rename(germ_notes = notes)
+
+#rename cols for flw survey and update sword colors
+flw_dates <- lookuptable %>%
+  filter(Survey_type == "flowering survey") %>%
+  rename(Sword_color = sword_color) %>%
+  rename(Flw_date = Date) %>%
+  rename(Census_year = Growing_season) %>%
+  mutate(
+    notes = ifelse(
+      Sword_color == "yellow for flower, orange if had fruit",
+      ifelse(is.na(notes) | notes == "",
+             "yellow for flower, orange if had fruit",
+             paste(notes, "yellow for flower, orange if had fruit", sep = "; ")),
+      notes
+    ),
+    Sword_color = ifelse(
+      Sword_color == "yellow for flower, orange if had fruit",
+      "yellow,orange",
+      Sword_color
+    )
+  ) %>%
+  separate_rows(Sword_color, sep = ",") %>%
+  mutate(Sword_color = trimws(Sword_color)) %>%
+  mutate(
+    notes = ifelse(
+      Sword_color == "green for new flower",
+      ifelse(is.na(notes) | notes == "", "green for new flower",
+             paste(notes, "green for new flower", sep = "; ")), notes),
+    Sword_color = ifelse(
+      Sword_color == "green for new flower", "green",Sword_color)) %>%
+  mutate(
+    notes = ifelse(
+      Sword_color == "yellow for many flower",
+      ifelse(is.na(notes) | notes == "", "yellow for many flower",
+             paste(notes, "yellow for many flower", sep = "; ")), notes),
+    Sword_color = ifelse(
+      Sword_color == "yellow for many flower", "yellow",Sword_color)) %>%
+  mutate(
+    notes = ifelse(
+      Sword_color == "orange if had fruit",
+      ifelse(is.na(notes) | notes == "", "orange if had fruit",
+             paste(notes, "orange if had fruit", sep = "; ")), notes),
+    Sword_color = ifelse(
+      Sword_color == "orange if had fruit", "orange",Sword_color)) %>%
+  mutate(
+    notes = ifelse(
+      Sword_color == "blue for new flower and green if had fruit",
+      ifelse(is.na(notes) | notes == "",
+             "blue for new flower and green if had fruit",
+             paste(notes, "blue for new flower and green if had fruit", sep = "; ")),
+      notes
+    ),
+    Sword_color = ifelse(
+      Sword_color == "blue for new flower and green if had fruit",
+      "blue,green",
+      Sword_color
+    )
+  ) %>%
+  separate_rows(Sword_color, sep = ",") %>%
+  mutate(Sword_color = trimws(Sword_color))
+#filter to keep flw survey cols
+flw_dates <- flw_dates[,c(1:3, 9, 12)] %>%
+  rename(flw_notes = notes)
+```
+
+### Add missing years
+
+```{r}
+germ_dates <- germ_dates %>%
+  mutate(Germ_date = as.Date(Germ_date)) %>%
+  add_row(Germ_date = as.Date("2021-05-05"), Census_year = 2021, Site = "CP2", cohort="3", Pick_color="orange") %>%
+  add_row(Germ_date = as.Date("2021-05-12"), Census_year = 2021, Site = "CP2", cohort="4", Pick_color="yellow") %>%
+  add_row(Germ_date = as.Date("2021-05-18"), Census_year = 2021, Site = "CP2", cohort="5", Pick_color="blue") %>%
+  add_row(Germ_date = as.Date("2021-05-24"), Census_year = 2021, Site = "CP2", cohort="6", Pick_color="pink") %>%
+  add_row(Germ_date = as.Date("2021-06-05"), Census_year = 2021, Site = "CP2", cohort="7", Pick_color="white") %>%
+  add_row(Germ_date = as.Date("2018-01-03"), Census_year = 2018, Site = "WL2", Pick_color="yellow") %>%
+  add_row(Germ_date = as.Date("2020-05-10"), Census_year = 2020, Site = "CP2", Pick_color="red") %>%
+  add_row(Germ_date = as.Date("2021-04-19"), Census_year = 2021, Site = "CP2", Pick_color="green") %>%
+  add_row(Germ_date = as.Date("2019-01-23"), Census_year = 2019, Site = "TM2", Pick_color="red")
+```
+
+### Add new col for germ/flw timing - days since Sept 1
+
+```{r}
+#convert to days since Sept 1
+germ_dates <- germ_dates %>%
+  mutate(
+    Census_year = as.numeric(Census_year),  # force to numeric
+    Germ_date = as.Date(Germ_date),
+    Germ_days_since_Sept1 = as.numeric(
+      Germ_date - as.Date(paste0(Census_year - 1, "-09-01"))
+    )
+  )
+
+flw_dates <- flw_dates %>%
+  mutate(
+    Census_year = as.numeric(Census_year),  # force to numeric
+    Flw_date = as.Date(Flw_date),
+    Flw_days_since_Sept1 = as.numeric(
+      Flw_date - as.Date(paste0(Census_year - 1, "-09-01"))
+    )
+  )
+```
+
+### Update pick and sword color names
+
+```{r}
+germ_repro_pops <- germ_repro_pops %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "blu" ~ "blue",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "grn" ~ "green",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "yelllow" ~ "yellow",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "ylw" ~ "yellow",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "Ylw" ~ "yellow",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "ylw*" ~ "orange",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "R" ~ "red",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "O" ~ "orange",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "o" ~ "orange",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "r" ~ "red",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "W" ~ "white",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "*" ~ "unmarked",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "none" ~ NA_character_,
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "unmarked" ~ NA_character_,
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "blk" ~ "black",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "G" ~ "green",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "ylw" ~ "yellow",
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "grn" ~ "green",
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "whie" ~ "white",
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "none" ~ NA_character_,
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "*" ~ "unmarked",
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "unmarked" ~ NA_character_,
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "no" ~ NA_character_,
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "none (green? One loose sword in the plot)" ~ NA_character_,
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "fallen out" ~ NA_character_,
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "N" ~ NA_character_,
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Sword_color = case_when(
+    Sword_color == "blu" ~ "blue",
+    TRUE ~ as.character(Sword_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "neon blu" ~ "blue",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "neon grn" ~ "green",
+    TRUE ~ as.character(Pick_color)
+  )) %>%
+  mutate(Pick_color = case_when(
+    Pick_color == "NO" ~ NA_character_,
+    TRUE ~ as.character(Pick_color)
+  ))
+```
+
+### Join germ and flw dates with annual census data
+
+```{r}
+germ_repro_pops_dates <- germ_repro_pops %>%
+  left_join(germ_dates, by=c("Site", "Census_year", "Pick_color")) %>%
+  left_join(flw_dates, by=c("Site", "Census_year", "Sword_color"))
+```
+
+#### Check every row with a pick/sword color now has a corresponding date - still missing dates for some individuals from CP2, WL2, and WL3
+
+```{r}
+#number of pick/sword rows
+sum(!is.na(germ_repro_pops_dates$Pick_color))
+sum(!is.na(germ_repro_pops_dates$Sword_color))
+
+#number of germ/flw date rows
+sum(!is.na(germ_repro_pops_dates$Germ_days_since_Sept1))
+sum(!is.na(germ_repro_pops_dates$Flw_days_since_Sept1))
+
+#~300 rows missing germ date
+#~300 rows missing flw date
+
+bad_germ_merge <- germ_repro_pops_dates %>%
+  filter(!is.na(Pick_color) & is.na(Germ_days_since_Sept1))
+```
+
+### Plot germ time vs flower time 2 ways
+
+```{r}
+ggplot(germ_repro_pops_dates, aes(x=Germ_days_since_Sept1, y=Flw_days_since_Sept1))+
+  geom_point() +
+  facet_wrap(~Site, scales="free")
+
+ggplot(germ_repro_pops_dates, aes(x=Germ_days_since_Sept1, y=Flw_days_since_Sept1, color=Census_year))+
+  geom_point() +
+  facet_wrap(~Site, scales="free")
+
+#TM2 has the best data - will run model only using TM2
+```
+
+### Probability of surviving to reproduction and probability of reproducing
+
+```{r}
+#need to clean entries in Phenology column
+
+prob_surv_repro <- germ_repro_pops_dates %>%
+  mutate(Phenology = if_else(Phenology == "PF", "P", Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "b", "B", Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "f", "F", Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "s", "S", Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "Na", NA_character_, Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "LS", "V", Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "M", NA_character_, Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "x", "X", Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "D", "X", Phenology)) %>%
+  mutate(Phenology = if_else(Phenology == "blank (probably X)", "X", Phenology)) %>% #there are still other entries to address but this should be enough to determine if plants were dead or alive at the census
+  mutate(prob_surv_to_repro = if_else(Phenology == "X",0, 1)) %>% #0 if pheno is X and 1 if pheno is anything else - I'm not sure I like this because there are cases where a plant reproduced but died before the census
+  mutate(probRepro = if_else(is.na(Flw_date), 0, 1)) #0 if NA for flw data, 1 if there is a date 
+```
+
+### Models
+
+#### Visualize germ and flw time distributions
+
+```{r}
+#visualize distribution
+ggplot(prob_surv_repro, aes(x=Germ_days_since_Sept1)) +
+  geom_histogram() #not the most normal distribution, right tail
+
+ggplot(prob_surv_repro, aes(x=Flw_days_since_Sept1)) +
+  geom_histogram() #slightly more normal but almost bimodal
+
+#interesting there are inverse trends when only plotting TM2
+```
+
+#### Log transform germ and flw time
+
+```{r}
+#log transform
+scaled_prob_surv_repro <- prob_surv_repro %>%
+  mutate(log_flw_time = log(Flw_days_since_Sept1)) %>%
+  mutate(log_germ_time = log(Germ_days_since_Sept1))
+  
+ggplot(scaled_prob_surv_repro, aes(x=log_germ_time)) +
+  geom_histogram() #might be worse
+
+ggplot(scaled_prob_surv_repro, aes(x=log_flw_time)) +
+  geom_histogram() #slighlty better
+```
+
+### Filter to only include TM2 for Flw time \~ Germ time analyses since it is the only pop with sufficient sample size
+
+```{r}
+#filter for only TM2
+TM2_prob_surv_repro <- scaled_prob_surv_repro %>%
+  filter(Site == "TM2") %>%
+  filter(!is.na(Flw_days_since_Sept1) & !is.na(Germ_days_since_Sept1))
+
+ggplot(TM2_prob_surv_repro, aes(x=Germ_days_since_Sept1, y=Flw_days_since_Sept1))+
+  geom_point() +
+  facet_wrap(~Census_year)
+
+ggplot(TM2_prob_surv_repro, aes(x=log_germ_time, y=log_flw_time)) +
+  geom_point() +
+  facet_wrap(~Census_year)
+```
+
+#### Flw time \~ Germ time Fixed effects models
+
+```{r}
+#only fixed effect of germ days - SIGNIFICANT slightly negative relationship
+null <- glm(Flw_days_since_Sept1 ~ 1,
+            data=TM2_prob_surv_repro,
+            family=gaussian)
+m1_Germ <- glm(Flw_days_since_Sept1 ~ Germ_days_since_Sept1,
+            data=TM2_prob_surv_repro,
+            family=gaussian)
+summary(m1_Germ)
+lrtest(null, m1_Germ)
+
+plot(m1_Germ, which = 1)
+qqnorm(resid(m1_Germ))
+qqline(resid(m1_Germ))
+
+m1.25_log_Germ <- glm(log_flw_time ~ log_germ_time,
+            data=TM2_prob_surv_repro,
+            family=gaussian)
+
+plot(m1.25_log_Germ, which = 1)
+qqnorm(resid(m1.25_log_Germ))
+qqline(resid(m1.25_log_Germ)) #log transformed looks slightly better
+
+
+m1.5_Germ_year_int <- m1_Germ <- glm(log_flw_time ~ log_germ_time*Census_year,
+            data=TM2_prob_surv_repro,
+            family=gaussian)
+summary(m1.5_Germ_year_int)
+
+plot(m1.5_Germ_year_int, which = 1)
+qqnorm(resid(m1.5_Germ_year_int))
+qqline(resid(m1.5_Germ_year_int))
+```
+
+#### Flw time \~ Germ time Random effects models
+
+```{r}
+#model with random effect of year
+m2_Germ_year <- lmer(Flw_days_since_Sept1 ~ Germ_days_since_Sept1 + (1 |Census_year), data = TM2_prob_surv_repro)
+summary(m2_Germ_year) #year explains some of the variance
+Anova(m2_Germ_year) #Germ day is still significant but now slightly positive
+
+#compare random to fixed effect model
+ICtab(m1_Germ, m2_Germ_year)
+
+#testing random effects of year, transect, and quad
+m3_Germ_year_transect_plot <- lmer(Flw_days_since_Sept1 ~ Germ_days_since_Sept1 + (1|Census_year) + (1|Transect_plot) +(1|Quad), data = TM2_prob_surv_repro)
+summary(m3_Germ_year_transect_plot) #year explains some of the variance
+
+```
+
+#### Visualize germ time and prob of surviving to reproduction and prob of reproducing
+
+```{r}
+germ_prop_surv_repro <- scaled_prob_surv_repro %>%
+  filter(!is.na(log_germ_time))
+
+ggplot(germ_prop_surv_repro, aes(x=Germ_days_since_Sept1, y=prob_surv_to_repro)) +
+  geom_point()
+
+ggplot(germ_prop_surv_repro, aes(x=log_germ_time, y=prob_surv_to_repro)) +
+  geom_point()
+
+ggplot(germ_prop_surv_repro, aes(x=log_germ_time, y=probRepro)) +
+  geom_point()
+```
+
+#### Survival to Repro \~ Germ time Fixed effects models
+
+```{r}
+null_str <- glm(prob_surv_to_repro ~ 1,
+                data=germ_prop_surv_repro,
+                family=binomial())
+m4_Germ_str <- glm(prob_surv_to_repro ~ Germ_days_since_Sept1,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m4_Germ_str)
+
+
+m4.5_logGerm_str <- glm(prob_surv_to_repro ~ log_germ_time,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m4.5_logGerm_str)
+
+m5_logGerm_year_str <- glm(prob_surv_to_repro ~ log_germ_time*Census_year,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m5_logGerm_year_str)
+lrtest(null_str, m4_Germ_str, m4.5_logGerm_str, m5_logGerm_year_str)
+
+m6_site_str <- glm(prob_surv_to_repro ~ Site,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m6_site_str)
+lrtest(null_str, m6_site_str)
+
+m7_logGerm_site_str <- glm(prob_surv_to_repro ~ log_germ_time*Site,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m7_logGerm_site_str)
+
+m8_logGerm_year_site_str <- glm(prob_surv_to_repro ~ log_germ_time*Census_year*Site,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m8_logGerm_year_site_str)
+
+ICtab(m4.5_logGerm_str, m5_logGerm_year_str, m6_site_str, m7_logGerm_site_str, m8_logGerm_year_site_str) #three way interaction with log germ time, census year, and site was the best fitting model
+```
+
+#### Survival to Repro \~ Germ time Random effects models
+
+```{r}
+m9_logGerm_year_site_plot_quad <- glmer(prob_surv_to_repro ~ log_germ_time + (1|Census_year) + (1|Site) + (1|Transect_plot) +(1|Quad),
+             data=germ_prop_surv_repro,
+             family=binomial)
+summary(m9_logGerm_year_site_plot_quad)
+
+#m10_logGerm_Site_Year_plot_quad <- glmer(prob_surv_to_repro ~ log_germ_time*Census_year*Site + (1|Transect_plot) +(1|Quad),
+           #  data=germ_prop_surv_repro,
+           #  family=binomial) #not enough power for this
+#summary(m10_logGerm_Site_Year_plot_quad)
+
+ICtab(m8_logGerm_year_site_str, m9_logGerm_year_site_plot_quad) #the random effects model is a better fit than the 3 way interaction
+```
+
+#### Predicted vs Observed  Survival to Repro \~ Germ time 
+
+```{r}
+germ_prop_surv_repro$prob_surv_model <- predict(m9_logGerm_year_site_plot_quad, newdata = germ_prop_surv_repro, type = "response", allow.new.levels = TRUE)
+
+ggplot(germ_prop_surv_repro, aes(x = Germ_days_since_Sept1, y = prob_surv_to_repro)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(aes(y = prob_surv_model), method = "glm", se = FALSE, linetype = "solid") +
+  facet_wrap(~Site) +
+  labs(
+    x = "Germination Time",
+    y = "Probability of surviving to reproduction",) +
+  theme_minimal()
+```
+
+#### Prob of Repro \~ Germ time Fixed effects models - only TM2 will have probRepro=1
+
+```{r}
+null_probRepro <- glm(probRepro ~ 1,
+                data=germ_prop_surv_repro,
+                family=binomial())
+m11_Germ_probRepro <- glm(probRepro ~ Germ_days_since_Sept1,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m11_Germ_probRepro)
+
+m11.5_logGerm_probRepro <- glm(probRepro ~ log_germ_time,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m11.5_logGerm_probRepro)
+
+m12_logGerm_year_probRepro <- glm(probRepro ~ log_germ_time*Census_year,
+                      data=germ_prop_surv_repro,
+                family=binomial())
+summary(m12_logGerm_year_probRepro)
+lrtest(null_probRepro, m11_Germ_probRepro, m11.5_logGerm_probRepro, m12_logGerm_year_probRepro)
+
+ICtab(m11.5_logGerm_probRepro, m12_logGerm_year_probRepro) #log germ time and year interaction is the best fit
+
+#only TM2 has probRepro=1 so can't do this for now
+#m13_site_probRepro <- glm(probRepro ~ Site,
+        #              data=germ_prop_surv_repro,
+         #       family=binomial())
+#summary(m13_site_probRepro) 
+#lrtest(null_probRepro, m13_site_probRepro)
+
+#m14_logGerm_site_probRepro <- glm(probRepro ~ log_germ_time*Site,
+  #                    data=germ_prop_surv_repro,
+   #             family=binomial())
+#summary(m14_logGerm_site_probRepro)
+
+#m15_logGerm_year_site_probRepro <- glm(probRepro ~ log_germ_time*Census_year*Site,
+   #                   data=germ_prop_surv_repro,
+   #             family=binomial())
+#summary(m15_logGerm_year_site_probRepro)
+```
+
+#### Prob of Repro \~ Germ time Random effects models - only TM2 will have probRepro=1
+
+```{r}
+m16_logGerm_year_plot_quad <- glmer(probRepro ~ log_germ_time + (1|Census_year) +  (1|Transect_plot) +(1|Quad),
+             data=germ_prop_surv_repro,
+             family=binomial)
+summary(m16_logGerm_year_plot_quad)
+
+ICtab(m12_logGerm_year_probRepro, m16_logGerm_year_plot_quad) #random effect model is the better fit
+```
+
+#### Predicted vs Observed  Prob of Repro \~ Germ time 
+
+```{r}
+germ_prop_surv_repro$probRepro_model <- predict(m16_logGerm_year_plot_quad, newdata = germ_prop_surv_repro, type = "response", allow.new.levels = TRUE)
+
+ggplot(germ_prop_surv_repro, aes(x = Germ_days_since_Sept1, y = probRepro)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(aes(y = probRepro_model), method = "glm", se = FALSE, linetype = "solid") +
+  labs(
+    x = "Germination Time",
+    y = "Probability of reproducing",) +
+  theme_minimal()
+
+ggplot(germ_prop_surv_repro, aes(x = Germ_days_since_Sept1, y = probRepro)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(aes(y = probRepro_model), method = "glm", se = FALSE, linetype = "solid") +
+  facet_wrap(~Site)+
+  labs(
+    x = "Germination Time",
+    y = "Probability of reproducing",) +
+  theme_minimal()
+```
