@@ -1,0 +1,85 @@
+"site","survey_year","transect_plot","quadrat","germ_survey_date","pick_color","number_germ","missing_germs","germ_notes","mort_survey_date","num_dead","mort_notes","days_since_germ","cum_dead","count_check"
+"CP2",2022,"C10","C10",2022-05-27,"red",0,0,"scorched",2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C11","C11",2022-05-27,"red",0,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C12","C12",2022-05-27,"red",1,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C13","C13",2022-05-27,"red",0,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C14","C14",2022-05-27,"red",1,0,"alive: 2",2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C1D10","C1D10",2022-05-27,"red",2,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C2D9","C2D9",2022-05-27,"red",0,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C3D8","C3D8",2022-05-27,"red",1,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C4D7","C4D7",2022-05-27,"red",7,0,NA,2022-07-15,1,NA,49,1,TRUE
+"CP2",2022,"C5D6","C5D6",2022-05-27,"red",5,0,"one possible strep not",2022-07-15,1,NA,49,1,TRUE
+"CP2",2022,"C6D5","C6D5",2022-05-27,"red",5,0,"alive:5, 39, 9, 47, 53",2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C7","C7",2022-05-27,"red",3,0,NA,2022-07-15,1,NA,49,1,TRUE
+"CP2",2022,"C8","C8",2022-05-27,"red",0,0,"alive: 7",2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"C9","C9",2022-05-27,"red",2,0,"alive: 46, 80, 75, 27",2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"T1","T1",2022-05-27,"red",34,0,NA,2022-07-15,0,"extra 6 red after adjusting plot boundaries",49,0,TRUE
+"CP2",2022,"T10","T10",2022-05-27,"red",0,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"T11","T11",2022-05-27,"red",3,0,"alive: 48",2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"T12","T12",2022-05-27,"red",6,0,NA,2022-07-15,1,"extra red after adjusting plot boundaries",49,1,TRUE
+"CP2",2022,"T13","T13",2022-05-27,"red",15,0,"alive: 47, 44, 94, 48",2022-07-15,1,"extra red after adjusting plot boundaries",49,1,TRUE
+"CP2",2022,"T14","T14",2022-05-27,"red",14,0,"alive: 88",2022-07-15,1,NA,49,1,TRUE
+"CP2",2022,"T2","T2",2022-05-27,"red",11,0,"alive: 43, 45, 95, 63, 13, 950, 565, 24, 33",2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"T3","T3",2022-05-27,"red",7,0,"alive: 29, 51, 17",2022-07-15,1,"extra 2 red after adjusting plot boundaries",49,1,TRUE
+"CP2",2022,"T4","T4",2022-05-27,"red",10,0,"alive: 8, 7 (poles fell down)",2022-07-15,1,NA,49,1,TRUE
+"CP2",2022,"T5","T5",2022-05-27,"red",8,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"T6","T6",2022-05-27,"red",1,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"T7","T7",2022-05-27,"red",16,0,NA,2022-07-15,3,NA,49,3,TRUE
+"CP2",2022,"T8","T8",2022-05-27,"red",1,0,NA,2022-07-15,0,NA,49,0,TRUE
+"CP2",2022,"T9","T9",2022-05-27,"red",1,0,"alive: 40",2022-07-15,0,"extra red after adjusting plot boundaries",49,0,TRUE
+"CP2",2022,"C10","C10",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C11","C11",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C12","C12",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C13","C13",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C14","C14",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C1D10","C1D10",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C2D9","C2D9",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C3D8","C3D8",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C4D7","C4D7",2022-06-24,"blue",1,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C5D6","C5D6",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C6D5","C6D5",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C7","C7",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C8","C8",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"C9","C9",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T1","T1",2022-06-24,"blue",3,0,NA,2022-07-15,0,"extra 6 red after adjusting plot boundaries",21,0,TRUE
+"CP2",2022,"T10","T10",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T11","T11",2022-06-24,"blue",1,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T12","T12",2022-06-24,"blue",1,0,NA,2022-07-15,0,"extra red after adjusting plot boundaries",21,0,TRUE
+"CP2",2022,"T13","T13",2022-06-24,"blue",2,0,NA,2022-07-15,0,"extra red after adjusting plot boundaries",21,0,TRUE
+"CP2",2022,"T14","T14",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T2","T2",2022-06-24,"blue",0,0,"marked extra red",2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T3","T3",2022-06-24,"blue",2,0,NA,2022-07-15,0,"extra 2 red after adjusting plot boundaries",21,0,TRUE
+"CP2",2022,"T4","T4",2022-06-24,"blue",1,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T5","T5",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T6","T6",2022-06-24,"blue",0,0,"marked extra red",2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T7","T7",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T8","T8",2022-06-24,"blue",0,0,NA,2022-07-15,0,NA,21,0,TRUE
+"CP2",2022,"T9","T9",2022-06-24,"blue",0,0,NA,2022-07-15,0,"extra red after adjusting plot boundaries",21,0,TRUE
+"CP2",2022,"C10","C10",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C11","C11",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C12","C12",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C13","C13",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C14","C14",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C1D10","C1D10",2022-07-15,"white",1,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C2D9","C2D9",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C3D8","C3D8",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C4D7","C4D7",2022-07-15,"white",1,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C5D6","C5D6",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C6D5","C6D5",2022-07-15,"white",2,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C7","C7",2022-07-15,"white",2,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C8","C8",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"C9","C9",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T1","T1",2022-07-15,"white",1,0,"extra 6 red after adjusting plot boundaries",2022-07-15,0,"extra 6 red after adjusting plot boundaries",0,0,TRUE
+"CP2",2022,"T10","T10",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T11","T11",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T12","T12",2022-07-15,"white",0,0,"extra red after adjusting plot boundaries",2022-07-15,0,"extra red after adjusting plot boundaries",0,0,TRUE
+"CP2",2022,"T13","T13",2022-07-15,"white",0,0,"extra red after adjusting plot boundaries",2022-07-15,0,"extra red after adjusting plot boundaries",0,0,TRUE
+"CP2",2022,"T14","T14",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T2","T2",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T3","T3",2022-07-15,"white",0,0,"extra 2 red after adjusting plot boundaries",2022-07-15,0,"extra 2 red after adjusting plot boundaries",0,0,TRUE
+"CP2",2022,"T4","T4",2022-07-15,"white",1,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T5","T5",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T6","T6",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T7","T7",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T8","T8",2022-07-15,"white",0,0,NA,2022-07-15,0,NA,0,0,TRUE
+"CP2",2022,"T9","T9",2022-07-15,"white",0,0,"extra red after adjusting plot boundaries",2022-07-15,0,"extra red after adjusting plot boundaries",0,0,TRUE

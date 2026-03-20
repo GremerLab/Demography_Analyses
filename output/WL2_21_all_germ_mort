@@ -1,0 +1,364 @@
+"site","survey_year","transect_plot","quadrat","germ_survey_date","pick_color","number_germ","missing_germs","germ_notes","mort_survey_date","num_dead","mort_notes","days_since_germ","cum_dead","count_check"
+"WL2",2021,"201A",0,2021-05-20,"blue",2,0,"blue;cohort 0;true leaves; orange 69;perennial",2021-06-18,0,"plus 1 blue",29,0,TRUE
+"WL2",2021,"201A",0,2021-05-20,"blue",2,0,"blue;cohort 0;true leaves; orange 69;perennial",2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201A",0,2021-05-20,"blue",2,0,"blue;cohort 0;true leaves; orange 69;perennial",2021-07-16,1,NA,57,1,TRUE
+"WL2",2021,"201A",1,2021-05-20,"blue",0,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201A",1,2021-05-20,"blue",0,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201A",1,2021-05-20,"blue",0,0,NA,2021-07-16,0,NA,57,0,TRUE
+"WL2",2021,"201A",2,2021-05-20,"blue",0,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201A",2,2021-05-20,"blue",0,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201A",2,2021-05-20,"blue",0,0,NA,2021-07-16,0,"tree, grasses",57,0,TRUE
+"WL2",2021,"201A",3,2021-05-20,"blue",0,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201A",3,2021-05-20,"blue",0,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201A",3,2021-05-20,"blue",0,0,NA,2021-07-16,0,"tree, grasses",57,0,TRUE
+"WL2",2021,"201A",4,2021-05-20,"blue",0,0,"tree next to plot",2021-06-18,0,"tree",29,0,TRUE
+"WL2",2021,"201A",4,2021-05-20,"blue",0,0,"tree next to plot",2021-07-02,0,"tree",43,0,TRUE
+"WL2",2021,"201A",4,2021-05-20,"blue",0,0,"tree next to plot",2021-07-16,0,"tree, grasses",57,0,TRUE
+"WL2",2021,"201B",0,2021-05-20,"blue",4,0,NA,2021-06-18,0,"plus 1 red",29,0,TRUE
+"WL2",2021,"201B",0,2021-05-20,"blue",4,0,NA,2021-07-02,3,"small mammal burrow/dens? (new buried a few picks) ant hill?",43,3,TRUE
+"WL2",2021,"201B",0,2021-05-20,"blue",4,0,NA,2021-07-16,0,NA,57,3,TRUE
+"WL2",2021,"201B",1,2021-05-20,"blue",3,0,NA,2021-06-18,1,"plus 2 red",29,1,TRUE
+"WL2",2021,"201B",1,2021-05-20,"blue",3,0,NA,2021-07-02,0,NA,43,1,TRUE
+"WL2",2021,"201B",1,2021-05-20,"blue",3,0,NA,2021-07-16,0,"3 missing red, 1 missing yellow, maybe buried",57,1,TRUE
+"WL2",2021,"201B",2,2021-05-20,"blue",0,0,"lots of grass",2021-06-18,0,"lots of grass",29,0,TRUE
+"WL2",2021,"201B",2,2021-05-20,"blue",0,0,"lots of grass",2021-07-02,0,"lots of grass",43,0,TRUE
+"WL2",2021,"201B",2,2021-05-20,"blue",0,0,"lots of grass",2021-07-16,0,"lots of grass",57,0,TRUE
+"WL2",2021,"201B",3,2021-05-20,"blue",0,0,"orange 58",2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201B",3,2021-05-20,"blue",0,0,"orange 58",2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201B",3,2021-05-20,"blue",0,0,"orange 58",2021-07-16,0,NA,57,0,TRUE
+"WL2",2021,"201B",4,2021-05-20,"blue",2,0,NA,2021-06-18,0,"plus 1 red, plus 1 blue",29,0,TRUE
+"WL2",2021,"201B",4,2021-05-20,"blue",2,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201B",4,2021-05-20,"blue",2,0,NA,2021-07-16,0,NA,57,0,TRUE
+"WL2",2021,"201C",0,2021-05-20,"blue",34,1,"orange 60;orange 87;orange 96",2021-06-18,2,"1 blue missing (pick?)",29,2,TRUE
+"WL2",2021,"201C",0,2021-05-20,"blue",34,1,"orange 60;orange 87;orange 96",2021-07-02,8,"2 missing yellow maybe sank in a hole",43,10,TRUE
+"WL2",2021,"201C",0,2021-05-20,"blue",34,1,"orange 60;orange 87;orange 96",2021-07-16,14,"1 extra yellow (dead) - partly buried",57,24,TRUE
+"WL2",2021,"201C",1,2021-05-20,"blue",30,0,"orange 16:orange 17;orange 18;orange 88;orange 40;orange 91",2021-06-18,3,"1 yellow missing (pick?)",29,3,TRUE
+"WL2",2021,"201C",1,2021-05-20,"blue",30,0,"orange 16:orange 17;orange 18;orange 88;orange 40;orange 91",2021-07-02,14,NA,43,17,TRUE
+"WL2",2021,"201C",1,2021-05-20,"blue",30,0,"orange 16:orange 17;orange 18;orange 88;orange 40;orange 91",2021-07-16,11,"1 extra yellow",57,28,TRUE
+"WL2",2021,"201C",2,2021-05-20,"blue",15,0,NA,2021-06-18,1,NA,29,1,TRUE
+"WL2",2021,"201C",2,2021-05-20,"blue",15,0,NA,2021-07-02,2,NA,43,3,TRUE
+"WL2",2021,"201C",2,2021-05-20,"blue",15,0,NA,2021-07-16,4,"1 missing red, 1 missing blue but found 2 unmarked plants",57,7,TRUE
+"WL2",2021,"201C",3,2021-05-20,"blue",3,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201C",3,2021-05-20,"blue",3,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201C",3,2021-05-20,"blue",3,0,NA,2021-07-16,1,"maybe all dried out?",57,1,TRUE
+"WL2",2021,"201C",4,2021-05-20,"blue",8,0,"orange 8;orange 94",2021-06-18,1,"plus 1 red, 1 yellow",29,1,TRUE
+"WL2",2021,"201C",4,2021-05-20,"blue",8,0,"orange 8;orange 94",2021-07-02,0,"1 yellow pulled (far below transect line)",43,1,TRUE
+"WL2",2021,"201C",4,2021-05-20,"blue",8,0,"orange 8;orange 94",2021-07-16,0,NA,57,1,TRUE
+"WL2",2021,"201D",0,2021-05-20,"blue",17,0,"blue;cohort 0;true leaves; orange 868;orange 46 no...(can't read the notes)",2021-06-18,6,NA,29,6,TRUE
+"WL2",2021,"201D",0,2021-05-20,"blue",17,0,"blue;cohort 0;true leaves; orange 868;orange 46 no...(can't read the notes)",2021-07-02,7,NA,43,13,TRUE
+"WL2",2021,"201D",0,2021-05-20,"blue",17,0,"blue;cohort 0;true leaves; orange 868;orange 46 no...(can't read the notes)",2021-07-16,1,NA,57,14,TRUE
+"WL2",2021,"201D",1,2021-05-20,"blue",9,0,"orange 845",2021-06-18,3,"found 1 extra blue, plus 1 red",29,3,TRUE
+"WL2",2021,"201D",1,2021-05-20,"blue",9,0,"orange 845",2021-07-02,5,"1 missing blue, heavy disturbance (gopher?)",43,8,TRUE
+"WL2",2021,"201D",1,2021-05-20,"blue",9,0,"orange 845",2021-07-16,0,NA,57,8,TRUE
+"WL2",2021,"201D",2,2021-05-20,"blue",16,0,"OR 51;OR 10;OR 54",2021-06-18,3,"missing 2 red (pick?), plus 2 red, gopher disturbance",29,3,TRUE
+"WL2",2021,"201D",2,2021-05-20,"blue",16,0,"OR 51;OR 10;OR 54",2021-07-02,1,"gopher disturbance, 1 pulled red actually perrential 344",43,4,TRUE
+"WL2",2021,"201D",2,2021-05-20,"blue",16,0,"OR 51;OR 10;OR 54",2021-07-16,11,"1 extra red, 1 extra blue",57,15,TRUE
+"WL2",2021,"201D",3,2021-05-20,"blue",3,0,"OR 88;OR 96;OR 56",2021-06-18,1,NA,29,1,TRUE
+"WL2",2021,"201D",3,2021-05-20,"blue",3,0,"OR 88;OR 96;OR 56",2021-07-02,0,"pulled 2 blue (out of plot), 3 yellow",43,1,TRUE
+"WL2",2021,"201D",3,2021-05-20,"blue",3,0,"OR 88;OR 96;OR 56",2021-07-16,0,NA,57,1,TRUE
+"WL2",2021,"202A",0,2021-05-20,"blue",9,0,"1 putative perennial;orange band 187",2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202A",0,2021-05-20,"blue",9,0,"1 putative perennial;orange band 187",2021-07-02,0,"1 missing blue pick, but found and replaced it",43,0,TRUE
+"WL2",2021,"202A",0,2021-05-20,"blue",9,0,"1 putative perennial;orange band 187",2021-07-16,8,"1 missing red, 1 extra blue (dead)",57,8,TRUE
+"WL2",2021,"202A",1,2021-05-20,"blue",3,0,"1 perennial;orange band 186",2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202A",1,2021-05-20,"blue",3,0,"1 perennial;orange band 186",2021-07-02,1,"1 missing blue",43,1,TRUE
+"WL2",2021,"202A",1,2021-05-20,"blue",3,0,"1 perennial;orange band 186",2021-07-16,0,NA,57,1,TRUE
+"WL2",2021,"202A",2,2021-05-20,"blue",6,0,"4 perennials;orange bands 60;88;97;56",2021-06-18,3,"found old orange pick",29,3,TRUE
+"WL2",2021,"202A",2,2021-05-20,"blue",6,0,"4 perennials;orange bands 60;88;97;56",2021-07-02,0,NA,43,3,TRUE
+"WL2",2021,"202A",2,2021-05-20,"blue",6,0,"4 perennials;orange bands 60;88;97;56",2021-07-16,1,NA,57,4,TRUE
+"WL2",2021,"202A",3,2021-05-20,"blue",2,0,"2 perennials;orange bands 70;71",2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202A",3,2021-05-20,"blue",2,0,"2 perennials;orange bands 70;71",2021-07-02,1,"1 missing yellow",43,1,TRUE
+"WL2",2021,"202A",3,2021-05-20,"blue",2,0,"2 perennials;orange bands 70;71",2021-07-16,0,NA,57,1,TRUE
+"WL2",2021,"202A",4,2021-05-20,"blue",6,0,NA,2021-06-18,0,"2 missing yellow",29,0,TRUE
+"WL2",2021,"202A",4,2021-05-20,"blue",6,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"202A",4,2021-05-20,"blue",6,0,NA,2021-07-16,2,NA,57,2,TRUE
+"WL2",2021,"202A",4.5,2021-05-20,"blue",21,0,"red band 36 is dead; red band 11 is dead",2021-06-18,3,"found extra yellow",29,3,TRUE
+"WL2",2021,"202A",4.5,2021-05-20,"blue",21,0,"red band 36 is dead; red band 11 is dead",2021-07-02,0,"1 missing blue",43,3,TRUE
+"WL2",2021,"202A",4.5,2021-05-20,"blue",21,0,"red band 36 is dead; red band 11 is dead",2021-07-16,2,"1 red missing",57,5,TRUE
+"WL2",2021,"202B",0,2021-05-20,"blue",4,0,NA,2021-06-18,1,NA,29,1,TRUE
+"WL2",2021,"202B",0,2021-05-20,"blue",4,0,NA,2021-07-02,0,NA,43,1,TRUE
+"WL2",2021,"202B",0,2021-05-20,"blue",4,0,NA,2021-07-16,3,NA,57,4,TRUE
+"WL2",2021,"202B",1,2021-05-20,"blue",3,0,"orange band;670",2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202B",1,2021-05-20,"blue",3,0,"orange band;670",2021-07-02,1,"found 1 extra red",43,1,TRUE
+"WL2",2021,"202B",1,2021-05-20,"blue",3,0,"orange band;670",2021-07-16,2,NA,57,3,TRUE
+"WL2",2021,"202B",2,2021-05-20,"blue",1,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202B",2,2021-05-20,"blue",1,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"202B",2,2021-05-20,"blue",1,0,NA,2021-07-16,1,NA,57,1,TRUE
+"WL2",2021,"202B",3,2021-05-20,"blue",7,0,"1 orange band 64; red band 700 is dead",2021-06-18,1,"1 extra blue",29,1,TRUE
+"WL2",2021,"202B",3,2021-05-20,"blue",7,0,"1 orange band 64; red band 700 is dead",2021-07-02,1,NA,43,2,TRUE
+"WL2",2021,"202B",3,2021-05-20,"blue",7,0,"1 orange band 64; red band 700 is dead",2021-07-16,2,NA,57,4,TRUE
+"WL2",2021,"202B",4,2021-05-20,"blue",9,0,"7 orange bands 97;48;77;74;88;78;16",2021-06-18,2,NA,29,2,TRUE
+"WL2",2021,"202B",4,2021-05-20,"blue",9,0,"7 orange bands 97;48;77;74;88;78;16",2021-07-02,0,NA,43,2,TRUE
+"WL2",2021,"202B",4,2021-05-20,"blue",9,0,"7 orange bands 97;48;77;74;88;78;16",2021-07-16,0,NA,57,2,TRUE
+"WL2",2021,"202C",0,2021-05-20,"blue",7,0,"blue;cohort 0;true leaves; 1 orange band 67",2021-06-18,6,NA,29,6,TRUE
+"WL2",2021,"202C",0,2021-05-20,"blue",7,0,"blue;cohort 0;true leaves; 1 orange band 67",2021-07-02,0,"loose blue pick 1/2 transect ????",43,6,TRUE
+"WL2",2021,"202C",0,2021-05-20,"blue",7,0,"blue;cohort 0;true leaves; 1 orange band 67",2021-07-16,0,NA,57,6,TRUE
+"WL2",2021,"202C",1,2021-05-20,"blue",1,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202C",1,2021-05-20,"blue",1,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"202C",1,2021-05-20,"blue",1,0,NA,2021-07-16,0,NA,57,0,TRUE
+"WL2",2021,"202C",2,2021-05-20,"blue",0,0,NA,2021-06-18,0,"4 notable ant hills",29,0,TRUE
+"WL2",2021,"202C",2,2021-05-20,"blue",0,0,NA,2021-07-02,0,"4 notable ant hills",43,0,TRUE
+"WL2",2021,"202C",2,2021-05-20,"blue",0,0,NA,2021-07-16,0,"4 notable ant hills",57,0,TRUE
+"WL2",2021,"202C",3,2021-05-20,"blue",3,0,"1 orange band 78",2021-06-18,0,"added 1 red",29,0,TRUE
+"WL2",2021,"202C",3,2021-05-20,"blue",3,0,"1 orange band 78",2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"202C",3,2021-05-20,"blue",3,0,"1 orange band 78",2021-07-16,3,NA,57,3,TRUE
+"WL2",2021,"202C",4,2021-05-20,"blue",0,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202C",4,2021-05-20,"blue",0,0,NA,2021-07-02,0,"1 missing red, 1 extra yellow",43,0,TRUE
+"WL2",2021,"202C",4,2021-05-20,"blue",0,0,NA,2021-07-16,0,NA,57,0,TRUE
+"WL2",2021,"202D",0,2021-05-20,"blue",9,0,"1 orange band 70",2021-06-18,3,"1 yellow missing",29,3,TRUE
+"WL2",2021,"202D",0,2021-05-20,"blue",9,0,"1 orange band 70",2021-07-02,4,NA,43,7,TRUE
+"WL2",2021,"202D",0,2021-05-20,"blue",9,0,"1 orange band 70",2021-07-16,2,"1 extra blue (dead)",57,9,TRUE
+"WL2",2021,"202D",1,2021-05-20,"blue",18,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202D",1,2021-05-20,"blue",18,0,NA,2021-07-02,0,"1 missing blue, 6 missing yellow",43,0,TRUE
+"WL2",2021,"202D",1,2021-05-20,"blue",18,0,NA,2021-07-16,6,"1 missing blue",57,6,TRUE
+"WL2",2021,"202D",3,2021-05-20,"blue",1,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202D",3,2021-05-20,"blue",1,0,NA,2021-07-02,1,NA,43,1,TRUE
+"WL2",2021,"202D",3,2021-05-20,"blue",1,0,NA,2021-07-16,0,NA,57,1,TRUE
+"WL2",2021,"202D",4,2021-05-20,"blue",4,0,NA,2021-06-18,2,NA,29,2,TRUE
+"WL2",2021,"202D",4,2021-05-20,"blue",4,0,NA,2021-07-02,0,NA,43,2,TRUE
+"WL2",2021,"202D",4,2021-05-20,"blue",4,0,NA,2021-07-16,2,NA,57,4,TRUE
+"WL2",2021,"201A",0,2021-05-20,"yellow",6,0,"yellow;new germs",2021-06-18,1,"plus 1 blue",29,1,TRUE
+"WL2",2021,"201A",0,2021-05-20,"yellow",6,0,"yellow;new germs",2021-07-02,0,NA,43,1,TRUE
+"WL2",2021,"201A",0,2021-05-20,"yellow",6,0,"yellow;new germs",2021-07-16,2,NA,57,3,TRUE
+"WL2",2021,"201A",1,2021-05-20,"yellow",4,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201A",1,2021-05-20,"yellow",4,0,NA,2021-07-02,1,NA,43,1,TRUE
+"WL2",2021,"201A",1,2021-05-20,"yellow",4,0,NA,2021-07-16,2,NA,57,3,TRUE
+"WL2",2021,"201A",2,2021-05-20,"yellow",0,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201A",2,2021-05-20,"yellow",0,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201A",2,2021-05-20,"yellow",0,0,NA,2021-07-16,0,"tree, grasses",57,0,TRUE
+"WL2",2021,"201A",3,2021-05-20,"yellow",0,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201A",3,2021-05-20,"yellow",0,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201A",3,2021-05-20,"yellow",0,0,NA,2021-07-16,0,"tree, grasses",57,0,TRUE
+"WL2",2021,"201A",4,2021-05-20,"yellow",0,0,NA,2021-06-18,0,"tree",29,0,TRUE
+"WL2",2021,"201A",4,2021-05-20,"yellow",0,0,NA,2021-07-02,0,"tree",43,0,TRUE
+"WL2",2021,"201A",4,2021-05-20,"yellow",0,0,NA,2021-07-16,0,"tree, grasses",57,0,TRUE
+"WL2",2021,"201B",0,2021-05-20,"yellow",30,0,NA,2021-06-18,2,"plus 1 red",29,2,TRUE
+"WL2",2021,"201B",0,2021-05-20,"yellow",30,0,NA,2021-07-02,5,"small mammal burrow/dens? (new buried a few picks) ant hill?",43,7,TRUE
+"WL2",2021,"201B",0,2021-05-20,"yellow",30,0,NA,2021-07-16,14,NA,57,21,TRUE
+"WL2",2021,"201B",1,2021-05-20,"yellow",3,0,NA,2021-06-18,0,"plus 2 red",29,0,TRUE
+"WL2",2021,"201B",1,2021-05-20,"yellow",3,0,NA,2021-07-02,1,NA,43,1,TRUE
+"WL2",2021,"201B",1,2021-05-20,"yellow",3,0,NA,2021-07-16,0,"3 missing red, 1 missing yellow, maybe buried",57,1,TRUE
+"WL2",2021,"201B",2,2021-05-20,"yellow",3,0,NA,2021-06-18,1,"lots of grass",29,1,TRUE
+"WL2",2021,"201B",2,2021-05-20,"yellow",3,0,NA,2021-07-02,0,"lots of grass",43,1,TRUE
+"WL2",2021,"201B",2,2021-05-20,"yellow",3,0,NA,2021-07-16,1,"lots of grass",57,2,TRUE
+"WL2",2021,"201B",3,2021-05-20,"yellow",1,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201B",3,2021-05-20,"yellow",1,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201B",3,2021-05-20,"yellow",1,0,NA,2021-07-16,1,NA,57,1,TRUE
+"WL2",2021,"201B",4,2021-05-20,"yellow",2,0,NA,2021-06-18,0,"plus 1 red, plus 1 blue",29,0,TRUE
+"WL2",2021,"201B",4,2021-05-20,"yellow",2,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201B",4,2021-05-20,"yellow",2,0,NA,2021-07-16,0,NA,57,0,TRUE
+"WL2",2021,"201C",0,2021-05-20,"yellow",19,0,NA,2021-06-18,1,"1 blue missing (pick?)",29,1,TRUE
+"WL2",2021,"201C",0,2021-05-20,"yellow",19,0,NA,2021-07-02,3,"2 missing yellow maybe sank in a hole",43,4,TRUE
+"WL2",2021,"201C",0,2021-05-20,"yellow",19,0,NA,2021-07-16,13,"1 extra yellow (dead) - partly buried",57,17,TRUE
+"WL2",2021,"201C",1,2021-05-20,"yellow",16,1,NA,2021-06-18,1,"1 yellow missing (pick?)",29,1,TRUE
+"WL2",2021,"201C",1,2021-05-20,"yellow",16,1,NA,2021-07-02,10,NA,43,11,TRUE
+"WL2",2021,"201C",1,2021-05-20,"yellow",16,1,NA,2021-07-16,4,"1 extra yellow",57,15,TRUE
+"WL2",2021,"201C",2,2021-05-20,"yellow",22,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201C",2,2021-05-20,"yellow",22,0,NA,2021-07-02,8,NA,43,8,TRUE
+"WL2",2021,"201C",2,2021-05-20,"yellow",22,0,NA,2021-07-16,8,"1 missing red, 1 missing blue but found 2 unmarked plants",57,16,TRUE
+"WL2",2021,"201C",3,2021-05-20,"yellow",13,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201C",3,2021-05-20,"yellow",13,0,NA,2021-07-02,3,NA,43,3,TRUE
+"WL2",2021,"201C",3,2021-05-20,"yellow",13,0,NA,2021-07-16,10,"maybe all dried out?",57,13,TRUE
+"WL2",2021,"201C",4,2021-05-20,"yellow",11,0,NA,2021-06-18,2,"plus 1 red, 1 yellow",29,2,TRUE
+"WL2",2021,"201C",4,2021-05-20,"yellow",11,0,NA,2021-07-02,0,"1 yellow pulled (far below transect line)",43,2,TRUE
+"WL2",2021,"201C",4,2021-05-20,"yellow",11,0,NA,2021-07-16,4,NA,57,6,TRUE
+"WL2",2021,"201D",0,2021-05-20,"yellow",5,0,"yellow;new germs",2021-06-18,3,NA,29,3,TRUE
+"WL2",2021,"201D",0,2021-05-20,"yellow",5,0,"yellow;new germs",2021-07-02,1,NA,43,4,TRUE
+"WL2",2021,"201D",0,2021-05-20,"yellow",5,0,"yellow;new germs",2021-07-16,1,NA,57,5,TRUE
+"WL2",2021,"201D",1,2021-05-20,"yellow",4,0,NA,2021-06-18,2,"found 1 extra blue, plus 1 red",29,2,TRUE
+"WL2",2021,"201D",1,2021-05-20,"yellow",4,0,NA,2021-07-02,2,"1 missing blue, heavy disturbance (gopher?)",43,4,TRUE
+"WL2",2021,"201D",1,2021-05-20,"yellow",4,0,NA,2021-07-16,0,NA,57,4,TRUE
+"WL2",2021,"201D",2,2021-05-20,"yellow",7,0,NA,2021-06-18,1,"missing 2 red (pick?), plus 2 red, gopher disturbance",29,1,TRUE
+"WL2",2021,"201D",2,2021-05-20,"yellow",7,0,NA,2021-07-02,1,"gopher disturbance, 1 pulled red actually perrential 344",43,2,TRUE
+"WL2",2021,"201D",2,2021-05-20,"yellow",7,0,NA,2021-07-16,5,"1 extra red, 1 extra blue",57,7,TRUE
+"WL2",2021,"201D",3,2021-05-20,"yellow",10,0,NA,2021-06-18,1,NA,29,1,TRUE
+"WL2",2021,"201D",3,2021-05-20,"yellow",10,0,NA,2021-07-02,4,"pulled 2 blue (out of plot), 3 yellow",43,5,TRUE
+"WL2",2021,"201D",3,2021-05-20,"yellow",10,0,NA,2021-07-16,1,NA,57,6,TRUE
+"WL2",2021,"201D",4,2021-05-20,"yellow",1,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"201D",4,2021-05-20,"yellow",1,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"201D",4,2021-05-20,"yellow",1,0,NA,2021-07-16,1,NA,57,1,TRUE
+"WL2",2021,"202A",0,2021-05-20,"yellow",7,1,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202A",0,2021-05-20,"yellow",7,1,NA,2021-07-02,0,"1 missing blue pick, but found and replaced it",43,0,TRUE
+"WL2",2021,"202A",0,2021-05-20,"yellow",7,1,NA,2021-07-16,2,"1 missing red, 1 extra blue (dead)",57,2,TRUE
+"WL2",2021,"202A",1,2021-05-20,"yellow",6,0,NA,2021-06-18,1,NA,29,1,TRUE
+"WL2",2021,"202A",1,2021-05-20,"yellow",6,0,NA,2021-07-02,2,"1 missing blue",43,3,TRUE
+"WL2",2021,"202A",1,2021-05-20,"yellow",6,0,NA,2021-07-16,2,NA,57,5,TRUE
+"WL2",2021,"202A",2,2021-05-20,"yellow",10,0,NA,2021-06-18,5,"found old orange pick",29,5,TRUE
+"WL2",2021,"202A",2,2021-05-20,"yellow",10,0,NA,2021-07-02,4,NA,43,9,TRUE
+"WL2",2021,"202A",2,2021-05-20,"yellow",10,0,NA,2021-07-16,0,NA,57,9,TRUE
+"WL2",2021,"202A",3,2021-05-20,"yellow",13,0,NA,2021-06-18,2,NA,29,2,TRUE
+"WL2",2021,"202A",3,2021-05-20,"yellow",13,0,NA,2021-07-02,3,"1 missing yellow",43,5,TRUE
+"WL2",2021,"202A",3,2021-05-20,"yellow",13,0,NA,2021-07-16,7,NA,57,12,TRUE
+"WL2",2021,"202A",4,2021-05-20,"yellow",15,1,NA,2021-06-18,3,"2 missing yellow",29,3,TRUE
+"WL2",2021,"202A",4,2021-05-20,"yellow",15,1,NA,2021-07-02,2,NA,43,5,TRUE
+"WL2",2021,"202A",4,2021-05-20,"yellow",15,1,NA,2021-07-16,8,NA,57,13,TRUE
+"WL2",2021,"202A",4.5,2021-05-20,"yellow",18,0,NA,2021-06-18,4,"found extra yellow",29,4,TRUE
+"WL2",2021,"202A",4.5,2021-05-20,"yellow",18,0,NA,2021-07-02,0,"1 missing blue",43,4,TRUE
+"WL2",2021,"202A",4.5,2021-05-20,"yellow",18,0,NA,2021-07-16,8,"1 red missing",57,12,TRUE
+"WL2",2021,"202B",0,2021-05-20,"yellow",13,0,NA,2021-06-18,1,NA,29,1,TRUE
+"WL2",2021,"202B",0,2021-05-20,"yellow",13,0,NA,2021-07-02,1,NA,43,2,TRUE
+"WL2",2021,"202B",0,2021-05-20,"yellow",13,0,NA,2021-07-16,3,NA,57,5,TRUE
+"WL2",2021,"202B",1,2021-05-20,"yellow",9,0,NA,2021-06-18,4,NA,29,4,TRUE
+"WL2",2021,"202B",1,2021-05-20,"yellow",9,0,NA,2021-07-02,2,"found 1 extra red",43,6,TRUE
+"WL2",2021,"202B",1,2021-05-20,"yellow",9,0,NA,2021-07-16,0,NA,57,6,TRUE
+"WL2",2021,"202B",2,2021-05-20,"yellow",1,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202B",2,2021-05-20,"yellow",1,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"202B",2,2021-05-20,"yellow",1,0,NA,2021-07-16,1,NA,57,1,TRUE
+"WL2",2021,"202B",3,2021-05-20,"yellow",20,0,NA,2021-06-18,7,"1 extra blue",29,7,TRUE
+"WL2",2021,"202B",3,2021-05-20,"yellow",20,0,NA,2021-07-02,7,NA,43,14,TRUE
+"WL2",2021,"202B",3,2021-05-20,"yellow",20,0,NA,2021-07-16,4,NA,57,18,TRUE
+"WL2",2021,"202B",4,2021-05-20,"yellow",13,0,NA,2021-06-18,8,NA,29,8,TRUE
+"WL2",2021,"202B",4,2021-05-20,"yellow",13,0,NA,2021-07-02,0,NA,43,8,TRUE
+"WL2",2021,"202B",4,2021-05-20,"yellow",13,0,NA,2021-07-16,1,NA,57,9,TRUE
+"WL2",2021,"202C",0,2021-05-20,"yellow",35,0,"yellow;new germs",2021-06-18,18,NA,29,18,TRUE
+"WL2",2021,"202C",0,2021-05-20,"yellow",35,0,"yellow;new germs",2021-07-02,6,"loose blue pick 1/2 transect ????",43,24,TRUE
+"WL2",2021,"202C",0,2021-05-20,"yellow",35,0,"yellow;new germs",2021-07-16,10,NA,57,34,TRUE
+"WL2",2021,"202C",1,2021-05-20,"yellow",6,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202C",1,2021-05-20,"yellow",6,0,NA,2021-07-02,1,NA,43,1,TRUE
+"WL2",2021,"202C",1,2021-05-20,"yellow",6,0,NA,2021-07-16,2,NA,57,3,TRUE
+"WL2",2021,"202C",2,2021-05-20,"yellow",1,0,"2 notable ant hills",2021-06-18,0,"4 notable ant hills",29,0,TRUE
+"WL2",2021,"202C",2,2021-05-20,"yellow",1,0,"2 notable ant hills",2021-07-02,0,"4 notable ant hills",43,0,TRUE
+"WL2",2021,"202C",2,2021-05-20,"yellow",1,0,"2 notable ant hills",2021-07-16,1,"4 notable ant hills",57,1,TRUE
+"WL2",2021,"202C",3,2021-05-20,"yellow",5,0,NA,2021-06-18,4,"added 1 red",29,4,TRUE
+"WL2",2021,"202C",3,2021-05-20,"yellow",5,0,NA,2021-07-02,0,NA,43,4,TRUE
+"WL2",2021,"202C",3,2021-05-20,"yellow",5,0,NA,2021-07-16,1,NA,57,5,TRUE
+"WL2",2021,"202C",4,2021-05-20,"yellow",6,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202C",4,2021-05-20,"yellow",6,0,NA,2021-07-02,2,"1 missing red, 1 extra yellow",43,2,TRUE
+"WL2",2021,"202C",4,2021-05-20,"yellow",6,0,NA,2021-07-16,4,NA,57,6,TRUE
+"WL2",2021,"202D",0,2021-05-20,"yellow",19,0,NA,2021-06-18,7,"1 yellow missing",29,7,TRUE
+"WL2",2021,"202D",0,2021-05-20,"yellow",19,0,NA,2021-07-02,10,NA,43,17,TRUE
+"WL2",2021,"202D",0,2021-05-20,"yellow",19,0,NA,2021-07-16,1,"1 extra blue (dead)",57,18,TRUE
+"WL2",2021,"202D",1,2021-05-20,"yellow",48,0,NA,2021-06-18,21,NA,29,21,TRUE
+"WL2",2021,"202D",1,2021-05-20,"yellow",48,0,NA,2021-07-02,5,"1 missing blue, 6 missing yellow",43,26,TRUE
+"WL2",2021,"202D",1,2021-05-20,"yellow",48,0,NA,2021-07-16,13,"1 missing blue",57,39,TRUE
+"WL2",2021,"202D",2,2021-05-20,"yellow",0,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202D",2,2021-05-20,"yellow",0,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"202D",2,2021-05-20,"yellow",0,0,NA,2021-07-16,0,NA,57,0,TRUE
+"WL2",2021,"202D",3,2021-05-20,"yellow",9,0,NA,2021-06-18,6,NA,29,6,TRUE
+"WL2",2021,"202D",3,2021-05-20,"yellow",9,0,NA,2021-07-02,3,NA,43,9,TRUE
+"WL2",2021,"202D",3,2021-05-20,"yellow",9,0,NA,2021-07-16,0,NA,57,9,TRUE
+"WL2",2021,"202D",4,2021-05-20,"yellow",0,0,NA,2021-06-18,0,NA,29,0,TRUE
+"WL2",2021,"202D",4,2021-05-20,"yellow",0,0,NA,2021-07-02,0,NA,43,0,TRUE
+"WL2",2021,"202D",4,2021-05-20,"yellow",0,0,NA,2021-07-16,0,NA,57,0,TRUE
+"WL2",2021,"201A",0,2021-06-07,"red",2,0,NA,2021-06-18,0,"plus 1 blue",11,0,TRUE
+"WL2",2021,"201A",0,2021-06-07,"red",2,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"201A",0,2021-06-07,"red",2,0,NA,2021-07-16,2,NA,39,2,TRUE
+"WL2",2021,"201A",1,2021-06-07,"red",0,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"201A",1,2021-06-07,"red",0,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"201A",1,2021-06-07,"red",0,0,NA,2021-07-16,0,NA,39,0,TRUE
+"WL2",2021,"201A",2,2021-06-07,"red",0,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"201A",2,2021-06-07,"red",0,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"201A",2,2021-06-07,"red",0,0,NA,2021-07-16,0,"tree, grasses",39,0,TRUE
+"WL2",2021,"201A",3,2021-06-07,"red",0,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"201A",3,2021-06-07,"red",0,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"201A",3,2021-06-07,"red",0,0,NA,2021-07-16,0,"tree, grasses",39,0,TRUE
+"WL2",2021,"201A",4,2021-06-07,"red",0,0,NA,2021-06-18,0,"tree",11,0,TRUE
+"WL2",2021,"201A",4,2021-06-07,"red",0,0,NA,2021-07-02,0,"tree",25,0,TRUE
+"WL2",2021,"201A",4,2021-06-07,"red",0,0,NA,2021-07-16,0,"tree, grasses",39,0,TRUE
+"WL2",2021,"201B",0,2021-06-07,"red",17,0,NA,2021-06-18,1,"plus 1 red",11,1,TRUE
+"WL2",2021,"201B",0,2021-06-07,"red",17,0,NA,2021-07-02,6,"small mammal burrow/dens? (new buried a few picks) ant hill?",25,7,TRUE
+"WL2",2021,"201B",0,2021-06-07,"red",17,0,NA,2021-07-16,6,NA,39,13,TRUE
+"WL2",2021,"201B",1,2021-06-07,"red",10,0,NA,2021-06-18,1,"plus 2 red",11,1,TRUE
+"WL2",2021,"201B",1,2021-06-07,"red",10,0,NA,2021-07-02,0,NA,25,1,TRUE
+"WL2",2021,"201B",1,2021-06-07,"red",10,0,NA,2021-07-16,4,"3 missing red, 1 missing yellow, maybe buried",39,5,TRUE
+"WL2",2021,"201B",2,2021-06-07,"red",3,0,NA,2021-06-18,1,"lots of grass",11,1,TRUE
+"WL2",2021,"201B",2,2021-06-07,"red",3,0,NA,2021-07-02,0,"lots of grass",25,1,TRUE
+"WL2",2021,"201B",2,2021-06-07,"red",3,0,NA,2021-07-16,1,"lots of grass",39,2,TRUE
+"WL2",2021,"201B",3,2021-06-07,"red",1,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"201B",3,2021-06-07,"red",1,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"201B",3,2021-06-07,"red",1,0,NA,2021-07-16,0,NA,39,0,TRUE
+"WL2",2021,"201B",4,2021-06-07,"red",4,0,NA,2021-06-18,0,"plus 1 red, plus 1 blue",11,0,TRUE
+"WL2",2021,"201B",4,2021-06-07,"red",4,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"201B",4,2021-06-07,"red",4,0,NA,2021-07-16,1,NA,39,1,TRUE
+"WL2",2021,"201C",0,2021-06-07,"red",22,0,NA,2021-06-18,1,"1 blue missing (pick?)",11,1,TRUE
+"WL2",2021,"201C",0,2021-06-07,"red",22,0,NA,2021-07-02,5,"2 missing yellow maybe sank in a hole",25,6,TRUE
+"WL2",2021,"201C",0,2021-06-07,"red",22,0,NA,2021-07-16,8,"1 extra yellow (dead) - partly buried",39,14,TRUE
+"WL2",2021,"201C",1,2021-06-07,"red",3,0,NA,2021-06-18,0,"1 yellow missing (pick?)",11,0,TRUE
+"WL2",2021,"201C",1,2021-06-07,"red",3,0,NA,2021-07-02,2,NA,25,2,TRUE
+"WL2",2021,"201C",1,2021-06-07,"red",3,0,NA,2021-07-16,1,"1 extra yellow",39,3,TRUE
+"WL2",2021,"201C",2,2021-06-07,"red",2,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"201C",2,2021-06-07,"red",2,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"201C",2,2021-06-07,"red",2,0,NA,2021-07-16,1,"1 missing red, 1 missing blue but found 2 unmarked plants",39,1,TRUE
+"WL2",2021,"201C",3,2021-06-07,"red",6,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"201C",3,2021-06-07,"red",6,0,NA,2021-07-02,1,NA,25,1,TRUE
+"WL2",2021,"201C",3,2021-06-07,"red",6,0,NA,2021-07-16,5,"maybe all dried out?",39,6,TRUE
+"WL2",2021,"201C",4,2021-06-07,"red",6,0,NA,2021-06-18,0,"plus 1 red, 1 yellow",11,0,TRUE
+"WL2",2021,"201C",4,2021-06-07,"red",6,0,NA,2021-07-02,0,"1 yellow pulled (far below transect line)",25,0,TRUE
+"WL2",2021,"201C",4,2021-06-07,"red",6,0,NA,2021-07-16,5,NA,39,5,TRUE
+"WL2",2021,"201D",0,2021-06-07,"red",12,0,NA,2021-06-18,6,NA,11,6,TRUE
+"WL2",2021,"201D",0,2021-06-07,"red",12,0,NA,2021-07-02,3,NA,25,9,TRUE
+"WL2",2021,"201D",0,2021-06-07,"red",12,0,NA,2021-07-16,2,NA,39,11,TRUE
+"WL2",2021,"201D",1,2021-06-07,"red",4,0,NA,2021-06-18,0,"found 1 extra blue, plus 1 red",11,0,TRUE
+"WL2",2021,"201D",1,2021-06-07,"red",4,0,NA,2021-07-02,4,"1 missing blue, heavy disturbance (gopher?)",25,4,TRUE
+"WL2",2021,"201D",1,2021-06-07,"red",4,0,NA,2021-07-16,0,NA,39,4,TRUE
+"WL2",2021,"201D",2,2021-06-07,"red",13,0,NA,2021-06-18,1,"missing 2 red (pick?), plus 2 red, gopher disturbance",11,1,TRUE
+"WL2",2021,"201D",2,2021-06-07,"red",13,0,NA,2021-07-02,4,"gopher disturbance, 1 pulled red actually perrential 344",25,5,TRUE
+"WL2",2021,"201D",2,2021-06-07,"red",13,0,NA,2021-07-16,4,"1 extra red, 1 extra blue",39,9,TRUE
+"WL2",2021,"201D",3,2021-06-07,"red",6,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"201D",3,2021-06-07,"red",6,0,NA,2021-07-02,1,"pulled 2 blue (out of plot), 3 yellow",25,1,TRUE
+"WL2",2021,"201D",3,2021-06-07,"red",6,0,NA,2021-07-16,4,NA,39,5,TRUE
+"WL2",2021,"201D",4,2021-06-07,"red",9,0,NA,2021-06-18,1,NA,11,1,TRUE
+"WL2",2021,"201D",4,2021-06-07,"red",9,0,NA,2021-07-02,0,NA,25,1,TRUE
+"WL2",2021,"201D",4,2021-06-07,"red",9,0,NA,2021-07-16,7,NA,39,8,TRUE
+"WL2",2021,"202A",0,2021-06-07,"red",7,0,"1 yellow out;pulled",2021-06-18,1,NA,11,1,TRUE
+"WL2",2021,"202A",0,2021-06-07,"red",7,0,"1 yellow out;pulled",2021-07-02,1,"1 missing blue pick, but found and replaced it",25,2,TRUE
+"WL2",2021,"202A",0,2021-06-07,"red",7,0,"1 yellow out;pulled",2021-07-16,3,"1 missing red, 1 extra blue (dead)",39,5,TRUE
+"WL2",2021,"202A",1,2021-06-07,"red",3,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202A",1,2021-06-07,"red",3,0,NA,2021-07-02,0,"1 missing blue",25,0,TRUE
+"WL2",2021,"202A",1,2021-06-07,"red",3,0,NA,2021-07-16,2,NA,39,2,TRUE
+"WL2",2021,"202A",2,2021-06-07,"red",2,0,NA,2021-06-18,0,"found old orange pick",11,0,TRUE
+"WL2",2021,"202A",2,2021-06-07,"red",2,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"202A",2,2021-06-07,"red",2,0,NA,2021-07-16,1,NA,39,1,TRUE
+"WL2",2021,"202A",3,2021-06-07,"red",2,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202A",3,2021-06-07,"red",2,0,NA,2021-07-02,0,"1 missing yellow",25,0,TRUE
+"WL2",2021,"202A",3,2021-06-07,"red",2,0,NA,2021-07-16,2,NA,39,2,TRUE
+"WL2",2021,"202A",4,2021-06-07,"red",0,0,NA,2021-06-18,0,"2 missing yellow",11,0,TRUE
+"WL2",2021,"202A",4,2021-06-07,"red",0,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"202A",4,2021-06-07,"red",0,0,NA,2021-07-16,0,NA,39,0,TRUE
+"WL2",2021,"202A",4.5,2021-06-07,"red",5,0,NA,2021-06-18,3,"found extra yellow",11,3,TRUE
+"WL2",2021,"202A",4.5,2021-06-07,"red",5,0,NA,2021-07-02,1,"1 missing blue",25,4,TRUE
+"WL2",2021,"202A",4.5,2021-06-07,"red",5,0,NA,2021-07-16,0,"1 red missing",39,4,TRUE
+"WL2",2021,"202B",0,2021-06-07,"red",2,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202B",0,2021-06-07,"red",2,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"202B",0,2021-06-07,"red",2,0,NA,2021-07-16,0,NA,39,0,TRUE
+"WL2",2021,"202B",1,2021-06-07,"red",8,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202B",1,2021-06-07,"red",8,0,NA,2021-07-02,4,"found 1 extra red",25,4,TRUE
+"WL2",2021,"202B",1,2021-06-07,"red",8,0,NA,2021-07-16,4,NA,39,8,TRUE
+"WL2",2021,"202B",2,2021-06-07,"red",2,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202B",2,2021-06-07,"red",2,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"202B",2,2021-06-07,"red",2,0,NA,2021-07-16,1,NA,39,1,TRUE
+"WL2",2021,"202B",3,2021-06-07,"red",4,0,NA,2021-06-18,0,"1 extra blue",11,0,TRUE
+"WL2",2021,"202B",3,2021-06-07,"red",4,0,NA,2021-07-02,2,NA,25,2,TRUE
+"WL2",2021,"202B",3,2021-06-07,"red",4,0,NA,2021-07-16,2,NA,39,4,TRUE
+"WL2",2021,"202B",4,2021-06-07,"red",3,0,NA,2021-06-18,1,NA,11,1,TRUE
+"WL2",2021,"202B",4,2021-06-07,"red",3,0,NA,2021-07-02,1,NA,25,2,TRUE
+"WL2",2021,"202B",4,2021-06-07,"red",3,0,NA,2021-07-16,1,NA,39,3,TRUE
+"WL2",2021,"202C",0,2021-06-07,"red",1,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202C",0,2021-06-07,"red",1,0,NA,2021-07-02,0,"loose blue pick 1/2 transect ????",25,0,TRUE
+"WL2",2021,"202C",0,2021-06-07,"red",1,0,NA,2021-07-16,1,NA,39,1,TRUE
+"WL2",2021,"202C",1,2021-06-07,"red",2,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202C",1,2021-06-07,"red",2,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"202C",1,2021-06-07,"red",2,0,NA,2021-07-16,0,NA,39,0,TRUE
+"WL2",2021,"202C",2,2021-06-07,"red",0,0,NA,2021-06-18,0,"4 notable ant hills",11,0,TRUE
+"WL2",2021,"202C",2,2021-06-07,"red",0,0,NA,2021-07-02,0,"4 notable ant hills",25,0,TRUE
+"WL2",2021,"202C",2,2021-06-07,"red",0,0,NA,2021-07-16,0,"4 notable ant hills",39,0,TRUE
+"WL2",2021,"202C",3,2021-06-07,"red",4,0,NA,2021-06-18,0,"added 1 red",11,0,TRUE
+"WL2",2021,"202C",3,2021-06-07,"red",4,0,NA,2021-07-02,3,NA,25,3,TRUE
+"WL2",2021,"202C",3,2021-06-07,"red",4,0,NA,2021-07-16,1,NA,39,4,TRUE
+"WL2",2021,"202C",4,2021-06-07,"red",3,0,NA,2021-06-18,1,NA,11,1,TRUE
+"WL2",2021,"202C",4,2021-06-07,"red",3,0,NA,2021-07-02,0,"1 missing red, 1 extra yellow",25,1,TRUE
+"WL2",2021,"202C",4,2021-06-07,"red",3,0,NA,2021-07-16,1,NA,39,2,TRUE
+"WL2",2021,"202D",0,2021-06-07,"red",12,0,NA,2021-06-18,8,"1 yellow missing",11,8,TRUE
+"WL2",2021,"202D",0,2021-06-07,"red",12,0,NA,2021-07-02,1,NA,25,9,TRUE
+"WL2",2021,"202D",0,2021-06-07,"red",12,0,NA,2021-07-16,3,"1 extra blue (dead)",39,12,TRUE
+"WL2",2021,"202D",1,2021-06-07,"red",13,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202D",1,2021-06-07,"red",13,0,NA,2021-07-02,6,"1 missing blue, 6 missing yellow",25,6,TRUE
+"WL2",2021,"202D",1,2021-06-07,"red",13,0,NA,2021-07-16,5,"1 missing blue",39,11,TRUE
+"WL2",2021,"202D",2,2021-06-07,"red",0,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202D",2,2021-06-07,"red",0,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"202D",2,2021-06-07,"red",0,0,NA,2021-07-16,0,NA,39,0,TRUE
+"WL2",2021,"202D",3,2021-06-07,"red",1,0,NA,2021-06-18,1,NA,11,1,TRUE
+"WL2",2021,"202D",3,2021-06-07,"red",1,0,NA,2021-07-02,0,NA,25,1,TRUE
+"WL2",2021,"202D",3,2021-06-07,"red",1,0,NA,2021-07-16,0,NA,39,1,TRUE
+"WL2",2021,"202D",4,2021-06-07,"red",0,0,NA,2021-06-18,0,NA,11,0,TRUE
+"WL2",2021,"202D",4,2021-06-07,"red",0,0,NA,2021-07-02,0,NA,25,0,TRUE
+"WL2",2021,"202D",4,2021-06-07,"red",0,0,NA,2021-07-16,0,NA,39,0,TRUE
