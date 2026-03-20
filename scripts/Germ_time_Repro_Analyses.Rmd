@@ -553,7 +553,22 @@ summary(m9_logGerm_year_site_plot_quad)
 ICtab(m8_logGerm_year_site_str, m9_logGerm_year_site_plot_quad) #the random effects model is a better fit than the 3 way interaction
 ```
 
-#### Predicted vs Observed  Survival to Repro \~ Germ time 
+#### Probability of Surviving to Reproduction
+
+```{r}
+m9.5_prob_surv_repro <- glmer(prob_surv_to_repro ~ 1 + (1|Census_year) + (1|Site) + (1|Transect_plot) +(1|Quad),
+             data=germ_prop_surv_repro,
+             family=binomial)
+summary(m9.5_prob_surv_repro)
+```
+
+#### Predicted vs Observed Survival to Repro \~ Germ time
+
+plot everything on a logit scale and see how it looks
+
+or could calculate means and variances on a logit scale (grouping by germination survey date), back-transform
+
+plot log(germ_time ) on the x
 
 ```{r}
 germ_prop_surv_repro$prob_surv_model <- predict(m9_logGerm_year_site_plot_quad, newdata = germ_prop_surv_repro, type = "response", allow.new.levels = TRUE)
@@ -621,7 +636,9 @@ summary(m16_logGerm_year_plot_quad)
 ICtab(m12_logGerm_year_probRepro, m16_logGerm_year_plot_quad) #random effect model is the better fit
 ```
 
-#### Predicted vs Observed  Prob of Repro \~ Germ time 
+#### Predicted vs Observed Prob of Repro \~ Germ time
+
+plot x=axis on logGermtime
 
 ```{r}
 germ_prop_surv_repro$probRepro_model <- predict(m16_logGerm_year_plot_quad, newdata = germ_prop_surv_repro, type = "response", allow.new.levels = TRUE)

@@ -1,0 +1,415 @@
+---
+title: "Seedling_establishment_cleaning"
+output: html_document
+date: "2025-07-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Libraries
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(purrr)
+library(lubridate)
+library(lmtest)
+library(lme4)
+library(car)
+library(bbmle)
+```
+
+### Load in WL1 2022 data
+
+```{r}
+all_WL1_germ_2022 <- read_excel("../input/Germination and Mortality data/WL1_germinationsurvey_2022_all.xlsx")
+
+WL1_mort_20220401 <- read_excel("../input/Germination and Mortality data/WL1_mortality_20220401_completed.xlsx")
+
+WL1_mort_20220427 <- read_excel("../input/Germination and Mortality data/WL1_mortalitysurvey_20220427_entered.xlsx.xlsx")
+
+WL1_mort_20220518 <- read_excel("../input/Germination and Mortality data/WL1_mortality_20220518_finished_SHS.xlsx")
+
+WL1_mort_20220701 <- read_excel("../input/Germination and Mortality data/WL1_mortalitysurvey_20220701_complete.xlsx")
+```
+
+### Focusing on only the 1st germ cohort ("green") for WL1 2022
+
+#### Check 1st mortality survey living and dead numbers sum to total from germ survey
+
+```{r}
+WL1_22_green <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "green") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_green_mort1 <- WL1_22_green %>%
+  left_join(WL1_mort_20220401[,c(4:9,14)] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = green_living + green_dead == number_germ)
+```
+
+#### Update number_germ/green_living counts (don't really need to update green_living because I'm planning on using green_dead for the regressions)
+
+```{r}
+WL1_22_green_updated <- WL1_22_green_mort1[,1:12] %>%
+  mutate(number_germ = ifelse(transect_plot == 1 & quadrat == 4.5, 9, number_germ),
+         number_germ = ifelse(transect_plot == 1 & quadrat == 8.0, 24, number_germ),
+         green_living = ifelse(transect_plot == 1 & quadrat == 8.0, 24, green_living),
+         number_germ = ifelse(transect_plot == 1 & quadrat == 8.5, 13, number_germ),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 1.0, 41, number_germ),
+         green_living = ifelse(transect_plot == 3 & quadrat == 1.5, 66, green_living)) %>%
+   mutate(sum_check  = green_living + green_dead == number_germ) %>%
+  filter(sum_check == TRUE) #remove row where we cannot update number_germ
+```
+
+#### Prep mort surveys to be joined in long format and join
+
+```{r}
+WL1_22_mort_list <- list(WL1_mort_20220401, WL1_mort_20220427, WL1_mort_20220518, WL1_mort_20220701)
+
+WL1_22_all_green_mort <- WL1_22_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = green_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5
+
+WL1_22_green_long_prep <- WL1_22_green_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, germ_notes)
+
+WL1_22_green_germ_mort_long <- WL1_22_green_long_prep %>%
+  left_join(WL1_22_all_green_mort)
+```
+
+#### Convert mort_survey_date to days since germ
+
+```{r}
+WL1_22_green_day_since_germ <- WL1_22_green_germ_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() #%>%
+  #mutate(count_check  =  green_dead <= number_germ)
+```
+
+#### Cumulative death regression over time models
+
+```{r}
+m0_green_null <- glm(cbind(cum_dead, number_germ-cum_dead) ~ 1,
+            data=WL1_22_green_day_since_germ,
+            family=binomial(link="logit"))
+
+m1_green_dead_time <- glm(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ,
+            data=WL1_22_green_day_since_germ,
+            family=binomial(link="logit"))
+
+lrtest(m0_green_null, m1_green_dead_time) # days_since_germ seems to have a significant slightly positive effect on the number of dead germs - is this how I should set up the model?
+summary(m1_green_dead_time)
+
+m2_green_dead_Time_transect_quad <- glmer(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ + (1|transect_plot) + (1|quadrat),
+            data=WL1_22_green_day_since_germ,
+            family=binomial(link="logit"))
+summary(m2_green_dead_Time_transect_quad) # days_since_germ has the same effect as in the glm and transect_plot and quadrat explain some of the variance
+```
+
+### Adding 2nd germ cohort ("blue") for WL1 2022
+
+```{r}
+WL1_22_blue <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "blue") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_blue_mort1 <- WL1_22_blue %>%
+  left_join(WL1_mort_20220401[,c(4:7,10:11,14)] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = blue_living + blue_dead == number_germ) #2 rows have "missing" germs but I'll leave those rows for now
+
+WL1_22_all_blue_mort <- WL1_22_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = blue_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5
+
+WL1_22_blue_long_prep <- WL1_22_blue %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, germ_notes)
+
+WL1_22_blue_germ_mort_long <- WL1_22_blue_long_prep %>%
+  left_join(WL1_22_all_blue_mort)
+
+WL1_22_blue_day_since_germ <- WL1_22_blue_germ_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() #%>%
+  #mutate(count_check = num_dead <= number_germ)
+```
+
+#### Testing death time models on blue cohort
+
+```{r}
+m0_blue_null <- glm(cbind(cum_dead, number_germ-cum_dead) ~ 1,
+            data=WL1_22_blue_day_since_germ,
+            family=binomial(link="logit"))
+
+m1_blue_dead_time <- glm(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ,
+            data=WL1_22_blue_day_since_germ,
+            family=binomial(link="logit"))
+
+lrtest(m0_blue_null, m1_blue_dead_time) # days_since_germ seems to have a significant slightly positive effect on the number of dead germs - is this how I should set up the model?
+summary(m1_blue_dead_time)
+
+m2_blue_dead_Time_transect_quad <- glmer(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ + (1|transect_plot) + (1|quadrat),
+            data=WL1_22_blue_day_since_germ,
+            family=binomial(link="logit")) #warning failed to converge
+summary(m2_blue_dead_Time_transect_quad) 
+```
+
+### Adding 3rd germ cohort ("red") for WL1 2022
+
+```{r}
+WL1_22_red <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "red") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_red_mort1 <- WL1_22_red %>%
+  left_join(WL1_mort_20220401[,c(4:7,12:14)] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = red_living + red_dead == number_germ) 
+
+WL1_22_red_updated <- WL1_22_red_mort1[,1:12] %>%
+  mutate(number_germ = ifelse(transect_plot == 2 & quadrat == 6.0, 4, number_germ))
+
+WL1_22_all_red_mort <- WL1_22_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = red_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5
+
+WL1_22_red_long_prep <- WL1_22_red_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, germ_notes)
+
+WL1_22_red_germ_mort_long <- WL1_22_red_long_prep %>%
+  left_join(WL1_22_all_red_mort)
+
+WL1_22_red_day_since_germ <- WL1_22_red_germ_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() #%>%
+  #mutate(count_check = num_dead <= number_germ)
+```
+
+#### Testing death time models on red cohort
+
+```{r}
+m0_red_null <- glm(cbind(cum_dead, number_germ-cum_dead) ~ 1,
+            data=WL1_22_red_day_since_germ,
+            family=binomial(link="logit"))
+
+m1_red_dead_time <- glm(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ,
+            data=WL1_22_red_day_since_germ,
+            family=binomial(link="logit"))
+
+lrtest(m0_red_null, m1_red_dead_time) # days_since_germ seems to have a significant slightly positive effect on the number of dead germs - is this how I should set up the model?
+summary(m1_red_dead_time)
+
+m2_red_dead_Time_transect_quad <- glmer(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ + (1|transect_plot) + (1|quadrat),
+            data=WL1_22_red_day_since_germ,
+            family=binomial(link="logit")) #significant slighlty positive effect of days_since_germ and quad and transect explain some variance
+summary(m2_red_dead_Time_transect_quad) 
+```
+
+### Adding 4th germ cohort ("yellow") for WL1 2022
+
+```{r}
+WL1_22_yellow <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "yellow") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_yellow_mort1 <- WL1_22_yellow %>%
+  left_join(WL1_mort_20220427[,c(4:7,14:ncol(WL1_mort_20220427))] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = yellow_living + yellow_dead == number_germ) 
+
+WL1_22_all_yellow_mort <- list(WL1_mort_20220427, WL1_mort_20220518, WL1_mort_20220701)
+
+WL1_22_all_yellow_mort <- WL1_22_all_yellow_mort %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = yellow_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5
+
+WL1_22_yellow_long_prep <- WL1_22_yellow %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, germ_notes)
+
+WL1_22_yellow_germ_mort_long <- WL1_22_yellow_long_prep %>%
+  left_join(WL1_22_all_yellow_mort)
+
+WL1_22_yellow_day_since_germ <- WL1_22_yellow_germ_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = num_dead <= number_germ)
+```
+
+#### Testing death time models on yellow cohort - there are fewer mort surveys for this cohort leading to non-significance and singularity problems with these models
+
+```{r}
+m0_yellow_null <- glm(cbind(cum_dead, number_germ-cum_dead) ~ 1,
+            data=WL1_22_yellow_day_since_germ,
+            family=binomial(link="logit"))
+
+m1_yellow_dead_time <- glm(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ,
+            data=WL1_22_yellow_day_since_germ,
+            family=binomial(link="logit"))
+
+lrtest(m0_yellow_null, m1_yellow_dead_time) # days_since_germ is marginally significant - if this because there are fewer mort surveys for later germ cohorts?
+summary(m1_yellow_dead_time)
+
+m2_yellow_dead_Time_transect_quad <- glmer(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ + (1|transect_plot) + (1|quadrat),
+            data=WL1_22_yellow_day_since_germ,
+            family=binomial(link="logit")) #significant slighlty positive effect of days_since_germ and quad and transect explain some variance
+summary(m2_yellow_dead_Time_transect_quad) 
+```
+
+### Adding 5th germ cohort ("orange") for WL1 2022
+
+```{r}
+WL1_22_orange <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "orange") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_orange_mort1 <- WL1_22_orange %>%
+  left_join(WL1_mort_20220518[, c(4:7, 16:ncol(WL1_mort_20220518))] %>%
+      rename(mort_survey_date = survey_date) %>%
+      mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat))) %>% #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5) 
+  mutate(sum_check = orange_living + orange_dead == number_germ)
+
+WL1_22_orange_updated <- WL1_22_orange_mort1[,1:12] %>%
+  mutate(number_germ = ifelse(transect_plot == 2 & quadrat == 3.0, 0, number_germ),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 1.0, 1, number_germ),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 2.0, 0, number_germ),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 3.5, 1, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 4.0, 1, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 4.5, 1, number_germ),
+         )
+
+WL1_22_all_orange_mort <- list(WL1_mort_20220518, WL1_mort_20220701)
+
+WL1_22_all_orange_mort <- WL1_22_all_orange_mort %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = orange_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5)
+
+WL1_22_orange_long_prep <- WL1_22_orange_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, germ_notes)
+
+WL1_22_orange_germ_mort_long <- WL1_22_orange_long_prep %>%
+  left_join(WL1_22_all_orange_mort)
+
+WL1_22_orange_day_since_germ <- WL1_22_orange_germ_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+   mutate(num_dead = ifelse(transect_plot == 2 & quadrat == 7.0 & mort_survey_date == "2022-07-01", 0, num_dead)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = num_dead <= number_germ)
+```
+
+```{r}
+m0_orange_null <- glm(cbind(cum_dead, number_germ-cum_dead) ~ 1,
+            data=WL1_22_orange_day_since_germ,
+            family=binomial(link="logit"))
+
+m1_orange_dead_time <- glm(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ,
+            data=WL1_22_orange_day_since_germ,
+            family=binomial(link="logit"))
+
+lrtest(m0_orange_null, m1_orange_dead_time) # days_since_germ is marginally significant - if this because there are fewer mort surveys for later germ cohorts?
+summary(m1_orange_dead_time)
+
+m2_orange_dead_Time_transect_quad <- glmer(cbind(cum_dead, number_germ-cum_dead) ~ days_since_germ + (1|transect_plot) + (1|quadrat),
+            data=WL1_22_orange_day_since_germ,
+            family=binomial(link="logit")) #significant slighlty positive effect of days_since_germ and quad and transect explain some variance
+summary(m2_orange_dead_Time_transect_quad) 
+```
+
+### Join all cohorts together
+
+```{r}
+WL1_22_all_cohort_list <- list(WL1_22_green_germ_mort_long, WL1_22_blue_germ_mort_long, WL1_22_red_germ_mort_long, WL1_22_yellow_germ_mort_long, WL1_22_orange_germ_mort_long)
+
+WL1_22_all_cohort <- bind_rows(WL1_22_all_cohort_list)
+```
+
+### Models
+
+#### Effect of germ time on the number of dead (I want this to be the probability of dying or 1-(prob of dying)
+
+```{r}
+
+```
+
+#### Prob of establishing given germ time
+
+```{r}
+
+```
+
+#### Prob of establishing over time - thinking about a threshold time where we can say plants have established and this may not be clear because there will still be mortality after establishment
+
+```{r}
+
+```
+
+With the last germination cohorts
+
+Try to find time to event analyses where some cohorts only have a few surveys or varying survey intervals
+
+Or I could pick the number of days after germination (IntBio is often 3 weeks after germination that we transplant)
+
+Include germination time within the growing season (or at least order germination cohorts)
+
+Is survival/establishment among these cohorts (time to event: time and cohort interaction)
+
+Keep in mind if I want to know if cohorts are responding differently
