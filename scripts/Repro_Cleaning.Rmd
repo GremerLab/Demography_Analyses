@@ -1,0 +1,26 @@
+---
+title: "Flower_Cleaning"
+output: html_document
+date: "2026-03-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load libraries
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(lubridate)
+```
+
+### WL and CP2 Repro Pheno Surveys
+
+```{r}
+#WL1 2019
+WL1_repro_20190703 <- read_excel("../input/Reproduction data/WL1_ReproPhen_7.3.19_edited9.3.19MM.xlsx")
+```

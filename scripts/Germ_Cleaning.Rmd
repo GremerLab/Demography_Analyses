@@ -1,0 +1,1544 @@
+---
+title: "Germ_Cleaning"
+output: html_document
+date: "2026-02-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load in libraries
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(lubridate)
+```
+
+### Load in TM2 Germ and Mortality Data
+
+```{r}
+#TM2 2016-2017
+TM2_germ_2016 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/Demog_TM2_germsurvey_fall2016winter2017_20170717_AJC.xlsx") #will need to load in each sheet seperately
+
+#TM2 2017-2018
+TM2_germ_20171205 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/Demog_TM2_germsurvey_fall2017winter2018_20171205_AJC.xlsx")
+TM2_germ_20171214 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/Demog_TM2_germsurvey_fall2017winter2018_20171214_AJC.xlsx")
+TM2_germ_20180117 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/Demog_TM2_germsurvey_winter2018spring2018_20180727_SLZ.xlsx")
+TM2_germ_2018 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_germ_2018.csv")
+
+#TM2 2018-2019
+TM2_germ_2019 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_germ_2019.csv")
+TM2_germ_20181214 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_GermSurvey_12.14.18_entered2.25.21ES.xlsx")
+TM2_germ_20181231 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_GermSurvey_12.31.18_edited9.4.19MM.xlsx")
+TM2_germ_20190123 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_GermSurvey_1.23.19_edited9.4.19MM.xlsx")
+TM2_germ_20190313 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_GermSurvey_3.13.2019_edited9.3.19MM.xlsx")
+TM2_germ_20190419 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_mortality_updated_20190419ES.xlsx")
+TM2_germ_20190508 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_mortality_updated_20190508ES.xlsx")
+
+#TM2 2019-2020
+TM2_germ_2020 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_germ_2020_done.xlsx")
+TM2_germ_20191211 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/Germination_survey_field_data_20200423_EEB.xlsx")
+
+#TM2 2020-2021
+TM2_germ_2021 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_germinationsurvey_2021_all_C.xlsx")
+TM2_mort_20210226 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_Mortality_Survey_20210226_verified.xlsx")
+
+
+#TM2 2021-2022
+TM2_germ_2022 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_germinationsurvey_2022_all_finished.xlsx")
+TM2_germ_20211210 <- read_excel ("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_mortalitysurvey_20211210_finished.xlsx")
+TM2_germ_20220105 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_mortalitysurvey_20220105_finished.xlsx")
+TM2_mort_20220114 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_mortalitysurvey_20220114_verified.xlsx.xlsx")
+TM2_mort_20220222 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_mortalitysurvey_20220222_verified.xlsx.xlsx")
+
+
+#TM2 2022-2023
+TM2_germ_20221014 <- read_excel("../input/Germination and Mortality data/TM2_Germ_Mort/TM2_germinationsurvey_20221014_verified_SRA.xlsx")
+
+```
+
+### TM2 2022-2023 Germination - only 1 survey
+
+```{r}
+TM2_germ_20221014 <- TM2_germ_20221014 %>%
+  mutate(survey_date = ymd(survey_date)) %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+#write.csv(TM2_germ_20221014, "../output/all_TM2_germ_2022_2023.csv", row.names = FALSE)
+```
+
+### TM2 2021-2022 Germination and Mortality
+
+```{r}
+#TM2_germ_2022 has the 20211103, 20211117, 20211210, 20220105, and 20220422 surveys
+
+#rename columns 
+TM2_germ_2022 <- TM2_germ_2022 %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+
+TM2_22_germ1 <- TM2_germ_2022 %>%
+  filter(pick_color == "red")
+
+
+TM2_22_germ1_mort1 <- TM2_22_germ1 %>%
+  left_join(TM2_mort_20220114[,c(4:9,16)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = red_living + red_dead == number_germ) #many do not match
+
+TM2_22_germ1_mort1_updated <- TM2_22_germ1_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate()
+
+
+TM2_mort_20220114
+TM2_mort_20220222
+```
+
+Germ Cohort 2
+
+```{r}
+TM2_22_germ2 <- TM2_germ_2022 %>%
+  filter(pick_color == "yellow")
+
+TM2_22_germ2_mort1 <- TM2_22_germ2 %>%
+  left_join(TM2_mort_20220114[,c(4:7, 10:11,16)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = yellow_living + yellow_dead == number_germ)
+```
+
+Germ Cohort 3
+
+```{r}
+TM2_22_germ3 <- TM2_germ_2022 %>%
+  filter(pick_color == "blue")
+
+TM2_22_germ3_mort1 <- TM2_22_germ3 %>%
+  left_join(TM2_mort_20220114[,c(4:7, 12:13,16)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = blue_living + blue_dead == number_germ)
+```
+
+Germ Cohort 4
+
+```{r}
+TM2_22_germ4 <- TM2_germ_2022 %>%
+  filter(pick_color == "orange")
+
+TM2_22_germ4_mort1 <- TM2_22_germ4 %>%
+  left_join(TM2_mort_20220114[,c(4:7, 14:16)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = orange_living + orange_dead == number_germ)
+```
+
+Germ Cohort 5 - no mort survey following this cohort
+
+```{r}
+TM2_22_germ5 <- TM2_germ_2022 %>%
+  filter(pick_color == "white")
+
+```
+
+### TM2 2020-2021 Germination and Mort
+
+Germ cohort 1
+
+```{r}
+TM2_germ_2021 <- TM2_germ_2021 %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+  
+TM2_mort_20210226 <- TM2_mort_20210226 %>%
+  rename(mort_survey_date = survey_date,
+         mort_notes = notes)
+
+TM2_21_germ1 <- TM2_germ_2021 %>%
+  filter(pick_color == "red")
+
+TM2_21_germ1_mort <- TM2_21_germ1 %>%
+  left_join(TM2_mort_20210226[,c(4:9, 18)]) %>%
+  mutate(sum_check  = color_living_red + color_dead_red == number_germ)
+
+TM2_21_germ1_mort_updated <- TM2_21_germ1_mort %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == "lower" & quadrat == 7.5, 8, number_germ),
+         number_germ = ifelse(transect_plot == "lower" & quadrat == 10.0, 2, number_germ)) %>%
+  mutate(sum_check  = color_living_red + color_dead_red + missing_germs== number_germ)
+
+TM2_mort_germ1 <- TM2_mort_20210226 %>%
+  rename(num_dead = color_dead_red) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)
+
+TM2_21_germ1_mort_long <- TM2_21_germ1_mort_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes) %>%
+  left_join(TM2_mort_germ1)
+
+TM2_21_germ1_day_since_germ <- TM2_21_germ1_mort_long %>%
+   mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+
+```
+
+Germ cohort 2
+
+```{r}
+TM2_21_germ2 <- TM2_germ_2021 %>%
+  filter(pick_color == "yellow")
+
+TM2_21_germ2_mort <- TM2_21_germ2 %>%
+  left_join(TM2_mort_20210226[,c(4:7,10:11, 18)]) %>%
+  mutate(sum_check  = color_living_yellow + color_dead_yellow == number_germ)
+
+TM2_21_germ2_mort_updated <- TM2_21_germ2_mort %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(missing_germs = ifelse(transect_plot == "upper" & quadrat == 7.0, 1, missing_germs)) %>%
+  mutate(sum_check  = color_living_yellow + color_dead_yellow + missing_germs== number_germ)
+
+TM2_mort_germ2 <- TM2_mort_20210226 %>%
+  rename(num_dead = color_dead_yellow) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)
+
+TM2_21_germ2_mort_long <- TM2_21_germ2_mort_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes) %>%
+  left_join(TM2_mort_germ2)
+
+TM2_21_germ2_day_since_germ <- TM2_21_germ2_mort_long %>%
+   mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+
+```
+
+Germ Cohort 3
+
+```{r}
+TM2_21_germ3 <- TM2_germ_2021 %>%
+  filter(pick_color == "blue")
+
+TM2_21_germ3_mort <- TM2_21_germ3 %>%
+  left_join(TM2_mort_20210226[,c(4:7,12:13, 18)]) %>%
+  mutate(sum_check  = color_living_blue + color_dead_blue == number_germ)
+
+TM2_21_germ3_mort_updated <- TM2_21_germ3_mort %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) 
+
+TM2_mort_germ3 <- TM2_mort_20210226 %>%
+  rename(num_dead = color_dead_blue) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)
+
+TM2_21_germ3_mort_long <- TM2_21_germ3_mort_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes) %>%
+  left_join(TM2_mort_germ3)
+
+TM2_21_germ3_day_since_germ <- TM2_21_germ3_mort_long %>%
+   mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+
+```
+
+Germ Cohort 4
+
+```{r}
+TM2_21_germ4 <- TM2_germ_2021 %>%
+  filter(pick_color == "orange")
+
+TM2_21_germ4_mort <- TM2_21_germ4 %>%
+  left_join(TM2_mort_20210226[,c(4:7,14:15, 18)]) %>%
+  mutate(sum_check  = color_living_orange + color_dead_orange == number_germ)
+
+TM2_21_germ4_mort_updated <- TM2_21_germ4_mort %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) 
+
+TM2_mort_germ4 <- TM2_mort_20210226 %>%
+  rename(num_dead = color_dead_orange) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)
+
+TM2_21_germ4_mort_long <- TM2_21_germ4_mort_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes) %>%
+  left_join(TM2_mort_germ4)
+
+TM2_21_germ4_day_since_germ <- TM2_21_germ4_mort_long %>%
+   mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+
+```
+
+Germ Cohort 5
+
+```{r}
+TM2_21_germ5 <- TM2_germ_2021 %>%
+  filter(pick_color == "green")
+
+TM2_21_germ5_mort <- TM2_21_germ5 %>%
+  left_join(TM2_mort_20210226[,c(4:7,16:17,18)]) %>%
+  mutate(sum_check  = color_living_green + color_dead_green == number_germ)
+
+TM2_21_germ5_mort_updated <- TM2_21_germ5_mort %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) 
+
+TM2_mort_germ5 <- TM2_mort_20210226 %>%
+  rename(num_dead = color_dead_green) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)
+
+TM2_21_germ5_mort_long <- TM2_21_germ5_mort_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes) %>%
+  left_join(TM2_mort_germ5)
+
+TM2_21_germ5_day_since_germ <- TM2_21_germ5_mort_long %>%
+   mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Combine all germ surveys and create csv
+
+```{r}
+TM2_21_all_cohort_list <- list(TM2_21_germ1_day_since_germ, TM2_21_germ2_day_since_germ, TM2_21_germ3_day_since_germ, TM2_21_germ4_day_since_germ, TM2_21_germ5_day_since_germ)
+
+TM2_21_all_germ_mort <- bind_rows(TM2_21_all_cohort_list)
+#write.csv(TM2_21_all_germ_mort, "../output/TM2_21_all_germ_mort.csv", row.names = FALSE)
+```
+
+### TM2 2019-2020 Germination and Mortality
+
+```{r}
+
+```
+
+### Load in WL and CP2 Germ and Mortality Data
+
+```{r}
+#WL and CP2 2021-2022 Surveys
+all_WL1_germ_2022 <- read_excel("../input/Germination and Mortality data/WL1_germinationsurvey_2022_all.xlsx")
+WL1_mort_20220401 <- read_excel("../input/Germination and Mortality data/WL1_mortality_20220401_completed.xlsx")
+WL1_mort_20220427 <- read_excel("../input/Germination and Mortality data/WL1_mortalitysurvey_20220427_entered.xlsx.xlsx")
+WL1_mort_20220518 <- read_excel("../input/Germination and Mortality data/WL1_mortality_20220518_finished_SHS.xlsx")
+WL1_mort_20220701 <- read_excel("../input/Germination and Mortality data/WL1_mortalitysurvey_20220701_complete.xlsx")
+all_WL2_WL3_germ_2022 <- read_excel("../input/Germination and Mortality data/WL2_3 germination 2022_all.xlsx")
+all_CP2_germ_2022 <- read_excel("../input/Germination and Mortality data/CP2_germinationsurvey_2022_all_entered.xlsx")
+CP2_mort_20220715 <- read_excel("../input/Germination and Mortality data/CP2_mortality_20220715_finished.xlsx")
+
+#WL and CP2 2020-2021 Surveys
+all_WL1_germ_2021 <- read_excel("../input/Germination and Mortality data/WL1_germinationsurvey_2021_all_C.xlsx")
+WL1_mort_20210438 <- read_excel("../input/Germination and Mortality data/WL1_Mortality_20210428_verified.xlsx")
+WL1_mort_20210513 <- read_excel("../input/Germination and Mortality data/WL1_Mortality_20210513_verified.xlsx")
+WL1_mort_20210618 <- read_excel("../input/Germination and Mortality data/WL1_Mortality_20210618_verified.xlsx")
+WL1_mort_20210702 <- read_excel("../input/Germination and Mortality data/WL1_mortality_20210702_verified.xlsx")
+all_WL2_WL3_germ_2021 <- read_excel("../input/Germination and Mortality data/WL2and3_germinationsurvey_2021_all_finished_EC_SRA.xlsx")
+WL2_WL3_mort_20210618 <- read_excel("../input/Germination and Mortality data/WL2_3_Mortality_20210618_verified.xlsx")
+WL2_WL3_mort_20210702 <- read_excel("../input/Germination and Mortality data/WL2_WL3_Mortality_20210702_verified.xlsx")
+WL2_WL3_mort_20210716 <- read_excel("../input/Germination and Mortality data/WL2_WL3_Mortality_20210716_verified.xlsx")
+
+#WL and CP2 2017-2018 Surveys
+WL1_germ_20180522 <- read_excel("../input/Germination and Mortality data/WL1_SpringGermSurvey_5.22.18_20180721_SLZ.xlsx")
+WL1_germ_20180603 <- read_excel("../input/Germination and Mortality data/WL1_SpringGermSurvey_6.03.2018_fixed_EEB.xlsx")
+WL_germ_20171102_20171118 <- read_excel("../input/Germination and Mortality data/Demog_WLCP_germ11.2.2017_20171219_AJC.xlsx") #Demog_WLCP_germ11.2.2017_20171106_AJC.xlsx contains just the 11/02/2017
+WL1_CP2_germ_20180103 <- read_excel("../input/Germination and Mortality data/WLCP_FallGermSurvey_1.3.18_20180721_SLZ.xlsx") #contains WL1, WL2, WL3, and CP2 but WL2 and WL3 were not accessible so all NA. CP2 is all 0
+WL1_WL2_WL3_CP2_germ_20180622 <- read_excel("../input/Germination and Mortality data/WLCP_SpringGermSurvey_6.22.18_20180721_SLZ.xlsx")
+WL1_WL2_WL3_CP2_germ_20180613_20180604_20180608 <- read_excel("../input/Germination and Mortality data/WLCP_SpringGermSurvey_6.3.18_20180721_SLZ.xlsx")
+WL2_WL3_mort_20180720 <- read_excel("../input/Germination and Mortality data/WLCP_SpringMortalitySurvey_7.20.18_SLZ.xlsx")
+CP2_germ_20180603 <- read_excel("../input/Germination and Mortality data/CP2_germsurvey_6.03.2018_fixed_EEB.xlsx")
+WL2_germ_20180603 <- read_excel("../input/Germination and Mortality data/WL2_germsurvey_6.03.2018_fixed_EEB.xlsx")
+WL3_germ_20180603 <- read_excel("../input/Germination and Mortality data/WL3_germsurvey_6.03.2018_fixed_EEB.xlsx")
+
+#WL and CP2 2018-2019 Surveys
+WL1_germ_20190612 <- read_excel("../input/Germination and Mortality data/WL1_GermSurvey_6.12.19_edited9.4.19MM.xlsx")
+WL1_germ_20190429 <- read_excel("../input/Germination and Mortality data/WL1_GermSurvey_4.29.19_edited9.3.19MM.xlsx")
+WL2_WL3_germ_20190715 <- read_excel("../input/Germination and Mortality data/WL23_GermSurvey_7.15.19_edited9.4.19MM.xlsx")
+WL2_WL3_CP2_germ_20190703 <- read_excel("../input/Germination and Mortality data/WL23+CP2_GermSurvey_7.3.19_edited9.3.19MM.xlsx")
+
+#WL2 2016-2017 Survey
+WL2_germ_20161027 <- read_excel("../input/Germination and Mortality data/Demog_WL2_fall_2016_germ_survey_10.27_20161026_AC.xlsx")
+```
+
+### WL1 2022 Germ and Mortality - need to rename mort survey notes column
+
+#### Germ Cohort 1
+
+```{r}
+#pull out only the 1st germ cohort
+WL1_22_germ1 <- all_WL1_germ_2022[,c("survey_year", "survey_date", "site", "transect_plot", "quadrat", "pick_color", "number_germ", "notes")] %>% 
+  filter(pick_color == "green") %>% #filter for 1st germ cohort
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes) #rename col names so we know what survey was done on that date
+
+#merge in the 1st mort survey
+WL1_22_germ1_mort1 <- WL1_22_germ1 %>%
+  left_join(WL1_mort_20220401[,c("survey_date", "site", "transect_plot", "quadrat", "green_living", "green_dead")] %>% #join mort survey date, number living from 1st germ cohort, and number dead from 1st germ cohort
+              rename(mort_survey_date = survey_date)) %>% #rename survey date to specify survey type
+  mutate(sum_check = green_living + green_dead == number_germ) #add column to see if the sum of living and dead equals the number of germinates from germ survey
+
+#there are 6 rows were the sum of living and dead doesn't equal the number of germinates
+#how to resolve this? Look at the next mort survey to see what the sum of living and dead is and if it matches the living count from the 1st mort survey
+#how to do this with code instead of just looking at the datasheets? I will just look and update for now because its faster
+WL1_22_germ1_mort1_updated <- WL1_22_germ1_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == 1 & quadrat == 4.5, 9, number_germ), #looked at 20220427 mort survey which had 9 green living so update number_germ from 8 to 9
+         number_germ = ifelse(transect_plot == 1 & quadrat == 8.0, 24, number_germ), #looked at 20220427 mort survey which had 24 green living, checked 20220518 mort survey which also had 24 green living, updated number_germ from 21 to 24 and green_living from 23 to 24
+         green_living = ifelse(transect_plot == 1 & quadrat == 8.0, 24, green_living),
+         number_germ = ifelse(transect_plot == 1 & quadrat == 8.5, 13, number_germ), #looked at 20220427 mort survey which had 12 green living so updated number_germ from 12 to 13
+         number_germ = ifelse(transect_plot == 3 & quadrat == 1.0, 41, number_germ), #looked at 20220427 mort survey which had 41 total germ cohort 1 individuals so updated number_germ from 38 to 41
+         green_living = ifelse(transect_plot == 3 & quadrat == 1.5, 66, green_living), #looked at 20220427 mort survey which had 66 total individuals so number_germ is correct and need to update green_living in the 1st mort survey from 67 to 66
+         number_germ = ifelse(transect_plot == 3 & quadrat == 2.0, 69, number_germ), #looked at 20220427 mort survey which had 66 green living (1 more than the living count in the 20220401 mort survey), looked at the 20220518 mort survey which had 66 total individuals, update number_germ to 69 and green_living in 1st mort survey to 66, will also have to update green_living in 20220701 mort survey from 75 to 65
+         green_living = ifelse(transect_plot == 3 & quadrat == 2.0, 66, green_living)) %>%
+  mutate(sum_check  = green_living + green_dead + missing_germs == number_germ)
+
+#Need to update mort survey to match
+WL1_mort_20220701 <- WL1_mort_20220701 %>%
+  mutate(living_green = ifelse(transect_plot == 3 & quadrat == 2.0, 65, green_living))
+
+#create a list of all mort surveys
+WL1_22_mort_list <- list(WL1_mort_20220401, WL1_mort_20220427, WL1_mort_20220518, WL1_mort_20220701)
+
+WL1_22_all_mort_germ1 <- WL1_22_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = green_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat: 4.4 to quadrat 4.5
+
+WL1_22_germ1_long_prep <- WL1_22_germ1_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL1_22_germ1_all_mort_long <- WL1_22_germ1_long_prep %>%
+  left_join(WL1_22_all_mort_germ1)
+
+#only keep number_germ and num_dead but calculate cum_dead- could subtract cum_dead from number_germ to get remaining living if needed
+WL1_22_germ1_day_since_germ <- WL1_22_germ1_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 2
+
+```{r}
+WL1_22_germ2 <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "blue") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_germ2_mort1 <- WL1_22_germ2 %>%
+  left_join(WL1_mort_20220401[,c(4:7,10:11,14)] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = blue_living + blue_dead == number_germ) #2 rows have "missing" germs but I'll leave those rows for now
+
+WL1_22_germ2_mort1_updated <- WL1_22_germ2_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(missing_germs = ifelse(transect_plot == 1 & quadrat == 0.0, 2, missing_germs),
+         missing_germs = ifelse(transect_plot == 1 & quadrat == 6.5, 1, missing_germs)) %>%
+  mutate(sum_check  = blue_living + blue_dead + missing_germs == number_germ)
+
+WL1_22_all_mort_germ2 <- WL1_22_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = blue_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5
+
+WL1_22_germ2_long_prep <- WL1_22_germ2_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL1_22_germ2_all_mort_long <- WL1_22_germ2_long_prep %>%
+  left_join(WL1_22_all_mort_germ2)
+
+WL1_22_germ2_day_since_germ <- WL1_22_germ2_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 3
+
+```{r}
+WL1_22_germ3 <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "red") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_germ3_mort1 <- WL1_22_germ3 %>%
+  left_join(WL1_mort_20220401[,c(4:7,12:14)] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = red_living + red_dead == number_germ) 
+
+WL1_22_germ3_mort1_updated <- WL1_22_germ3_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(missing_germs = ifelse(transect_plot == 1 & quadrat == 0.5, 1, missing_germs),
+         missing_germs = ifelse(transect_plot == 1 & quadrat == 2.5, 1, missing_germs),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 6.0, 4, number_germ),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 3.0, 7, missing_germs),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 4.0, 1, missing_germs),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 4.5, 1, missing_germs)) %>%
+   mutate(sum_check  = red_living + red_dead + missing_germs == number_germ)
+
+WL1_22_all_mort_germ3 <- WL1_22_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = red_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5
+
+WL1_22_germ3_long_prep <- WL1_22_germ3_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL1_22_germ3_all_mort_long <- WL1_22_germ3_long_prep %>%
+  left_join(WL1_22_all_mort_germ3)
+
+WL1_22_germ3_day_since_germ <- WL1_22_germ3_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 4
+
+```{r}
+WL1_22_germ4 <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "yellow") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_germ4_mort1 <- WL1_22_germ4 %>%
+  left_join(WL1_mort_20220427[,c(4:7,14:ncol(WL1_mort_20220427))] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = yellow_living + yellow_dead == number_germ) %>% #everything matches - probably because there were few germs
+  select(-sum_check) %>%
+  mutate(missing_germs = 0)
+
+#This germ survey took place after some of the mort surveys so I need to only include the mort surveys with this cohort
+WL1_22_germ4_mort_list <- list(WL1_mort_20220427, WL1_mort_20220518, WL1_mort_20220701)
+
+WL1_22_all_mort_germ4 <- WL1_22_germ4_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = yellow_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5
+
+WL1_22_germ4_long_prep <- WL1_22_germ4_mort1 %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL1_22_germ4_all_mort_long <- WL1_22_germ4_long_prep %>%
+  left_join(WL1_22_all_mort_germ4)
+
+WL1_22_germ4_day_since_germ <- WL1_22_germ4_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup()%>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 5
+
+```{r}
+WL1_22_germ5 <- all_WL1_germ_2022[,3:ncol(all_WL1_germ_2022)] %>%
+  filter(pick_color == "orange") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_22_germ5_mort1 <- WL1_22_germ5 %>%
+  left_join(WL1_mort_20220518[, c(4:7, 16:ncol(WL1_mort_20220518))] %>%
+      rename(mort_survey_date = survey_date) %>%
+      mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat))) %>% #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5) 
+  mutate(sum_check = orange_living + orange_dead == number_germ)
+
+WL1_22_germ5_mort1_updated <- WL1_22_germ5_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == 2 & quadrat == 3.0, 0, number_germ), #the germ wasn't STTO
+         number_germ = ifelse(transect_plot == 2 & quadrat == 4.0, 1, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 4.5, 1, number_germ),
+         missing_germs = ifelse(transect_plot == 2 & quadrat == 6.0, 1, missing_germs),
+         missing_germs = ifelse(transect_plot == 2 & quadrat == 6.5, 1, missing_germs),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 1.0, 1, number_germ), # 1 germ wasn't STTO
+         number_germ = ifelse(transect_plot == 3 & quadrat == 2.0, 0, number_germ), # 1 germ wasn't STTO
+         number_germ = ifelse(transect_plot == 3 & quadrat == 3.5, 1, number_germ)) %>% # 1 germ wasn't STTO
+  mutate(sum_check = orange_living + orange_dead + missing_germs == number_germ)
+
+#This germ survey took place after some of the mort surveys so I need to only include the mort surveys with this cohort
+WL1_22_germ5_mort_list <- list(WL1_mort_20220518, WL1_mort_20220701)
+
+WL1_22_all_mort_germ5 <- WL1_22_germ5_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = orange_dead) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() %>%
+  mutate(quadrat = if_else(quadrat == 4.4, 4.5, quadrat)) #need to update 20220518 transect_plot: 1 quadrat:4.4 to quadrat 4.5)
+
+WL1_22_germ5_long_prep <- WL1_22_germ5_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL1_22_germ5_all_mort_long <- WL1_22_germ5_long_prep %>%
+  left_join(WL1_22_all_mort_germ5)
+
+WL1_22_germ5_day_since_germ <- WL1_22_germ5_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+   mutate(num_dead = ifelse(transect_plot == 2 & quadrat == 6.5 & mort_survey_date == "2022-07-01", 0, num_dead),
+          num_dead = ifelse(transect_plot == 2 & quadrat == 7.0 & mort_survey_date == "2022-07-01", 0, num_dead)) %>% # number_germ was 0 initially and previous mort survey didn't have any individuals so these will be changed to 0
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Combine All Germ Cohorts and Save CSV
+
+```{r}
+WL1_22_all_cohort_list <- list(WL1_22_germ1_day_since_germ, WL1_22_germ2_day_since_germ, WL1_22_germ3_day_since_germ, WL1_22_germ4_day_since_germ, WL1_22_germ5_day_since_germ)
+
+WL1_22_all_germ_mort <- bind_rows(WL1_22_all_cohort_list)
+#write.csv(WL1_22_all_germ_mort, "../output/WL1_22_all_germ_mort.csv", row.names = FALSE)
+```
+
+### WL2 and WL3 2022 Germ (No Mortality Surveys)
+
+```{r}
+WL2_22_all_germ <- all_WL2_WL3_germ_2022 %>%
+  filter(site == "WL2") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes) %>%
+  mutate(missing_germs = 0)
+
+WL3_22_all_germ <- all_WL2_WL3_germ_2022 %>%
+  filter(site == "WL3") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes) %>%
+  mutate(missing_germs = 0)
+
+#write.csv(WL2_22_all_germ, "../output/WL2_22_all_germ_no_mort.csv")
+#write.csv(WL3_22_all_germ, "../output/WL3_22_all_germ_no_mort.csv")
+```
+
+### CP2 2022 Germ and Mortality
+
+#### Germ Cohort 1
+
+```{r}
+CP2_22_germ1 <- all_CP2_germ_2022 %>%
+  filter(pick_color == "red") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+CP2_22_germ1_mort1 <- CP2_22_germ1 %>%
+  left_join(CP2_mort_20220715[,c(4:9,14)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = red_living + red_dead == number_germ)
+
+CP2_22_germ1_mort1_updated <- CP2_22_germ1_mort1 %>%
+  select(-sum_check)%>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == "T4" & quadrat == "T4", 10, number_germ),
+         number_germ = ifelse(transect_plot == "T9" & quadrat == "T9", 1, number_germ),
+         number_germ = ifelse(transect_plot == "T12" & quadrat == "T12", 6, number_germ),
+         number_germ = ifelse(transect_plot == "T13" & quadrat == "T13", 15, number_germ)) %>%
+  mutate(sum_check = red_living + red_dead + missing_germs == number_germ)
+
+CP2_22_all_mort_germ1 <- CP2_mort_20220715 %>%
+  rename(mort_survey_date = survey_date,
+         mort_notes = notes,
+         num_dead = red_dead) %>%
+  select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)
+
+CP2_22_germ1_long_prep <- CP2_22_germ1_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+CP2_22_germ1_mort_long <- CP2_22_germ1_long_prep %>%
+  left_join(CP2_22_all_mort_germ1)
+
+CP2_22_germ1_day_since_germ <- CP2_22_germ1_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup()%>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 2
+
+```{r}
+CP2_22_germ2 <- all_CP2_germ_2022 %>%
+  filter(pick_color == "blue")%>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+CP2_22_germ2_mort1 <- CP2_22_germ2 %>%
+  left_join(CP2_mort_20220715[,c(4:7, 10:11 ,14)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = blue_living + blue_dead == number_germ) %>% #all correct
+  mutate(missing_germs = 0)
+
+CP2_22_all_mort_germ2 <- CP2_mort_20220715 %>%
+  rename(mort_survey_date = survey_date,
+         mort_notes = notes,
+         num_dead = blue_dead) %>%
+  select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)
+
+CP2_22_germ2_long_prep <- CP2_22_germ2_mort1 %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+CP2_22_germ2_mort_long <- CP2_22_germ2_long_prep %>%
+  left_join(CP2_22_all_mort_germ2)
+
+CP2_22_germ2_day_since_germ <- CP2_22_germ2_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup()%>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 3
+
+```{r}
+CP2_22_germ3 <- all_CP2_germ_2022 %>%
+  filter(pick_color == "white")%>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+CP2_22_germ3_mort1 <- CP2_22_germ3 %>%
+  left_join(CP2_mort_20220715[,c(4:7,12:14)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = white_living + white_dead == number_germ) %>% #all correct
+  mutate(missing_germs = 0)
+
+CP2_22_all_mort_germ3 <- CP2_mort_20220715 %>%
+  rename(mort_survey_date = survey_date,
+         mort_notes = notes,
+         num_dead = white_dead) %>%
+  select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)
+
+CP2_22_germ3_long_prep <- CP2_22_germ3_mort1 %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+CP2_22_germ3_mort_long <- CP2_22_germ3_long_prep %>%
+  left_join(CP2_22_all_mort_germ3)
+
+CP2_22_germ3_day_since_germ <- CP2_22_germ3_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup()%>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Combine All Germ Cohorts and Save CSV
+
+```{r}
+CP2_22_all_cohort_list <- list(CP2_22_germ1_day_since_germ, CP2_22_germ2_day_since_germ, CP2_22_germ3_day_since_germ)
+  
+CP2_22_all_germ_mort <- bind_rows(CP2_22_all_cohort_list)
+#write.csv(CP2_22_all_germ_mort, "../output/CP2_22_all_germ_mort.csv", row.names = FALSE)
+```
+
+### WL1 2021 Germ and Mortality - notes say plots are off so might not be able to use since it is hard to track where germs went
+
+#### Germ Cohort 1
+
+```{r}
+WL1_21_germ1 <- all_WL1_germ_2021 %>%
+  filter(pick_color == "red") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_21_germ1_mort1 <- WL1_21_germ1 %>%
+  left_join(WL1_mort_20210438[,c(4:9,18)] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = color_living_RED + color_dead_RED == number_germ)
+
+WL1_21_germ1_mort1_updated <- WL1_21_germ1_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(missing_germs = ifelse(transect_plot == 1 & quadrat == 5.5, 3, missing_germs),
+         missing_germs = ifelse(transect_plot == 2 & quadrat == 1.5, 1, missing_germs),
+         missing_germs = ifelse(transect_plot == 2 & quadrat == 2.5, 2, missing_germs),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 3.5, 8, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 6.5, 10, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 7.0, 7, number_germ), #notes say plots off for 6.5 and 7.0 but later mort surveys follow living counts so I will change number_germ to reflect this
+         number_germ = ifelse(transect_plot == 3 & quadrat == 3.0, 14, number_germ),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 4.0, 8, number_germ)) %>%
+  mutate(sum_check = color_living_RED + color_dead_RED + missing_germs == number_germ)
+
+WL1_mort_20210513 <- WL1_mort_20210513 %>%
+  rename(color_living_RED = color_living_red,
+         color_dead_RED = color_dead_red)
+
+WL1_mort_20210702 <- WL1_mort_20210702 %>%
+  rename(color_living_RED = color_living_red,
+         color_dead_RED = color_dead_red)
+
+WL1_21_germ1_mort_list <- list(WL1_mort_20210438, WL1_mort_20210513, WL1_mort_20210618, WL1_mort_20210702)
+
+WL1_21_all_mort_germ1 <- WL1_21_germ1_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = color_dead_RED) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows()
+
+WL1_21_germ1_long_prep <- WL1_21_germ1_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL1_21_germ1_all_mort_long <- WL1_21_germ1_long_prep %>%
+  left_join(WL1_21_all_mort_germ1)
+
+WL1_21_germ1_day_since_germ <- WL1_21_germ1_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup()%>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+
+WL1_mort_20210513 
+WL1_mort_20210618
+WL1_mort_20210702
+
+```
+
+#### Germ Cohort 2
+
+```{r}
+WL1_21_germ2 <- all_WL1_germ_2021 %>%
+  filter(pick_color == "yellow") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL1_21_germ2_mort1 <- WL1_21_germ2 %>%
+  left_join(WL1_mort_20210438[,c(4:7,10:11,18)] %>%
+              rename(mort_survey_date = survey_date)) %>%
+  mutate(sum_check  = color_living_YELLOW + color_dead_YELLOW == number_germ)
+
+WL1_21_germ2_mort1_updated <- WL1_21_germ2_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == 1 & quadrat == 0.0, 13, number_germ),
+         number_germ = ifelse(transect_plot == 1 & quadrat == 0.5, 8, number_germ),
+         number_germ = ifelse(transect_plot == 1 & quadrat == 2.0, 3, number_germ),
+         missing_germs = ifelse(transect_plot == 1 & quadrat == 5.5, 1, missing_germs),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 0.0, 5, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 4.0, 4, number_germ),
+         missing_germs = ifelse(transect_plot == 2 & quadrat == 4.0, 1, missing_germs),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 5.0, 3, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 6.0, 4, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 7.0, 2, number_germ)) %>%
+  mutate(sum_check = color_living_YELLOW + color_dead_YELLOW + missing_germs == number_germ)
+
+WL1_mort_20210513 <- WL1_mort_20210513 %>%
+  rename(color_living_YELLOW = color_living_yellow,
+         color_dead_YELLOW = color_dead_yellow) %>%
+  mutate(color_dead_YELLOW = ifelse(transect_plot == 3 & quadrat == 2.0, 11, color_dead_YELLOW),
+         color_dead_YELLOW = ifelse(transect_plot == 3 & quadrat == 3.5, 1, color_dead_YELLOW))
+
+WL1_mort_20210618 <- WL1_mort_20210618 %>%
+  mutate(color_dead_YELLOW = ifelse(transect_plot == 2 & quadrat == 5.0 , 1, color_dead_YELLOW))
+
+WL1_mort_20210702 <- WL1_mort_20210702 %>%
+  rename(color_living_YELLOW = color_living_yellow,
+         color_dead_YELLOW = color_dead_yellow)
+
+WL1_21_germ2_mort_list <- list(WL1_mort_20210438, WL1_mort_20210513, WL1_mort_20210618, WL1_mort_20210702)
+
+WL1_21_all_mort_germ2 <- WL1_21_germ2_mort_list %>%
+  map(~ .x %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = color_dead_YELLOW) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows()
+
+WL1_21_germ2_long_prep <- WL1_21_germ2_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL1_21_germ2_all_mort_long <- WL1_21_germ2_long_prep %>%
+  left_join(WL1_21_all_mort_germ2)
+
+WL1_21_germ2_day_since_germ <- WL1_21_germ2_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup()%>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ) %>% #there are still two rows from transect_plot: 1, quadrat 0.0 where the counts across mortality surveys don't match/make sense, can filter them out for now
+  filter(count_check == TRUE)
+```
+
+#### Germ Cohort 3 - there is no orange in the mortality surveys, also mort surveys have blue and green but germ surveys don't have those colors
+
+```{r}
+WL1_21_germ3 <- all_WL1_germ_2021 %>%
+  filter(pick_color == "orange") %>%
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+```
+
+#### Combine Germ Cohorts 1 and 2 and Save CSV - still need to figure out what is happening with the orange, blue, and green cohorts
+
+```{r}
+WL1_21_all_cohort_list <- list(WL1_21_germ1_day_since_germ, WL1_21_germ2_day_since_germ)
+  
+WL1_21_all_germ_mort <- bind_rows(WL1_21_all_cohort_list)
+#write.csv(WL1_21_all_germ_mort, "../output/WL1_21_all_germ_mort", row.names = FALSE)
+```
+
+### WL2 2021 Germ and Mortality
+
+```{r}
+#Need to correct transect plot names for 202C and 202D, also need to update site name to WL3 for those that say transect plot 1
+
+all_WL2_WL3_germ_2021 <- all_WL2_WL3_germ_2021 %>%
+  mutate(transect_plot = ifelse(transect_plot == "201C" & quadrat == 1.0 & number_germ == 2, "202C", transect_plot),
+         transect_plot = ifelse(transect_plot == "201C" & quadrat == 2.0 & number_germ == 0, "202C", transect_plot),
+         transect_plot = ifelse(transect_plot == "201C" & quadrat == 3.0 & number_germ == 3, "202C", transect_plot),
+         transect_plot = ifelse(transect_plot == "201C" & quadrat == 4.0 & number_germ == 3, "202C", transect_plot),
+        # transect_plot = replace(transect_plot, which(transect_plot == "201D" & quadrat == 0.0)[1], "202D"), #the number_germ and all other columns are the same for the two 201D 0.0 rows so I'm just selecting 1 of the rows and updating transect_plot to 202D - I'm not sure this is working
+         transect_plot = ifelse(transect_plot == "201D" & quadrat == 1.0 & number_germ == 13, "202D", transect_plot),
+         transect_plot = ifelse(transect_plot == "201D" & quadrat == 2.0 & number_germ == 0, "202D", transect_plot),
+         transect_plot = ifelse(transect_plot == "201D" & quadrat == 3.0 & number_germ == 1, "202D", transect_plot),
+         transect_plot = ifelse(transect_plot == "201D" & quadrat == 4.0 & number_germ == 0, "202D", transect_plot),
+         site = ifelse(transect_plot == 1, "WL3", site))
+
+```
+
+#### Germ Cohort 0
+
+```{r}
+WL2_21_germ0 <- all_WL2_WL3_germ_2021 %>%
+  filter(pick_color == "blue", #cohort 0 has true leaves
+         site == "WL2") %>%  
+  filter(!(transect_plot == "202D" & number_germ == 0)) %>% #2 202D 4.0 rows, deleted the one with the germ count that didn't match the mort survey counts
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes) %>%
+  mutate(quadrat = ifelse(transect_plot == "202A" & number_germ == 21, 4.5, quadrat)) %>%
+  mutate(transect_plot = replace(transect_plot, 14, "201C"))
+
+WL2_21_germ0_mort1 <- WL2_21_germ0 %>%
+  left_join(WL2_WL3_mort_20210618[,c(4:9,18)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = color_living_blue + color_dead_blue == number_germ)
+
+WL2_21_germ0_mort1_updated <- WL2_21_germ0_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == "201A" & quadrat == 0.0, 2, number_germ),
+         number_germ = ifelse(transect_plot == "201B" & quadrat == 4.0, 2, number_germ),
+         missing_germs = ifelse(transect_plot == "201C" & quadrat == 0.0, 1, missing_germs),
+         number_germ = ifelse(transect_plot == "201D" & quadrat == 1.0, 9, number_germ),
+         number_germ = ifelse(transect_plot == "202B" & quadrat == 3.0, 7, number_germ)) %>%
+  mutate(sum_check  = color_living_blue + color_dead_blue + missing_germs == number_germ)
+
+WL2_WL3_mort_20210716 <- WL2_WL3_mort_20210716 %>%
+  mutate(color_dead_blue = ifelse(transect_plot == "202D" & quadrat == 0.0, 2, color_dead_blue))
+
+WL2_21_mort_list <- list(WL2_WL3_mort_20210618, WL2_WL3_mort_20210702, WL2_WL3_mort_20210716)
+
+WL2_21_all_mort_germ0 <- WL2_21_mort_list %>%
+  map(~ .x %>%
+        filter(site == "WL2") %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = color_dead_blue) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() 
+
+WL2_21_germ0_long_prep <- WL2_21_germ0_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL2_21_germ0_all_mort_long <- WL2_21_germ0_long_prep %>%
+  left_join(WL2_21_all_mort_germ0)
+
+WL2_21_germ0_day_since_germ <- WL2_21_germ0_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 1
+
+```{r}
+WL2_21_germ1 <- all_WL2_WL3_germ_2021 %>%
+  filter(pick_color == "yellow", 
+         site == "WL2") %>%  
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL2_21_germ1_mort1 <- WL2_21_germ1 %>%
+  left_join(WL2_WL3_mort_20210618[,c(4:7, 10:11, 18)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = color_living_yellow + color_dead_yellow == number_germ)
+
+WL2_21_germ1_mort1_updated <- WL2_21_germ1_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(missing_germs = ifelse(transect_plot == "201C" & quadrat == 1.0, 1, missing_germs),
+         number_germ = ifelse(transect_plot == "201C" & quadrat == 4.0, 11, number_germ),
+         missing_germs = ifelse(transect_plot == "202A" & quadrat == 0.0, 1, missing_germs),
+         missing_germs = ifelse(transect_plot == "202A" & quadrat == 4.0, 1, missing_germs), #notes say 2 missing but note for 202A 4.5 says 1 extra so assuming 1 of the missing germs from 202A 4.0 is in 4.5
+         number_germ = ifelse(transect_plot == "202A" & quadrat == 4.0, 15, number_germ),
+         number_germ = ifelse(transect_plot == "202A" & quadrat == 4.5, 18, number_germ),
+         number_germ = ifelse(transect_plot == "202D" & quadrat == 0.0, 19, number_germ)) %>%
+  mutate(sum_check  = color_living_yellow + color_dead_yellow + missing_germs == number_germ)
+
+WL2_WL3_mort_20210716 <- WL2_WL3_mort_20210716 %>%
+  mutate(color_dead_yellow = ifelse(transect_plot == "201C" & quadrat == 1.0, 4, color_dead_yellow))
+
+WL2_WL3_mort_20210702 <- WL2_WL3_mort_20210702 %>%
+  mutate(color_dead_yellow = ifelse(transect_plot == "202C" & quadrat == 4.0, 2,  color_dead_yellow))
+
+WL2_21_mort_list <- list(WL2_WL3_mort_20210618, WL2_WL3_mort_20210702, WL2_WL3_mort_20210716)
+
+WL2_21_all_mort_germ1 <- WL2_21_mort_list %>%
+  map(~ .x %>%
+        filter(site == "WL2") %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = color_dead_yellow) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() 
+
+WL2_21_germ1_long_prep <- WL2_21_germ1_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL2_21_germ1_all_mort_long <- WL2_21_germ1_long_prep %>%
+  left_join(WL2_21_all_mort_germ1)
+
+WL2_21_germ1_day_since_germ <- WL2_21_germ1_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 2
+
+```{r}
+WL2_21_germ2 <- all_WL2_WL3_germ_2021 %>%
+  filter(pick_color == "red", 
+         site == "WL2") %>%  
+  mutate(transect_plot = ifelse(row_number() == 37, "202D", transect_plot)) %>% #the number_germ and all other columns are the same for the two 201D 0.0 rows so I'm manually doing it here
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes)
+
+WL2_21_germ2_mort1 <- WL2_21_germ2 %>%
+  left_join(WL2_WL3_mort_20210618[,c(4:7, 12:13, 18)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = color_living_red + color_dead_red == number_germ)
+
+WL2_21_germ2_mort1_updated <- WL2_21_germ2_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == "201B" & quadrat == 0.0, 17, number_germ),
+         number_germ = ifelse(transect_plot == "201B" & quadrat == 1.0, 10, number_germ),
+         number_germ = ifelse(transect_plot == "201B" & quadrat == 4.0, 4, number_germ),
+         number_germ = ifelse(transect_plot == "201C" & quadrat == 4.0, 6, number_germ),
+         number_germ = ifelse(transect_plot == "201D" & quadrat == 1.0, 4, number_germ), 
+         number_germ = ifelse(transect_plot == "202C" & quadrat == 3.0, 4, number_germ)) %>%
+  mutate(sum_check  = color_living_red + color_dead_red + missing_germs == number_germ)
+
+WL2_21_mort_list <- list(WL2_WL3_mort_20210618, WL2_WL3_mort_20210702, WL2_WL3_mort_20210716)
+
+WL2_21_all_mort_germ2 <- WL2_21_mort_list %>%
+  map(~ .x %>%
+        filter(site == "WL2") %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = color_dead_red) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() 
+
+WL2_21_germ2_long_prep <- WL2_21_germ2_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL2_21_germ2_all_mort_long <- WL2_21_germ2_long_prep %>%
+  left_join(WL2_21_all_mort_germ2)
+
+WL2_21_germ2_day_since_germ <- WL2_21_germ2_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Combine All Germ Cohorts and Save CSV
+
+```{r}
+WL2_21_all_cohort_list <- list(WL2_21_germ0_day_since_germ, WL2_21_germ1_day_since_germ, WL2_21_germ2_day_since_germ)
+  
+WL2_21_all_germ_mort <- bind_rows(WL2_21_all_cohort_list)
+#write.csv(WL2_21_all_germ_mort, "../output/WL2_21_all_germ_mort", row.names = FALSE)
+```
+
+### WL3 2021 Germ and Mortality - need to check to see what cohort orange is - flowering? (surveyed on the same day as blue)
+
+#### Germ Cohort 0
+
+```{r}
+WL3_21_germ0 <- all_WL2_WL3_germ_2021 %>%
+  filter(pick_color == "blue", #cohort 0 has true leaves
+         site == "WL3") %>%  
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes) 
+
+WL3_21_germ0_mort1 <- WL3_21_germ0 %>%
+  left_join(WL2_WL3_mort_20210618[,c(4:9,18)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = color_living_blue + color_dead_blue == number_germ)
+
+WL3_21_germ0_mort1_updated <- WL3_21_germ0_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == 2 & quadrat == 0.0, 12, number_germ),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 0.0, 18, number_germ),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 0.5, 1, missing_germs),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 1.5, 14, number_germ),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 3.0, 1, missing_germs),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 3.5, 3, missing_germs),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 4.5, 7, number_germ),
+         missing_germs = ifelse(transect_plot == 4 & quadrat == 7.5, 1, missing_germs)) %>%
+  mutate(sum_check  = color_living_blue + color_dead_blue + missing_germs == number_germ)
+
+WL3_21_mort_list <- list(WL2_WL3_mort_20210618, WL2_WL3_mort_20210702, WL2_WL3_mort_20210716)
+
+WL3_21_all_mort_germ0 <- WL3_21_mort_list %>%
+  map(~ .x %>%
+        filter(site == "WL3") %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = color_dead_blue) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() 
+
+WL3_21_germ0_long_prep <- WL3_21_germ0_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL3_21_germ0_all_mort_long <- WL3_21_germ0_long_prep %>%
+  left_join(WL3_21_all_mort_germ0)
+
+WL3_21_germ0_day_since_germ <- WL3_21_germ0_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 1
+
+```{r}
+WL3_21_germ1 <- all_WL2_WL3_germ_2021 %>%
+  filter(pick_color == "yellow", 
+         site == "WL3") %>%  
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes) 
+
+WL3_21_germ1_mort1 <- WL3_21_germ1 %>%
+  left_join(WL2_WL3_mort_20210618[,c(4:7, 10:11,18)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = color_living_yellow + color_dead_yellow == number_germ)
+
+WL3_21_germ1_mort1_updated <- WL3_21_germ1_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(number_germ = ifelse(transect_plot == 1 & quadrat == 0.0, 8, number_germ),
+         missing_germs = ifelse(transect_plot == 1 & quadrat == 1.0, 1, missing_germs),
+         number_germ = ifelse(transect_plot == 1 & quadrat == 5.0, 1, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 0.0, 16, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 1.0, 79, number_germ),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 1.5, 10, number_germ),
+         missing_germs = ifelse(transect_plot == 2 & quadrat == 2.5, 1, missing_germs),
+         number_germ = ifelse(transect_plot == 2 & quadrat == 3.5, 2, number_germ),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 0.0, 1, missing_germs),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 4.5, 1, missing_germs),
+         missing_germs = ifelse(transect_plot == 3 & quadrat == 5.5, 1, missing_germs),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 6.0, 4, number_germ),
+         number_germ = ifelse(transect_plot == 3 & quadrat == 6.5, 4, number_germ),
+         missing_germs = ifelse(transect_plot == 4 & quadrat == 2.0, 2, missing_germs),
+         number_germ = ifelse(transect_plot == 4 & quadrat == 5.5, 15, number_germ)) %>%
+  mutate(sum_check  = color_living_yellow + color_dead_yellow + missing_germs == number_germ)
+
+WL3_21_all_mort_germ1 <- WL3_21_mort_list %>%
+  map(~ .x %>%
+        filter(site == "WL3") %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = color_dead_yellow) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() 
+
+WL3_21_germ1_long_prep <- WL3_21_germ1_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL3_21_germ1_all_mort_long <- WL3_21_germ1_long_prep %>%
+  left_join(WL3_21_all_mort_germ1)
+
+WL3_21_germ1_day_since_germ <- WL3_21_germ1_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Germ Cohort 2
+
+```{r}
+WL3_21_germ2 <- all_WL2_WL3_germ_2021 %>%
+  filter(pick_color == "red", 
+         site == "WL3") %>%  
+  rename(germ_survey_date = survey_date,
+         germ_notes = notes) 
+
+WL3_21_germ2_mort1 <- WL3_21_germ2 %>%
+  left_join(WL2_WL3_mort_20210618[,c(4:7, 12:13,18)] %>%
+              rename(mort_survey_date = survey_date,
+                     mort_notes = notes)) %>%
+  mutate(sum_check  = color_living_red + color_dead_red == number_germ)
+
+WL3_21_germ2_mort1_updated <- WL3_21_germ2_mort1 %>%
+  select(-sum_check) %>%
+  mutate(missing_germs = 0) %>%
+  mutate(missing_germs = ifelse(transect_plot == 3 & quadrat == 5.0, 1, missing_germs)) %>%
+  mutate(sum_check  = color_living_red + color_dead_red + missing_germs == number_germ)
+
+WL3_21_all_mort_germ2 <- WL3_21_mort_list %>%
+  map(~ .x %>%
+        filter(site == "WL3") %>%
+        rename(mort_survey_date = survey_date,
+               mort_notes = notes,
+               num_dead = color_dead_red) %>%
+        select(mort_survey_date, transect_plot, quadrat, num_dead, mort_notes)) %>%
+  bind_rows() 
+
+WL3_21_germ2_long_prep <- WL3_21_germ2_mort1_updated %>%
+  select(site, survey_year, transect_plot, quadrat, germ_survey_date, pick_color, number_germ, missing_germs, germ_notes)
+
+WL3_21_germ2_all_mort_long <- WL3_21_germ2_long_prep %>%
+  left_join(WL3_21_all_mort_germ2)
+
+WL3_21_germ2_day_since_germ <- WL3_21_germ2_all_mort_long %>%
+  mutate(germ_survey_date = as.Date(germ_survey_date),
+         mort_survey_date = as.Date(mort_survey_date),
+         days_since_germ = as.integer(mort_survey_date - germ_survey_date)) %>%
+  arrange(transect_plot, quadrat, mort_survey_date) %>%
+  group_by(transect_plot, quadrat) %>%
+  mutate(cum_dead = cumsum(num_dead)) %>%
+  ungroup() %>%
+  mutate(count_check = cum_dead + missing_germs <= number_germ)
+```
+
+#### Combine All Germ Cohorts and Save CSV
+
+```{r}
+WL3_21_all_cohort_list <- list(WL3_21_germ0_day_since_germ, WL3_21_germ1_day_since_germ, WL3_21_germ2_day_since_germ)
+  
+WL3_21_all_germ_mort <- bind_rows(WL3_21_all_cohort_list)
+write.csv(WL3_21_all_germ_mort, "../output/WL3_21_all_germ_mort", row.names = FALSE)
+```
+
+### WL1 2017-2018 Germination - this data is quite messy, there is no pick color and mort surveys are included in germ survey
+
+```{r}
+WL1_fall_2017_germ <- WL_germ_20171102_20171118 %>%
+  filter(site == "WL1") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/ transect',
+         quadrat = quad,
+         number_germ = '#germ',
+         germ_notes = notes) %>%
+  filter(germ_survey_date == "2017-11-18") %>%
+  mutate(pick_color = "blue")
+
+WL1_germ_20180103 <- WL1_CP2_germ_20180103 %>%
+  filter(site == "WL1") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '#new_germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "yellow") %>%
+  select(-'#blue_total') %>%
+  select(-'#blue_dead') %>%
+  select(-'#blue_misid')
+
+
+#difficult to process later germ cohorts - probably need to look at physical datasheets
+
+  
+  
+#Blue, yellow, red, green
+WL_germ_20171102_20171118
+WL1_CP2_germ_20180103
+WL1_germ_20180522
+WL1_germ_20180603
+WL1_WL2_WL3_CP2_germ_20180613_20180604_20180608
+WL1_WL2_WL3_CP2_germ_20180622
+```
+
+### WL2 2017-2018 Germination
+
+```{r}
+WL2_germ1_20180603 <- WL1_WL2_WL3_CP2_germ_20180613_20180604_20180608 %>%
+  filter(site == "WL2") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '# old germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "orange") %>%
+  select(-'# new germ') %>%
+  select(-'# mortality')
+
+WL2_germ2_20180603 <- WL1_WL2_WL3_CP2_germ_20180613_20180604_20180608 %>%
+  filter(site == "WL2") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '# new germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "green") %>%
+  select(-'# old germ') %>%
+  select(-'# mortality')
+
+WL2_germ_20180622 <- WL1_WL2_WL3_CP2_germ_20180622 %>%
+  filter(site == "WL2") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '# germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "yellow") %>%
+  select(-budding) %>%
+  select(-'flowering (white pick)')
+
+#Combine all germ surveys
+WL2_18_all_germ_list <- list(WL2_germ1_20180603, WL2_germ2_20180603, WL2_germ_20180622)
+  
+all_WL2_germ_2018 <- bind_rows(WL2_18_all_germ_list)
+#write.csv(all_WL2_germ_2018, "../output/all_WL2_germ_2018", row.names = FALSE)
+
+
+#the mortality surveys
+WL2_germ_20180603
+WL2_WL3_mort_20180720
+```
+
+### WL3 2017-2018 Germination
+
+```{r}
+WL3_germ1_20180603 <- WL1_WL2_WL3_CP2_germ_20180613_20180604_20180608 %>%
+  filter(site == "WL3") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '# old germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "orange") %>%
+  select(-'# new germ') %>%
+  select(-'# mortality')
+
+WL3_germ2_20180603 <- WL1_WL2_WL3_CP2_germ_20180613_20180604_20180608 %>%
+  filter(site == "WL3") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '# new germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "green") %>%
+  select(-'# old germ') %>%
+  select(-'# mortality')
+
+WL3_germ_20180622 <- WL1_WL2_WL3_CP2_germ_20180622 %>%
+  filter(site == "WL3") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '# germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "yellow") %>%
+  select(-budding) %>%
+  select(-'flowering (white pick)')
+
+WL3_germ_20180603 #this says pink and green picks but look up table doesn't have pink
+```
+
+### CP2 2017-2018 Germiantion
+
+```{r}
+CP2_germ_20180608 <- WL1_WL2_WL3_CP2_germ_20180613_20180604_20180608 %>%
+  filter(site == "CP2") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '# old germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "green") %>%
+  select(-'# new germ') %>%
+  select(-'# mortality')
+
+CP2_germ_20180622 <- WL1_WL2_WL3_CP2_germ_20180622 %>%
+  filter(site == "CP2") %>%
+  mutate(date = ymd(date)) %>%
+  rename(germ_survey_date = date,
+         transect_plot = 'plot/transect',
+         quadrat = quad,
+         number_germ = '# germ',
+         germ_notes = notes) %>%
+  mutate(pick_color = "yellow") %>%
+  select(-budding) %>%
+  select(-'flowering (white pick)')
+
+#Combine all germ surveys
+CP2_18_all_germ_list <- list(CP2_germ_20180608, CP2_germ_20180622)
+  
+all_CP2_germ_2018 <- bind_rows(CP2_18_all_germ_list)
+#write.csv(all_CP2_germ_2018, "../output/all_CP2_germ_2018", row.names = FALSE)
+
+```
+
+### WL1 2018-2019 Germination
+
+```{r}
+WL1_germ_20190612 <- read_excel("../input/Germination and Mortality data/WL1_GermSurvey_6.12.19_edited9.4.19MM.xlsx")
+WL1_germ_20190429 <- read_excel("../input/Germination and Mortality data/WL1_GermSurvey_4.29.19_edited9.3.19MM.xlsx")
+```
+
+### WL2, WL3, CP2 2018-2019 Germination
+
+```{r}
+WL2_WL3_germ_20190715 <- read_excel("../input/Germination and Mortality data/WL23_GermSurvey_7.15.19_edited9.4.19MM.xlsx")
+WL2_WL3_CP2_germ_20190703 <- read_excel("../input/Germination and Mortality data/WL23+CP2_GermSurvey_7.3.19_edited9.3.19MM.xlsx")
+```
+
+### WL2 2016-2017 Germination - only 1 germinate
+
+```{r}
+WL2_germ_20161027 <- read_excel("../input/Germination and Mortality data/Demog_WL2_fall_2016_germ_survey_10.27_20161026_AC.xlsx", sheet = "Sheet1")
+```
