@@ -21,6 +21,24 @@ library(lubridate)
 ### WL and CP2 Repro Pheno Surveys
 
 ```{r}
+#WL and CP2 2018
+WL_CP2_repro_20180720 <- read_excel("../input/Reproduction data/WLCP_SpringPhenSurvey_7.20.18_SLZ.xlsx")
+
 #WL1 2019
 WL1_repro_20190703 <- read_excel("../input/Reproduction data/WL1_ReproPhen_7.3.19_edited9.3.19MM.xlsx")
+WL1_repro_20190715 <- read_excel("../input/Reproduction data/WL1_ReproPheno_7.15.19_edited9.4.19MM.xlsx")
+
+#WL2/3 2019
+WL2_WL3_repro_20190725 <- read_excel("../input/Reproduction data/WL23_Quick&Dirty_ReproPheno_7.25.19_edited9.3.19MM.xlsx")
+
+#WL 2022
+WL2_WL3_repro_20220624 <- read_excel("../input/Reproduction data/CP2_Repro_Pheno_20220722_.xlsx")
+WL1_WL2_WL3_repro_20220701 <- read_excel("../input/Reproduction data/WL1_2_3_ReproPheno_20220701_complete.xlsx")
+WL2_WL3_repro_20220711 <- read_excel("../input/Reproduction data/WL2_3_repropheno_20220711_complete_YHW.xlsx")
+
+#CP2 2022
+CP2_repro_20220715 <- read_excel("../input/Reproduction data/CP2_Repro_Pheno_20220715_finished (2).xlsx")
+CP2_repro_20220722 <- read_excel("..input/Reproduction data/CP2_Repro_Pheno_20220722_.xlsx")
+CP2_repro_20220624 <- read_excel("../input/Reproduction data/CP2_Repro_Pheno_20220722_.xlsx")
+
 ```
