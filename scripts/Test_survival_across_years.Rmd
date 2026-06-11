@@ -1,0 +1,391 @@
+---
+title: "WL1_Survival_Across_Years"
+output: html_document
+date: "2026-05-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+```
+Initial test with WL1 2023-2024
+```{r}
+WL1_all <- read_csv("../input/Cleaned/WL1_cleaned.csv") %>%
+  select(-'...1') 
+
+WL1_24 <- WL1_all %>%
+  filter(Census_year == 2024) %>%
+  mutate(plant_id = paste(Site, Band_color, Band_num, sep = "_"),
+         alive = as.integer(!is.na(Phenology) & Phenology != "X"))
+  
+
+WL1_23 <- WL1_all %>%
+  filter(Census_year == 2023) %>%
+  mutate(plant_id = paste(Site, Band_color, Band_num, sep = "_"),
+         alive = as.integer(!is.na(Phenology) & Phenology != "X"))
+```
+```{r}
+WL1_23_24_survival <- WL1_23 %>%
+  left_join(WL1_24 %>% select(plant_id, alive_2024 = alive, Phenology_2024 = Phenology), by = "plant_id") %>%
+  mutate(alive_2024 = if_else(is.na(alive_2024), FALSE, alive_2024),
+         survived_23_24 = alive & alive_2024)
+```
+
+Try to generalize across all years at WL1
+Need to start by only including plants that have the band number and color - not sure if this is the best way to go about it but it is what works for now
+Will need to think about how this will work for years without band color and number
+```{r}
+WL1_survival <- WL1_all %>%
+ filter(!is.na(Band_color), !is.na(Band_num)) %>% #only include individuals with a band num and color
+  mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_"), #create a unique ID for each individual
+         alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>% #add a column for binary alive = 1 or dead = 0
+  arrange(plant_id, Census_year) %>% #arrange individuals by census year
+  group_by(plant_id) %>%
+  mutate(age = row_number(), #add an age - so the first row with the unique plant id will be 1 and ever followign row would increase age by 1
+         next_year = Census_year + 1, #add next year column
+         alive_next_year = lead(alive), #check alive column from the following year
+         survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>% #1 if alive = 1 in census year and alive in census year + 1
+  ungroup()
+
+#This seems to work
+#alive_next_year seems to be NA if the plant was not relocated in the following year or if the plant died in the current census year
+```
+
+
+Test if this works for WL2
+```{r}
+WL2_16_23 <- read_csv("../input/Cleaned/WL2_cleaned_16_23.csv")
+WL2_24 <- read_csv("../input/Cleaned/WL2_cleaned_24.csv")
+WL2_all <- bind_rows(WL2_16_23, WL2_24  %>% mutate(Quad = as.character(Quad), Num_flowers = as.character(Num_flowers)))
+```
+
+```{r}
+WL2_survival <- WL2_all %>%
+ filter(!is.na(Band_color), !is.na(Band_num)) %>%
+  mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_"),
+         alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+  mutate(age = row_number(),
+         next_year = Census_year + 1,
+         alive_next_year = lead(alive),
+         survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>%
+  ungroup()
+
+#Noticed some individuals have a 0 for survived to next year = 0 for 2025, unsure why these are getting assigned a 0 and not NA
+```
+
+Testing for WL3
+```{r}
+WL3_all <- read_csv("..//input/Cleaned/WL3_cleaned_all.csv")
+
+WL3_survival <- WL3_all %>%
+ filter(!is.na(Band_color), !is.na(Band_num)) %>%
+  mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_"),
+         alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+mutate(age = row_number(),
+       next_year = Census_year + 1,
+       alive_next_year = lead(alive),
+         survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>%
+  ungroup()
+```
+
+Testing for BH
+```{r}
+BH_all <- read_csv("../input/Cleaned/BH_cleaned_all.csv")
+
+BH_survival <- BH_all %>%
+ filter(!is.na(Band_color), !is.na(Band_num)) %>%
+  mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_"),
+         alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+mutate(age = row_number(),
+       next_year = Census_year + 1,
+       alive_next_year = lead(alive),
+         survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>%
+  ungroup()
+```
+
+Testing for CP2
+```{r}
+CP2_all <- read_csv("../input/Cleaned/CP2_cleaned_all.csv")
+
+CP2_survival <- CP2_all %>%
+ filter(!is.na(Band_color), !is.na(Band_num)) %>%
+  mutate(plant_id = paste(Site,Transect_plot, Quad,  Band_color, Band_num, sep = "_"),
+         alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+mutate(age = row_number(),
+       next_year = Census_year + 1,
+       alive_next_year = lead(alive),
+         survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>%
+  ungroup()
+```
+
+Testing for TM2
+```{r}
+TM2_all <- read_csv("../input/Cleaned/TM2_cleaned_all.csv")
+
+TM2_survival <- TM2_all %>%
+ filter(!is.na(Band_color), !is.na(Band_num)) %>%
+  mutate(plant_id = paste(Site,Transect_plot, Quad, Band_color, Band_num, sep = "_"),
+         alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+mutate(age = row_number(),
+       next_year = Census_year + 1,
+       alive_next_year = lead(alive),
+         survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>%
+  ungroup()
+```
+Preliminary visualization of survival differences across pops
+summarize across years and calc sem?
+```{r}
+sem <- function(x, na.rm=FALSE) {           #for calculating standard error
+  sd(x,na.rm=na.rm)/sqrt(length(na.omit(x)))
+} 
+
+WL1_survival <- WL1_survival %>%
+  group_by(plant_id) %>%
+  mutate(original_census_year = min(Census_year)) %>% #create a column so we know when the plant was first censused
+  ungroup()
+
+#The fates of 1st year plants observed in 2024 haven't been uploaded yet so we exclude them for now
+max_year_WL1 <- max(WL1_survival$Census_year)
+
+#remove plants that first appeared in 2024 and were not observed beyond age 1
+survival_by_year_WL1 <- WL1_survival %>%
+  group_by(plant_id, original_census_year) %>%
+  summarise(max_age = max(age),
+            survived_to_age2 = as.integer(any(age == 2 & alive == 1)),
+            .groups = "drop") %>%
+  filter(!(original_census_year == max_year_WL1 & max_age == 1))
+  
+#summarize by year
+WL1_survival_by_year <- survival_by_year_WL1 %>%
+  group_by(original_census_year) %>%
+  summarize(survival = mean(survived_to_age2),
+            survival_se = sem(survived_to_age2),
+            n=n(),
+            .groups = "drop")
+
+#plot survival differences across years at WL1
+ggplot(WL1_survival_by_year, aes(x=original_census_year, survival)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=survival - survival_se,
+                    ymax = survival + survival_se),
+                width = 0.15) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Original census year",
+    y = "Proportion surviving to age 2"
+  ) +
+  theme_classic()
+```
+Survival differences across years at WL2
+```{r}
+WL2_survival <- WL2_survival %>%
+  group_by(plant_id) %>%
+  mutate(original_census_year = min(Census_year)) %>% #create a column so we know when the plant was first censused
+  ungroup()
+
+#The fates of 1st year plants observed in 2024 haven't been uploaded yet so we exclude them for now
+max_year_WL2 <- max(WL2_survival$Census_year)
+
+#remove plants that first appeared in 2024 and were not observed beyond age 1
+survival_by_year_WL2 <- WL2_survival %>%
+  group_by(plant_id, original_census_year) %>%
+  summarise(max_age = max(age),
+            survived_to_age2 = as.integer(any(age == 2 & alive == 1)),
+            .groups = "drop") %>%
+  filter(!(original_census_year == max_year_WL2 & max_age == 1))
+  
+#summarize by year
+WL2_survival_by_year <- survival_by_year_WL2 %>%
+  group_by(original_census_year) %>%
+  summarize(survival = mean(survived_to_age2),
+            survival_se = sem(survived_to_age2),
+            n=n(),
+            .groups = "drop")
+
+#plot survival differences across years at WL2
+ggplot(WL2_survival_by_year, aes(x=original_census_year, survival)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=survival - survival_se,
+                    ymax = survival + survival_se),
+                width = 0.15) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Original census year",
+    y = "Proportion surviving to age 2"
+  ) +
+  theme_classic()
+```
+Survival differences across years at WL3
+```{r}
+WL3_survival <- WL3_survival %>%
+  group_by(plant_id) %>%
+  mutate(original_census_year = min(Census_year)) %>% #create a column so we know when the plant was first censused
+  ungroup()
+
+#The fates of 1st year plants observed in 2024 haven't been uploaded yet so we exclude them for now
+max_year_WL3 <- max(WL3_survival$Census_year)
+
+#remove plants that first appeared in 2024 and were not observed beyond age 1
+survival_by_year_WL3 <- WL3_survival %>%
+  group_by(plant_id, original_census_year) %>%
+  summarise(max_age = max(age),
+            survived_to_age2 = as.integer(any(age == 2 & alive == 1)),
+            .groups = "drop") %>%
+  filter(!(original_census_year == max_year_WL3 & max_age == 1))
+  
+#summarize by year
+WL3_survival_by_year <- survival_by_year_WL3 %>%
+  group_by(original_census_year) %>%
+  summarize(survival = mean(survived_to_age2),
+            survival_se = sem(survived_to_age2),
+            n=n(),
+            .groups = "drop")
+
+#plot survival differences across years at WL3
+ggplot(WL3_survival_by_year, aes(x=original_census_year, survival)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=survival - survival_se,
+                    ymax = survival + survival_se),
+                width = 0.15) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Original census year",
+    y = "Proportion surviving to age 2"
+  ) +
+  theme_classic()
+```
+Survival differences across years at BH
+```{r}
+BH_survival <- BH_survival %>%
+  group_by(plant_id) %>%
+  mutate(original_census_year = min(Census_year)) %>% #create a column so we know when the plant was first censused
+  ungroup()
+
+#The fates of 1st year plants observed in 2024 haven't been uploaded yet so we exclude them for now
+max_year_BH <- max(BH_survival$Census_year)
+
+#remove plants that first appeared in 2024 and were not observed beyond age 1
+survival_by_year_BH <- BH_survival %>%
+  group_by(plant_id, original_census_year) %>%
+  summarise(max_age = max(age),
+            survived_to_age2 = as.integer(any(age == 2 & alive == 1)),
+            .groups = "drop") %>%
+  filter(!(original_census_year == max_year_BH & max_age == 1))
+  
+#summarize by year
+BH_survival_by_year <- survival_by_year_BH %>%
+  group_by(original_census_year) %>%
+  summarize(survival = mean(survived_to_age2),
+            survival_se = sem(survived_to_age2),
+            n=n(),
+            .groups = "drop")
+
+#plot survival differences across years at WL1
+ggplot(BH_survival_by_year, aes(x=original_census_year, survival)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=survival - survival_se,
+                    ymax = survival + survival_se),
+                width = 0.15) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Original census year",
+    y = "Proportion surviving to age 2"
+  ) +
+  theme_classic()
+```
+Survival differences across years at CP2
+```{r}
+CP2_survival <- CP2_survival %>%
+  group_by(plant_id) %>%
+  mutate(original_census_year = min(Census_year)) %>% #create a column so we know when the plant was first censused
+  ungroup()
+
+#The fates of 1st year plants observed in 2024 haven't been uploaded yet so we exclude them for now
+max_year_CP2 <- max(WL2_survival$Census_year)
+
+#remove plants that first appeared in 2024 and were not observed beyond age 1
+survival_by_year_CP2 <- CP2_survival %>%
+  group_by(plant_id, original_census_year) %>%
+  summarise(max_age = max(age),
+            survived_to_age2 = as.integer(any(age == 2 & alive == 1)),
+            .groups = "drop") %>%
+  filter(!(original_census_year == max_year_CP2 & max_age == 1))
+  
+#summarize by year
+CP2_survival_by_year <- survival_by_year_CP2 %>%
+  group_by(original_census_year) %>%
+  summarize(survival = mean(survived_to_age2),
+            survival_se = sem(survived_to_age2),
+            n=n(),
+            .groups = "drop")
+
+#plot survival differences across years at WL1
+ggplot(CP2_survival_by_year, aes(x=original_census_year, survival)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=survival - survival_se,
+                    ymax = survival + survival_se),
+                width = 0.15) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Original census year",
+    y = "Proportion surviving to age 2"
+  ) +
+  theme_classic()
+```
+
+Survival differences across years at TM2
+```{r}
+TM2_survival <- TM2_survival %>%
+  group_by(plant_id) %>%
+  mutate(original_census_year = min(Census_year)) %>% #create a column so we know when the plant was first censused
+  ungroup()
+
+#The fates of 1st year plants observed in 2024 haven't been uploaded yet so we exclude them for now
+max_year_TM2 <- max(TM2_survival$Census_year)
+
+#remove plants that first appeared in 2024 and were not observed beyond age 1
+survival_by_year_TM2 <- TM2_survival %>%
+  group_by(plant_id, original_census_year) %>%
+  summarise(max_age = max(age),
+            survived_to_age2 = as.integer(any(age == 2 & alive == 1)),
+            .groups = "drop") %>%
+  filter(!(original_census_year == max_year_TM2 & max_age == 1))
+  
+#summarize by year
+TM2_survival_by_year <- survival_by_year_TM2 %>%
+  group_by(original_census_year) %>%
+  summarize(survival = mean(survived_to_age2),
+            survival_se = sem(survived_to_age2),
+            n=n(),
+            .groups = "drop")
+
+#plot survival differences across years at WL1
+ggplot(TM2_survival_by_year, aes(x=original_census_year, survival)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=survival - survival_se,
+                    ymax = survival + survival_se),
+                width = 0.15) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Original census year",
+    y = "Proportion surviving to age 2"
+  ) +
+  theme_classic()
+```
+
