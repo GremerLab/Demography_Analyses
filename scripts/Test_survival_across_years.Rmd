@@ -1,6 +1,8 @@
 ---
 title: "WL1_Survival_Across_Years"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 date: "2026-05-06"
 ---
 
