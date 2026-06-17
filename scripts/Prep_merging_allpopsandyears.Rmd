@@ -1,0 +1,94 @@
+---
+title: "Prep_merging_allpopsandyears"
+author: "JR Gremer"
+date: "2026-06-17"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+```
+
+Load dataframes
+This is for the detailed phenology and demography sites (TM2, WL1, WL2, WL3, CP2), 
+will add BH and YOSE eventually
+```{r}
+#TM2
+TM2_all <- read_csv("../input/Cleaned/TM2_cleaned_all.csv")%>%
+  select(-'...1', -Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+#WL1
+WL1_all <- read_csv("../input/Cleaned/WL1_cleaned.csv") %>%
+  select(-'...1',-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+#WL2
+WL2_16_23 <- read_csv("../input/Cleaned/WL2_cleaned_16_23.csv")
+WL2_24 <- read_csv("../input/Cleaned/WL2_cleaned_24.csv")
+WL2_all <- bind_rows(WL2_16_23, WL2_24  %>% mutate(Quad = as.character(Quad), Num_flowers = as.character(Num_flowers))) %>%
+        select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+#WL3
+WL3_all <- read_csv("..//input/Cleaned/WL3_cleaned_all.csv")%>%
+  select(-'...1',-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+#CP2
+CP2_all <- read_csv("../input/Cleaned/CP2_cleaned_all.csv") %>%
+  select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+```
+
+Merge dataframes
+```{r}
+library(janitor)
+
+compare_df_cols(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all) #cols match, but structure varies across dataframes
+
+
+#need to fix column structure mismatches
+TM2_all = TM2_all %>%
+          mutate(Height_cm = as.numeric(Height_cm)) %>%
+          mutate(Num_flowers = as.numeric(Num_flowers))%>%
+          mutate(Num_fruits = as.numeric(Num_fruits))%>%
+          mutate(Year_marked = as.numeric(Year_marked)) %>%
+          mutate(Herbivory = if_else(Herbivory == "?", "N", Herbivory)) %>%
+          mutate(Herbivory = if_else(Herbivory == "*", "N", Herbivory)) 
+
+WL1_all = WL1_all %>%
+          mutate(Transect_plot = as.character(Transect_plot)) %>%
+          mutate(Quad = as.character(Quad)) %>%
+          mutate(Longest_leaf_cm = as.numeric(Longest_leaf_cm)) %>%
+          mutate(Year_marked = as.numeric(Year_marked))%>%
+          mutate(Canopy_width_cm = as.numeric(Canopy_width_cm))
+
+WL2_all = WL2_all %>%
+          mutate(Num_flowers = if_else(Num_flowers == "(1)?", "1", Num_flowers)) %>%
+          mutate(Num_flowers = as.numeric(Num_flowers))
+
+WL3_all = WL3_all %>%
+          mutate(Transect_plot = as.character(Transect_plot)) %>%
+          mutate(Longest_leaf_cm = as.numeric(Longest_leaf_cm))%>%
+          mutate(Canopy_width_cm = as.numeric(Canopy_width_cm))
+
+
+
+CP2_all = CP2_all %>%
+          mutate(Height_cm = as.numeric(Height_cm)) %>%
+          mutate(Longest_leaf_cm = as.numeric(Longest_leaf_cm)) %>%
+          mutate(Num_flowers = as.numeric(Num_flowers))%>%
+          mutate(Canopy_width_cm = as.numeric(Canopy_width_cm))
+#check again
+compare_df_cols(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all) #better.  all numeric columns are the same
+
+
+#try to bind rows and check errors
+alldat = bind_rows(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all)
+
+summary(alldat)
+```
