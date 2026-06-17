@@ -92,3 +92,17 @@ alldat = bind_rows(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all)
 
 summary(alldat)
 ```
+
+Add unique plant id based on band color and number,
+and the year in which plants were first marked (original census year)
+```{r}
+alldat = alldat %>%
+          filter(!is.na(Band_color), !is.na(Band_num)) %>% #filter to years in which we had numbered bands
+          #eventually will need to add in the rest, in which case the x and y coordinates of earlier plants will be the unique identifier.  
+          mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_")) %>% #add unique id
+          group_by(plant_id) %>% 
+          mutate(original_census_year = min(Census_year)) %>% #add original census year
+          ungroup()
+write.csv(alldat, "../input/Cleaned/AllSites_cleaned.csv", row.names = FALSE)
+```
+I think that is working so far
