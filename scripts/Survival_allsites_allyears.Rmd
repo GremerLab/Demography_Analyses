@@ -1,0 +1,111 @@
+---
+title: "Survival_all sites_allyears"
+author: "JR Gremer"
+date: "2026-06-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+```
+Code for standard error of the mean
+```{r}
+sem <- function(x, na.rm=FALSE) {           #for calculating standard error
+  sd(x,na.rm=na.rm)/sqrt(length(na.omit(x)))
+} 
+```
+
+Load data, created in Prep_merging_allpopsandyears.Rmd
+```{r}
+alldat = read_csv("../input/Cleaned/AllSites_cleaned.csv")
+summary(alldat)
+```
+data are already filtered for only years in which band number and color are recorded (see Prep script)
+
+Score for survival
+```{r}
+all_survival <- alldat %>%
+  mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_"),
+         alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+mutate(age = row_number(),
+       next_year = Census_year + 1,
+       alive_next_year = lead(alive),
+         survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>%
+  ungroup()
+```
+
+Filter and check data
+Note: for all sites except WL2, 2024 was the last annual census and new plants were not marked that year
+To fix:  some plants at other sites have original census year == 2024.  Need to fix that somehow. Used Maya's code below to exclude those, but need to figure out what is going on in the data.  It may be due to issue below (unique IDs)
+To fix: different spellings (and capitalization) of colors might be inflating number of unique plant id - fix that in prep script
+```{r}
+table(all_survival$Site, all_survival$original_census_year)
+table(all_survival$Band_color)
+
+#add max census year for each site?
+max_year = max(all_survival$Census_year) #Currently all sites have the same max census year, but in future will need to adapt this (WL2 has 2025 and will have 2026 data)
+
+#remove plants that first appeared in 2024 (or latest census year) and were not observed beyond age 1
+#Jenny notes - I don't think we want to remove plants not observed beyond age 1?  Left it in for now, but probably want to remove that
+prep_survival_by_year <- all_survival %>%
+  group_by(Site, plant_id, original_census_year) %>%
+  summarise(max_age = max(age),
+            survived_to_age2 = as.integer(any(age == 2 & alive == 1)),
+            .groups = "drop") %>%
+  filter(!(original_census_year == max_year & max_age == 1)) %>%
+  ungroup()
+
+dim(survival_by_year) 
+dim(all_survival)
+
+#summarize by year
+survival_by_year <- prep_survival_by_year %>%
+  group_by(Site, original_census_year) %>%
+  summarize(survival = mean(survived_to_age2),
+            survival_se = sem(survived_to_age2),
+            n=n(),
+            .groups = "drop")
+```
+Visualize and check whether results consistent with Maya's script
+
+```{r}
+#plot survival differences across years and sites
+ggplot(survival_by_year, aes(x=original_census_year, y= survival, group = Site, color = Site)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=survival - survival_se,
+                    ymax = survival + survival_se),
+                width = 0.15) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Original census year",
+    y = "Proportion surviving to age 2"
+  ) +
+  theme_classic() 
+
+#with site on X
+#order by elevation
+survival_by_year$siteorder <- factor(survival_by_year$Site, levels = c("TM2", "WL1", "WL2", "WL3", "CP2"))
+
+ggplot(survival_by_year, aes(x=siteorder, y= survival, group = as.factor(original_census_year), color = as.factor(original_census_year))) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=survival - survival_se,
+                    ymax = survival + survival_se),
+                width = 0.15) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Site",
+    y = "Proportion surviving to age 2",
+    color = "Original census year"
+  ) +
+  theme_classic() 
+```
+```
