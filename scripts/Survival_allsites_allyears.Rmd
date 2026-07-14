@@ -32,7 +32,7 @@ data are already filtered for only years in which band number and color are reco
 Score for survival
 ```{r}
 all_survival <- alldat %>%
-  mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_"),
+  mutate(plant_id = paste(Site, Transect_plot, Quad, original_census_year, Band_color, Band_num, sep = "_"),
          alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
   arrange(plant_id, Census_year) %>%
   group_by(plant_id) %>%
@@ -42,6 +42,20 @@ mutate(age = row_number(),
          survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>%
   ungroup()
 ```
+
+Goal: Need to check if plants that were not relocated come back in a future year. We want to mark these individuals as dead in the year they are lost if they do not come back
+```{r}
+all_survival <- all_survival %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+  mutate(Pheno_next = lead(Phenology)) %>%
+  ungroup() %>%
+  filter(is.na(Phenology), !is.na(Pheno_next), Pheno_next != "X")
+```
+
+
+
+
 
 Filter and check data
 Note: for all sites except WL2, 2024 was the last annual census and new plants were not marked that year
