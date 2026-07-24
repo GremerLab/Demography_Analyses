@@ -843,7 +843,7 @@ WL1_cleaned_24 <- WL1_all %>%   filter(Census_year == 2024)
 write.csv(WL1_cleaned_24, "../input/Cleaned/WL1_cleaned_24.csv", row.names = FALSE)
 ```
 
-#### WL2 2016-2024
+#### WL2 2016-2025
 
 ```{r}
 WL2_16 <- read_excel("../input/Annual census data/Demog_WL2_summer_2016_20170622_AJC_cleaned.xlsx")
@@ -863,6 +863,8 @@ WL2_22 <- read_excel("../input/Annual census data/WL2_Annual_Census_2022_Verifie
 WL2_23 <- read_excel("../input/Annual census data/WL2_annualcensus_2023_finished_cleaned.xlsx")
 
 WL2_24 <- read_excel("../input/Annual census data/WL2_annualcensus_2024_verified_cleaned.xlsx")
+
+WL2_25 <- read_csv("../input/Annual census data/WL2_annualcensus_20250731.csv")
 ```
 
 ##### Check colnames are the same for all WL2 dataframes
@@ -877,7 +879,8 @@ WL2_col_check <- list(
   WL2_21 = colnames(WL2_21),
   WL2_22 = colnames(WL2_22),
   WL2_23 = colnames(WL2_23),
-  WL2_24 = colnames(WL2_24)
+  WL2_24 = colnames(WL2_24),
+  WL2_25 = colnames(WL2_25)
 )
 WL2_all_col <- unique(unlist(WL2_col_check))
 WL2_col_presence <- map_dfr(WL2_all_col, function(col) {
@@ -1024,7 +1027,7 @@ WL2_23 <- WL2_23 %>%
 ##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
 
 ```{r}
-WL2_list <- list(WL2_16, WL2_17, WL2_18, WL2_19, WL2_20, WL2_21, WL2_22, WL2_23, WL2_24)
+WL2_list <- list(WL2_16, WL2_17, WL2_18, WL2_19, WL2_20, WL2_21, WL2_22, WL2_23, WL2_24, WL2_25)
 
 #Loop over each dataset in WL2_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
 for(i in seq_along(WL2_list)) {
@@ -1052,7 +1055,7 @@ WL2_all <- WL2_list %>%
   lapply(convert_all_columns) %>%
   bind_rows()
 
-write.csv(WL2_all, "../input/Cleaned/WL2_cleaned_all.csv")
+write.csv(WL2_all, "../input/Cleaned/WL2_cleaned_all.csv", row.names = FALSE)
 ```
 
 ##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
