@@ -688,7 +688,7 @@ TM2_all <- TM2_list %>%
   lapply(convert_all_columns) %>%
   bind_rows()
 
-write.csv(TM2_all, "../input/Cleaned/TM2_cleaned_all.csv")
+write.csv(TM2_all, "../input/Cleaned/TM2_cleaned_all.csv", row.names = FALSE)
 ```
 
 ##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
@@ -826,7 +826,7 @@ WL1_all <- WL1_list %>%
   lapply(convert_all_columns) %>%
   bind_rows()
 
-write.csv(WL1_all, "../input/Cleaned/WL1_cleaned.csv")
+write.csv(WL1_all, "../input/Cleaned/WL1_cleaned.csv", row.names = FALSE)
 ```
 
 ##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
@@ -1194,7 +1194,7 @@ WL3_all <- WL3_list %>%
   lapply(convert_all_columns) %>%
   bind_rows()
 
-write.csv(WL3_all, "../input/Cleaned/WL3_cleaned_all.csv")
+write.csv(WL3_all, "../input/Cleaned/WL3_cleaned_all.csv", row.names = FALSE)
 ```
 
 ##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
@@ -1276,6 +1276,52 @@ YOSE1 <- YOSE1_list %>%
   bind_rows()
 ```
 
+##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
+
+```{r}
+#Loop over each dataset in YOSE1_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
+for(i in seq_along(YOSE1_list)) {
+  YOSE1_list[[i]] <- YOSE1_list[[i]] %>%
+    mutate(Stem_diam_mm_UFA = case_when(
+      Stem_diam_mm == "<1" ~ 0.5,
+      Stem_diam_mm < 1 ~ 0.5,
+      Stem_diam_mm == "~1" ~ 1,
+      TRUE ~ as.numeric(Stem_diam_mm)
+    ))
+}
+```
+
+##### Convert all "NA" strings to NA's
+
+```{r}
+YOSE1_list <- map(YOSE1_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+```
+
+##### Combine all YOSE1 censuses and write csv
+
+```{r}
+YOSE1_all <- YOSE1_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()
+
+write.csv(YOSE1_all, "../input/Cleaned/YOSE1_cleaned_all.csv", row.names = FALSE)
+```
+
+##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
+
+```{r}
+#create csv for YOSE1 years 2018-2023 
+YOSE1_18_23 <- YOSE1_all %>%   filter(Census_year != 2024)  
+
+write.csv(YOSE1_18_23, "../input/Cleaned/YOSE1_cleaned_18_23.csv", row.names = FALSE) 
+
+#create csv for YOSE1 2024 
+YOSE1_cleaned_24 <- YOSE1_all %>%   filter(Census_year == 2024)  
+
+write.csv(YOSE1_cleaned_24, "../input/Cleaned/YOSE1_cleaned_24.csv", row.names = FALSE)
+```
+
 #### YOSE7 2018-2023, abv 2024
 
 ```{r}
@@ -1349,6 +1395,52 @@ YOSE7 <- YOSE7_list %>%
   bind_rows()
 ```
 
+##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
+
+```{r}
+#Loop over each dataset in YOSE7_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
+for(i in seq_along(YOSE7_list)) {
+  YOSE7_list[[i]] <- YOSE7_list[[i]] %>%
+    mutate(Stem_diam_mm_UFA = case_when(
+      Stem_diam_mm == "<1" ~ 0.5,
+      Stem_diam_mm < 1 ~ 0.5,
+      Stem_diam_mm == "~1" ~ 1,
+      TRUE ~ as.numeric(Stem_diam_mm)
+    ))
+}
+```
+
+##### Convert all "NA" strings to NA's
+
+```{r}
+YOSE7_list <- map(YOSE7_list, ~.x %>%
+                 mutate(across(where(is.character), ~na_if(., "NA"))))
+```
+
+##### Combine all YOSE7 censuses and write csv
+
+```{r}
+YOSE7_all <- YOSE7_list %>%
+  lapply(convert_all_columns) %>%
+  bind_rows()  
+
+write.csv(YOSE7_all, "../input/Cleaned/YOSE7_cleaned_all.csv", row.names = FALSE)
+```
+
+##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
+
+```{r}
+#create csv for YOSE7 years 2018-2023 
+YOSE7_18_23 <- YOSE7_all %>%   filter(Census_year != 2024)  
+
+write.csv(YOSE7_18_23, "../input/Cleaned/YOSE7_cleaned_18_23.csv", row.names = FALSE) 
+
+#create csv for YOSE7 2024 
+YOSE7_cleaned_24 <- YOSE7_all %>%   filter(Census_year == 2024)  
+
+write.csv(YOSE7_cleaned_24, "../input/Cleaned/YOSE7_cleaned_24.csv", row.names = FALSE)
+```
+
 #### YOSE8 2018-2023, abv 2024
 
 ```{r}
@@ -1404,8 +1496,6 @@ YOSE8_24 <- YOSE8_24 %>%
 #YOSE8_18 has "N/A" in Xcoord and Ycoord and Longest_fruit_cm and Num_repro_branches
 #YOSE8_21 has missing data in Xcoord and Ycoord and Longest_fruit_cm and Num_repro_branches
 
-
-
 YOSE8_list <- list(YOSE8_18, YOSE8_19, YOSE8_20, YOSE8_21, YOSE8_22, YOSE8_23, YOSE8_24)
 
 YOSE8_list <- map(YOSE8_list, ~.x %>%
@@ -1415,3 +1505,53 @@ YOSE8 <- YOSE8_list %>%
   lapply(convert_all_columns) %>%
   bind_rows()
 ```
+
+##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
+
+```{r}
+#Loop over each dataset in YOSE8_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis 
+
+for(i in seq_along(YOSE8_list)) {   
+  YOSE8_list[[i]] <- YOSE8_list[[i]] %>%     
+    mutate(Stem_diam_mm_UFA = case_when(       
+      Stem_diam_mm == "<1" ~ 0.5,       
+      Stem_diam_mm < 1 ~ 0.5,       
+      Stem_diam_mm == "~1" ~ 1,       
+      TRUE ~ as.numeric(Stem_diam_mm)    
+      )) }
+```
+
+##### Convert all "NA" strings to NA's
+
+```{r}
+YOSE8_list <- map(YOSE8_list, ~.x %>%                 
+                    mutate(across(where(is.character), ~na_if(., "NA"))))
+```
+
+##### Combine all YOSE8 censuses and write csv
+
+```{r}
+YOSE8_all <- YOSE8_list %>%   
+  lapply(convert_all_columns) %>%   
+  bind_rows()    
+
+write.csv(YOSE8_all, "../input/Cleaned/YOSE8_cleaned_all.csv", row.names = FALSE)
+```
+
+##### Filter out 2024 and write csv - this is because 2024 was an abbreviated census
+
+```{r}
+#create csv for YOSE8 years 2018-2023  
+YOSE8_18_23 <- YOSE8_all %>%  
+  filter(Census_year != 2024)    
+
+write.csv(YOSE8_18_23, "../input/Cleaned/YOSE8_cleaned_18_23.csv", row.names = FALSE)   
+
+#create csv for YOSE8 2024  
+YOSE8_cleaned_24 <- YOSE8_all %>%  
+  filter(Census_year == 2024)   
+
+write.csv(YOSE8_cleaned_24, "../input/Cleaned/YOSE8_cleaned_24.csv", row.names = FALSE)
+```
+
+#### 
