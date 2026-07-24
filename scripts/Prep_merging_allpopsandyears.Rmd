@@ -22,11 +22,11 @@ will add BH and YOSE eventually
 ```{r}
 #TM2
 TM2_all <- read_csv("../input/Cleaned/TM2_cleaned_all.csv")%>%
-  select(-'...1', -Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+  select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
 
 #WL1
 WL1_all <- read_csv("../input/Cleaned/WL1_cleaned.csv") %>%
-  select(-'...1',-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+  select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
 
 #WL2
 WL2_16_23 <- read_csv("../input/Cleaned/WL2_cleaned_16_23.csv")
@@ -36,11 +36,27 @@ WL2_all <- bind_rows(WL2_16_23, WL2_24  %>% mutate(Quad = as.character(Quad), Nu
 
 #WL3
 WL3_all <- read_csv("..//input/Cleaned/WL3_cleaned_all.csv")%>%
-  select(-'...1',-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+  select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
 
 #CP2
 CP2_all <- read_csv("../input/Cleaned/CP2_cleaned_all.csv") %>%
   select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+#BH
+BH_all <- read_csv("../input/Cleaned/BH_cleaned_all.csv") %>%
+    select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+#YOSE1
+YOSE1_all <- read_csv("../input/Cleaned/YOSE1_cleaned_all.csv") %>%
+    select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+#YOSE7
+YOSE7_all <- read_csv("../input/Cleaned/YOSE7_cleaned_all.csv") %>%
+    select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+
+#YOSE8
+YOSE8_all <- read_csv("../input/Cleaned/YOSE8_cleaned_all.csv") %>%
+    select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
 
 ```
 
@@ -48,7 +64,7 @@ Merge dataframes
 ```{r}
 library(janitor)
 
-compare_df_cols(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all) #cols match, but structure varies across dataframes
+compare_df_cols(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all, BH_all, YOSE1_all, YOSE7_all, YOSE8_all) #cols match, but structure varies across dataframes
 
 
 #need to fix column structure mismatches
@@ -83,12 +99,40 @@ CP2_all = CP2_all %>%
           mutate(Longest_leaf_cm = as.numeric(Longest_leaf_cm)) %>%
           mutate(Num_flowers = as.numeric(Num_flowers))%>%
           mutate(Canopy_width_cm = as.numeric(Canopy_width_cm))
+
+BH_all <- BH_all %>%
+    mutate('2018tag' = as.logical('2018tag'),
+           '2019tag' = as.logical('2019tag'),
+           Buds = as.logical(Buds),
+           Quad = as.character(Quad),
+           Num_flowers = as.numeric(Num_flowers))
+
+YOSE1_all <- YOSE1_all %>%
+  mutate(Buds = as.character(Buds),
+         Quad = as.character(Quad),
+         Longest_leaf_cm = as.numeric(Longest_leaf_cm),
+         Height_cm = as.numeric(Height_cm))
+
+YOSE7_all <- YOSE7_all %>%
+  mutate(Buds = as.character(Buds),
+         Transect_plot = as.character(Transect_plot),
+         Longest_leaf_cm = as.numeric(Longest_leaf_cm),
+         Num_fruits = as.numeric(Num_fruits),
+         Num_flowers = as.numeric(Num_flowers),
+         Height_cm = as.numeric(Height_cm))
+
+YOSE8_all <- YOSE8_all %>%
+  mutate(Transect_plot = as.character(Transect_plot),
+         Longest_leaf_cm = as.numeric(Longest_leaf_cm),
+         Num_fruits = as.numeric(Num_fruits),
+         Num_flowers = as.numeric(Num_flowers))
+
 #check again
-compare_df_cols(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all) #better.  all numeric columns are the same
+compare_df_cols(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all, BH_all, YOSE1_all, YOSE7_all, YOSE8_all) #better.  all numeric columns are the same
 
 
 #try to bind rows and check errors
-alldat = bind_rows(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all)
+alldat = bind_rows(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all, BH_all, YOSE1_all, YOSE7_all, YOSE8_all)
 
 summary(alldat)
 ```
@@ -99,7 +143,7 @@ and the year in which plants were first marked (original census year)
 alldat = alldat %>%
           filter(!is.na(Band_color), !is.na(Band_num)) %>% #filter to years in which we had numbered bands
           #eventually will need to add in the rest, in which case the x and y coordinates of earlier plants will be the unique identifier.  
-          mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_")) %>% #add unique id
+          mutate(plant_id = paste(Site, Transect_plot, Quad, Band_color, Band_num, sep = "_")) %>% #add unique id - need to add original census year to plant_id but we use plant_id to determine original census year...
           group_by(plant_id) %>% 
           mutate(original_census_year = min(Census_year)) %>% #add original census year
           ungroup()
