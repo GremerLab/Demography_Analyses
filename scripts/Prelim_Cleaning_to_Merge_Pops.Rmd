@@ -275,6 +275,27 @@ BH_20 <- BH_20 %>%
   mutate(Quad = ifelse(Quad == "DP", NA, Quad))
 ```
 
+##### Move notes from Buds to Notes column - there must be a better way to do this but some rows in the Buds column have NA's and I think they would be copied or pasted over the existing notes in teh Notes column if I did this another way
+
+```{r}
+BH_20 <- BH_20 %>%
+  mutate(Notes = if_else(Transect_plot == "2.0" & Quad == "3.5" & Band_color == "red" & Band_num == "29.0", Buds, Notes),
+         Buds = ifelse(Transect_plot == "2.0" & Quad == "3.5" & Band_color == "red" & Band_num == "29.0", NA_character_, Buds),
+         Notes = if_else(Transect_plot == "DP" & Band_color == "blue" & Band_num == "58.0", Buds, Notes),
+         Buds = ifelse(Transect_plot == "DP" & Band_color == "blue" & Band_num == "58.0", NA_character_, Buds),
+         Notes = if_else(Transect_plot == "2.0" & Quad == "4.5" & Band_color == "blue" & Band_num == "44.0", Buds, Notes),
+         Buds = ifelse(Transect_plot == "2.0" & Quad == "4.5" & Band_color == "blue" & Band_num == "44.0", NA_character_, Buds),
+         Notes = if_else(Transect_plot == "DP" & Band_color == "blue" & Band_num == "80.0", Buds, Notes),
+         Buds = ifelse(Transect_plot == "DP" & Band_color == "blue" & Band_num == "80.0", NA_character_, Buds),
+         Notes = if_else(Transect_plot == "2.0" & Quad == "3.0" & Band_color == "blue" & Band_num == "26.0", Buds, Notes),
+         Buds = ifelse(Transect_plot == "2.0" & Quad == "3.0" & Band_color == "blue" & Band_num == "26.0", NA_character_, Buds),
+         Notes = if_else(Transect_plot == "DP" & Band_color == "blue" & Band_num == "5.0", Buds, Notes),
+         Buds = ifelse(Transect_plot == "DP" & Band_color == "blue" & Band_num == "5.0", NA_character_, Buds),
+         Notes = if_else(Transect_plot == "2.0" & Quad == "1.5" & Band_color == "blue" & Band_num == "8.0", Buds, Notes),
+         Buds = ifelse(Transect_plot == "2.0" & Quad == "1.5" & Band_color == "blue" & Band_num == "8.0", NA_character_, Buds))
+  
+```
+
 ##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
 
 ```{r}
