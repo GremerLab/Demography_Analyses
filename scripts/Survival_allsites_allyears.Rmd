@@ -32,7 +32,7 @@ data are already filtered for only years in which band number and color are reco
 Score for survival
 ```{r}
 all_survival <- alldat %>%
-  mutate(plant_id = paste(Site, Transect_plot, Quad, original_census_year, Band_color, Band_num, sep = "_"),
+  mutate(plant_id = paste(Site, Transect_plot, Quad, original_census_year, Band_color, Band_num, sep = "_"), #need to update plant_id with original census year
          alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
   arrange(plant_id, Census_year) %>%
   group_by(plant_id) %>%
@@ -51,9 +51,12 @@ all_survival <- all_survival %>%
   mutate(Pheno_next = lead(Phenology)) %>%
   ungroup() %>%
   filter(is.na(Phenology), !is.na(Pheno_next), Pheno_next != "X")
+
+#WL2_201C_0_2022_orange_87 is the only individual that was not relocated in one year but came back in the following year. It also has 2 rows in 2022 where one row says Nonexistent and the other row has data. But the coordinates of the plant location are the same in addition to the band color and number
+all_survival %>%
+    filter(plant_id == "WL2_201C_0_2022_orange_87") %>%
+    View()
 ```
-
-
 
 
 
