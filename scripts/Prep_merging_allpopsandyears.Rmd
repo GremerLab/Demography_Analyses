@@ -136,7 +136,30 @@ alldat = bind_rows(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all, BH_all, YOSE1_al
 
 summary(alldat)
 ```
+Checking spelling and capitalization errors
+```{r}
+unique(alldat$Pick_color)
 
+unique(alldat$Band_color) #why are there numbers in there?
+
+
+alldat2 = alldat %>%
+        mutate(Pick_color= recode(Pick_color, "*" = "NA", "none" = "NA", "unmarked" = "NA", "NO" = "NA", "N/A" = "NA", #iterations of unmarked
+                                  "G" = "green", "grn" = "green", "neon grn" = "green",
+                                  "o" = "orange", "O" = "orange", 
+                                   "r" = "red", "R" = "red",
+                                   "W" = "white", 
+                                  "ylw" = "yellow", "Ylw" = "yellow", "ylw*" = "yellow", "yelllow"= "yellow",
+                                  "blu" = "blue", "neon blu" = "blue", "blk" = "black")) #%>% #remember to mutate to factor eventually
+      # mutate(Band_color= recode(Band_color, "*" = "NA", "none" = "NA", "unmarked" = "NA", "NO" = "NA", "N/A" = "NA", #iterations of unmarked
+                           #       "G" = "green", "grn" = "green", "neon grn" = "green",
+                            #      "o" = "orange", "O" = "orange", 
+                              #     "r" = "red", "R" = "red",
+                              #     "W" = "white", 
+                               #   "ylw" = "yellow", "Ylw" = "yellow", "ylw*" = "yellow", "yelllow"= "yellow",
+                               #   "blu" = "blue", "neon blu" = "blue", "blk" = "black")) %>%
+
+```
 Add unique plant id based on band color and number,
 and the year in which plants were first marked (original census year)
 ```{r}
