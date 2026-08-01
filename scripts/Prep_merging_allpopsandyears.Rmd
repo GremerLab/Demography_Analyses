@@ -17,12 +17,62 @@ library(lubridate)
 ```
 
 Load dataframes
-This is for the detailed phenology and demography sites (TM2, WL1, WL2, WL3, CP2), 
-will add BH and YOSE eventually
+Also checked site, quad, transect/plot, will clean up band and pick colors below
 ```{r}
 #TM2
 TM2_all <- read_csv("../input/Cleaned/TM2_cleaned_all.csv")%>%
-  select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+  select(-Leaf_thickness_mm, -Num_leaves) %>%#leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+  #fix transect_plot
+  mutate(Transect_plot = case_when(
+          Transect_plot == "outrcrop" ~  "outcrop", 
+           Transect_plot == "outcrp" ~  "outcrop",
+           Transect_plot == "lower*" ~  "lower",
+          TRUE ~ Transect_plot )) %>%
+  mutate(Quad = case_when(
+          Quad == "0-0.5" ~  "0.0",
+          Quad == "0" ~  "0.0",
+          Quad == "1" ~  "1.0",
+          Quad == "2" ~  "2.0",
+          Quad == "3" ~  "3.0",
+          Quad == "4" ~  "4.0",
+          Quad == "5" ~  "5.0",
+          Quad == "6" ~  "6.0",
+          Quad == "7" ~  "7.0",
+          Quad == "8" ~  "8.0",
+          Quad == "9" ~  "9.0",
+          Quad == "10" ~  "10.0",
+          Quad == "11" ~  "11.0",
+          Quad == "12" ~  "12.0",
+          Quad == "13" ~  "13.0",
+          Quad == "14" ~  "14.0",
+          Quad == "15" ~  "15.0",
+           Quad == "16" ~  "16.0",
+           Quad == "17" ~  "17.0",
+           Quad == "18" ~  "18.0",
+           Quad == "1L" ~  "1.0L",
+          Quad == "2L" ~  "2.0L",
+          Quad == "3L" ~  "3.0L",
+          Quad == "4L" ~  "4.0L",
+          Quad == "5L" ~  "5.0L",
+          Quad == "6L" ~  "6.0L",
+          Quad == "7L" ~  "7.0L",
+          Quad == "8L" ~  "8.0L",
+          Quad == "9L" ~  "9.0L",
+          Quad == "10L" ~  "10.0L",
+          Quad == "11L" ~  "11.0L",
+          Quad == "12L" ~  "12.0L",
+          Quad == "13L" ~  "13.0L",
+          Quad == "14L" ~  "14.0L",
+          Quad == "15L" ~  "15.0L",
+          Quad == "13R" ~  "13.0R",
+          Quad == "14R" ~  "14.0R",
+          Quad == "15R" ~  "15.0R",
+          Quad == "16R" ~  "16.0R",
+           Quad == "6R" ~  "6.0R",
+          TRUE ~ Quad)) %>%
+  filter(Transect_plot != "below lower") %>% #this is likely from a different experiment and not in demography data, remove here
+  filter(!Quad %in% c("12-13.5", "16.5-19.5")) # these were placeholders where there weren't plants.  
+#everything else looks okay...
 
 #WL1
 WL1_all <- read_csv("../input/Cleaned/WL1_cleaned.csv") %>%
@@ -32,37 +82,106 @@ WL1_all <- read_csv("../input/Cleaned/WL1_cleaned.csv") %>%
 WL2_16_23 <- read_csv("../input/Cleaned/WL2_cleaned_16_23.csv")
 WL2_24 <- read_csv("../input/Cleaned/WL2_cleaned_24.csv")
 WL2_all <- bind_rows(WL2_16_23, WL2_24  %>% mutate(Quad = as.character(Quad), Num_flowers = as.character(Num_flowers))) %>%
-        select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+        select(-Leaf_thickness_mm, -Num_leaves) %>%#leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+    #2016 data had different quad labels.  These can be matched up, but for now, let's filter it out until we want to do the more complicated          matching up
+         mutate(Quad = case_when(
+            Quad == "1*" ~  "1.0",
+            Quad == "0" ~  "0.0",
+          Quad == "1" ~  "1.0",
+          Quad == "2" ~  "2.0",
+          Quad == "3" ~  "3.0",
+          Quad == "4" ~  "4.0",
+          Quad == "5" ~  "5.0",
+          TRUE ~ Quad)) %>%
+     
+        filter(Census_year != 2016) %>%
+        filter(!Quad %in% c("2.0 - 4.0", "0-4.5")) %>%
+        filter(!is.na(Quad) ) #some quads are from missing plants, or bands found outside of quads.  filtered here.  
+    
+
 
 #WL3
-WL3_all <- read_csv("..//input/Cleaned/WL3_cleaned_all.csv")%>%
-  select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
-
+WL3_all <- read_csv("..//input/Cleaned/WL3_cleaned_all.csv") %>%
+  select(-Leaf_thickness_mm, -Num_leaves) %>% #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+  mutate(Quad = case_when(
+          Quad == "0-0.5" ~  "0.0",
+          Quad == "0" ~  "0.0",
+          Quad == "1" ~  "1.0",
+          Quad == "2" ~  "2.0",
+          Quad == "3" ~  "3.0",
+          Quad == "4" ~  "4.0",
+          Quad == "5" ~  "5.0",
+          Quad == "6" ~  "6.0",
+          Quad == "7" ~  "7.0",
+          Quad == "8" ~  "8.0",
+          Quad == "9" ~  "9.0",
+          TRUE ~ Quad))
 #CP2
 CP2_all <- read_csv("../input/Cleaned/CP2_cleaned_all.csv") %>%
-  select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+  select(-Leaf_thickness_mm, -Num_leaves) %>%#leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+  filter(!Quad %in% c("T3", "T4", "T8", "C8", "T7", "C7", "C14")) #these were Elena's quadrats, remove from here
 
 #BH
 BH_all <- read_csv("../input/Cleaned/BH_cleaned_all.csv") %>%
-    select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
-
+    select(-Leaf_thickness_mm, -Num_leaves) %>% #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+    mutate(Transect_plot = case_when(
+          Transect_plot == "1.0" ~  "1",
+          Transect_plot == "2.0" ~  "2",
+           TRUE ~ Transect_plot)) %>%
+   #in 2018, dispersed plant tag numbers were entered as quad numbers.  They all died.  
+           mutate(Quad = as.character(Quad)) %>%
+           mutate(Quad = if_else(Quad %in% c(901.0:911.0), "DP", Quad))
+                         
 #YOSE1
 YOSE1_all <- read_csv("../input/Cleaned/YOSE1_cleaned_all.csv") %>%
-    select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+    select(-Leaf_thickness_mm, -Num_leaves) %>% #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
+    mutate(Site = "YOSE1") %>%
+    mutate(Transect_plot = case_when(
+          Transect_plot == "Y1-1" ~  "Y1.1",
+           TRUE ~ Transect_plot)) %>%
+   filter(!is.na(Quad) ) #removing some blank rows
+    
 
 #YOSE7
-YOSE7_all <- read_csv("../input/Cleaned/YOSE7_cleaned_all.csv") %>%
+YOSE7_all <- read_csv("../input/Cleaned/YOSE7_cleaned_all.csv") %>% #why is there YOSE8 in this dataset? need to fix that in the prelim cleaning to merge script - come back to this.  
     select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
 
 #YOSE8
 YOSE8_all <- read_csv("../input/Cleaned/YOSE8_cleaned_all.csv") %>%
     select(-Leaf_thickness_mm, -Num_leaves) #leaf thickness and number of leaves only measured at CP2 in 2021 (E. Suglia)
 
+unique(YOSE8_all$Band_color) #in 2019, the band numbers for newly marked plants were entered in band color column, 
+#looks like they were marked with yellow bands (even though lookup table says "red")
+#in 2018, one band color was entered as "9" when it was supposed to be "g")
+
+YOSE8_all = YOSE8_all %>% 
+              #first, move band numbers to the correct column
+             mutate(
+               Band_num = case_when(
+                          Band_color =="68.0" ~ 68,
+                          Band_color =="52.0" ~ 52,
+                          Band_color =="66.0" ~ 66,
+                          Band_color =="0.0" ~ 0,
+                          Band_color =="73.0" ~ 73,
+                          True ~ Band_num)) %>%
+              #now add correct band number
+              mutate(Band_color = case_when(
+                          Band_color =="68.0" ~ "ylw",
+                          Band_color =="52.0" ~ "ylw",
+                          Band_color =="66.0" ~ "ylw",
+                          Band_color =="0.0" ~ "ylw",
+                          Band_color =="73.0" ~ "ylw",
+                          Band_color == "9.0" ~ "g",
+                          TRUE ~ Band_color))
+
+unique(YOSE8_all$Band_color) #colors and spelling fixed below            
+
 ```
 
 Merge dataframes
 ```{r}
 library(janitor)
+
 
 compare_df_cols(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all, BH_all, YOSE1_all, YOSE7_all, YOSE8_all) #cols match, but structure varies across dataframes
 
@@ -87,6 +206,7 @@ WL2_all = WL2_all %>%
           mutate(Num_flowers = if_else(Num_flowers == "(1)?", "1", Num_flowers)) %>%
           mutate(Num_flowers = as.numeric(Num_flowers))
 
+
 WL3_all = WL3_all %>%
           mutate(Transect_plot = as.character(Transect_plot)) %>%
           mutate(Longest_leaf_cm = as.numeric(Longest_leaf_cm))%>%
@@ -108,13 +228,13 @@ BH_all <- BH_all %>%
            Num_flowers = as.numeric(Num_flowers))
 
 YOSE1_all <- YOSE1_all %>%
-  mutate(Buds = as.character(Buds),
+  mutate(Buds = as.logical(Buds),
          Quad = as.character(Quad),
          Longest_leaf_cm = as.numeric(Longest_leaf_cm),
          Height_cm = as.numeric(Height_cm))
 
 YOSE7_all <- YOSE7_all %>%
-  mutate(Buds = as.character(Buds),
+  mutate(Buds = as.logical(Buds),
          Transect_plot = as.character(Transect_plot),
          Longest_leaf_cm = as.numeric(Longest_leaf_cm),
          Num_fruits = as.numeric(Num_fruits),
@@ -134,13 +254,35 @@ compare_df_cols(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all, BH_all, YOSE1_all, 
 #try to bind rows and check errors
 alldat = bind_rows(TM2_all, WL1_all, WL2_all, WL3_all, CP2_all, BH_all, YOSE1_all, YOSE7_all, YOSE8_all)
 
-summary(alldat)
+summary(alldat) #have no idea why the fixes to YOSE8 disappeared?
+
+
+alldat = alldat %>%
+         #first, move band numbers to the correct column
+             mutate(
+               Band_num = case_when(
+                          Band_color =="68.0" ~ 68,
+                          Band_color =="52.0" ~ 52,
+                          Band_color =="66.0" ~ 66,
+                          Band_color =="0.0" ~ 0,
+                          Band_color =="73.0" ~ 73)) %>%
+              #now add correct band number
+              mutate(Band_color = case_when(
+                          Band_color =="68.0" ~ "ylw",
+                          Band_color =="52.0" ~ "ylw",
+                          Band_color =="66.0" ~ "ylw",
+                          Band_color =="0.0" ~ "ylw",
+                          Band_color =="73.0" ~ "ylw",
+                          Band_color == "9.0" ~ "g",
+                          TRUE ~ Band_color))
+
 ```
+
 Checking spelling and capitalization errors
 ```{r}
 unique(alldat$Pick_color)
 
-unique(alldat$Band_color) #why are there numbers in there?
+unique(alldat$Band_color) #
 
 
 alldat2 = alldat %>%
@@ -150,14 +292,14 @@ alldat2 = alldat %>%
                                    "r" = "red", "R" = "red",
                                    "W" = "white", 
                                   "ylw" = "yellow", "Ylw" = "yellow", "ylw*" = "yellow", "yelllow"= "yellow",
-                                  "blu" = "blue", "neon blu" = "blue", "blk" = "black")) #%>% #remember to mutate to factor eventually
-      # mutate(Band_color= recode(Band_color, "*" = "NA", "none" = "NA", "unmarked" = "NA", "NO" = "NA", "N/A" = "NA", #iterations of unmarked
-                           #       "G" = "green", "grn" = "green", "neon grn" = "green",
-                            #      "o" = "orange", "O" = "orange", 
-                              #     "r" = "red", "R" = "red",
-                              #     "W" = "white", 
-                               #   "ylw" = "yellow", "Ylw" = "yellow", "ylw*" = "yellow", "yelllow"= "yellow",
-                               #   "blu" = "blue", "neon blu" = "blue", "blk" = "black")) %>%
+                                  "blu" = "blue", "neon blu" = "blue", "blk" = "black")) %>% #remember to mutate to factor eventually
+       mutate(Band_color= recode(Band_color, "*" = "NA", "NO" = "NA", "N/A" = "NA", #iterations of unmarked
+                                  "G" = "green", "grn" = "green", "neon grn" = "green",
+                                  "o" = "orange", "O" = "orange", 
+                                   "r" = "red", "R" = "red",
+                                   "W" = "white", 
+                                  "ylw" = "yellow", "Ylw" = "yellow", "ylw*" = "yellow", "yelllow"= "yellow",
+                                  "blu" = "blue", "neon blu" = "blue", "blk" = "black")) %>%
 
 ```
 Add unique plant id based on band color and number,
