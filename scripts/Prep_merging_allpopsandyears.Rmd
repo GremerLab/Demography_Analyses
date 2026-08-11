@@ -5,7 +5,6 @@ date: "2026-06-17"
 output: html_document
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -16,8 +15,8 @@ library(tidyverse)
 library(lubridate)
 ```
 
-Load dataframes
-Also checked site, quad, transect/plot, will clean up band and pick colors below
+Load dataframes Also checked site, quad, transect/plot, will clean up band and pick colors below
+
 ```{r}
 #TM2
 TM2_all <- read_csv("../input/Cleaned/TM2_cleaned_all.csv")%>%
@@ -163,7 +162,7 @@ YOSE8_all = YOSE8_all %>%
                           Band_color =="66.0" ~ 66,
                           Band_color =="0.0" ~ 0,
                           Band_color =="73.0" ~ 73,
-                          True ~ Band_num)) %>%
+                          TRUE ~ Band_num)) %>%
               #now add correct band number
               mutate(Band_color = case_when(
                           Band_color =="68.0" ~ "ylw",
@@ -179,6 +178,7 @@ unique(YOSE8_all$Band_color) #colors and spelling fixed below
 ```
 
 Merge dataframes
+
 ```{r}
 library(janitor)
 
@@ -239,7 +239,8 @@ YOSE7_all <- YOSE7_all %>%
          Longest_leaf_cm = as.numeric(Longest_leaf_cm),
          Num_fruits = as.numeric(Num_fruits),
          Num_flowers = as.numeric(Num_flowers),
-         Height_cm = as.numeric(Height_cm))
+         Height_cm = as.numeric(Height_cm),
+         Quad = as.character(Quad))
 
 YOSE8_all <- YOSE8_all %>%
   mutate(Transect_plot = as.character(Transect_plot),
@@ -279,6 +280,7 @@ alldat = alldat %>%
 ```
 
 Checking spelling and capitalization errors
+
 ```{r}
 unique(alldat$Pick_color)
 
@@ -299,11 +301,12 @@ alldat2 = alldat %>%
                                    "r" = "red", "R" = "red",
                                    "W" = "white", 
                                   "ylw" = "yellow", "Ylw" = "yellow", "ylw*" = "yellow", "yelllow"= "yellow",
-                                  "blu" = "blue", "neon blu" = "blue", "blk" = "black")) %>%
+                                  "blu" = "blue", "neon blu" = "blue", "blk" = "black")) #%>%
 
 ```
-Add unique plant id based on band color and number,
-and the year in which plants were first marked (original census year)
+
+Add unique plant id based on band color and number, and the year in which plants were first marked (original census year)
+
 ```{r}
 alldat = alldat %>%
           filter(!is.na(Band_color), !is.na(Band_num)) %>% #filter to years in which we had numbered bands
@@ -314,4 +317,5 @@ alldat = alldat %>%
           ungroup()
 write.csv(alldat, "../input/Cleaned/AllSites_cleaned.csv", row.names = FALSE)
 ```
+
 I think that is working so far
