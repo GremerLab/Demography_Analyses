@@ -45,20 +45,52 @@ mutate(age = row_number(),
 
 Goal: Need to check if plants that were not relocated come back in a future year. We want to mark these individuals as dead in the year they are lost if they do not come back
 ```{r}
-all_survival <- all_survival %>%
+check_survival <- all_survival %>%
   arrange(plant_id, Census_year) %>%
   group_by(plant_id) %>%
   mutate(Pheno_next = lead(Phenology)) %>%
   ungroup() %>%
   filter(is.na(Phenology), !is.na(Pheno_next), Pheno_next != "X")
 
-#WL2_201C_0_2022_orange_87 is the only individual that was not relocated in one year but came back in the following year. It also has 2 rows in 2022 where one row says Nonexistent and the other row has data. But the coordinates of the plant location are the same in addition to the band color and number
+#WL2_201C_0_2022_orange_87 was not relocated in one year but came back in the following year. It also has 2 rows in 2022 where one row says Nonexistent and the other row has data. But the coordinates of the plant location are the same in addition to the band color and number
+#BH_2_3.5_2020_red_38 has 2 entries in 2020 where one has pheno NA and the other has pheno V, censused on the same day but entered 2 days apart
+#BH_DP_NA_2020_red_14 also has 2 entries in 2020 where one has pheno NA and the other has pheno P
+#YOSE8_2_2.5_2021_red_46 was first censused in 2021 but in 2022, the coordinates were updated so there are 2 rows for the plant in 2022 (one with the original coordinates and one with the updated coordinates)
+
 all_survival %>%
-    filter(plant_id == "WL2_201C_0_2022_orange_87") %>%
+    filter(plant_id %in% c("WL2_201C_0_2022_orange_87", "BH_2_3.5_2020_red_38", "BH_DP_NA_2020_red_14", "YOSE8_2_2.5_2021_red_46")) %>%
     View()
+
+#Remove the empty duplicate rows for the 3 BH and YOSE8 individuals 
+all_survival <- all_survival %>%
+  filter(!(plant_id %in% c("BH_2_3.5_2020_red_38", "BH_DP_NA_2020_red_14", "YOSE8_2_2.5_2021_red_46") & is.na(Phenology)))
+
+#check only the WL2_201C is remaining as an issue - YES!
+all_survival %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+  mutate(Pheno_next = lead(Phenology)) %>%
+  ungroup() %>%
+  filter(is.na(Phenology), !is.na(Pheno_next), Pheno_next != "X") %>%
+  View()
 ```
 
+YES! We can update any pheno = NA to X after confirming no missing plants come back to life - still need to deal with the WL2_201C plant (see above)
 
+```{r}
+unique(all_survival$Phenology)
+
+all_survival %>%
+  filter(Phenology %in% c("*", "A", "XX", "S", NA)) %>%
+  View()
+#Note for row with * = *found plant in this spot that looks like a perennial, the BB is lost, we tagged it #58 and took data
+#Note for row with A = not found, disturbed by small mammals/gophers
+#Notes for rows with NA = rattlesnake on this transcet not surveying, band missing/missing band, not found, missing, plant and band not found, Plant and tag NRL, No data taken, 
+#No note for XX, I think this should just be X
+#Protocol says S should only be for TM2, but this individual with S was measured at YOSE1
+
+
+```
 
 Filter and check data
 Note: for all sites except WL2, 2024 was the last annual census and new plants were not marked that year
