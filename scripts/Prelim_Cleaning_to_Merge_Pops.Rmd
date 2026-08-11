@@ -1346,9 +1346,9 @@ write.csv(YOSE1_cleaned_24, "../input/Cleaned/YOSE1_cleaned_24.csv", row.names =
 #### YOSE7 2018-2023, abv 2024
 
 ```{r}
-YOSE7_18 <- read_excel("../input/Annual census data/Yose8_2018_annualcensus_data_cleaned.xlsx")
+YOSE7_18 <- read_excel("../input/Annual census data/Yose7_annual census_data_08.28.18_cleaned.xlsx")
 
-YOSE7_19 <- read_excel("../input/Annual census data/Yose8_AnnualCensus_7.30.19_edited9.10.19MM_cleaned.xlsx")
+YOSE7_19 <- read_excel("../input/Annual census data/Yose7_AnnualCensus_7.30.19_edited9.10.19MM_cleaned.xlsx")
 
 YOSE7_20 <- read_excel("../input/Annual census data/YOSE7_annualcensus_2020_finished_cleaned.xlsx")
 
@@ -1396,6 +1396,10 @@ YOSE7_21 <- YOSE7_21 %>%
   rename(Leaf_thickness_mm=Leaf_thickness_mm...28) %>%
   #Changing Leaf_thickness_mm...35 to Year_marked - verified with the original dataset that the column should be filled with NAs
   rename(Year_marked=Leaf_thickness_mm...35)
+
+#YOSE7_19 has Num_fruit instead of Num_fruits
+YOSE7_19 <- YOSE7_19 %>%
+  rename(Num_fruits = Num_fruit)
 ```
 
 ```{r}
