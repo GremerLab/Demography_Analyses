@@ -113,7 +113,7 @@ prep_survival_by_year <- all_survival %>%
   filter(!(original_census_year == max_year & max_age == 1)) %>%
   ungroup()
 
-dim(survival_by_year) 
+dim(prep_survival_by_year) 
 dim(all_survival)
 
 #summarize by year
@@ -122,13 +122,20 @@ survival_by_year <- prep_survival_by_year %>%
   summarize(survival = mean(survived_to_age2),
             survival_se = sem(survived_to_age2),
             n=n(),
-            .groups = "drop")
+            .groups = "drop") 
+
+#order by elevation
+survival_by_year$siteorder <- factor(survival_by_year$Site, levels = c("TM2", "BH", "WL1", "WL2", "WL3", "YOSE1", "CP2", "YOSE7", "YOSE8"))
+
 ```
 Visualize and check whether results consistent with Maya's script
 
 ```{r}
 #plot survival differences across years and sites
-ggplot(survival_by_year, aes(x=original_census_year, y= survival, group = Site, color = Site)) +
+survival_by_year_tograph = survival_by_year %>%
+  filter(!(original_census_year == 2024)) #for sites except WL2, 2024 is the last year
+
+ggplot(survival_by_year_tograph, aes(x=original_census_year, y= survival, group = Site, color = Site)) +
   geom_point(size = 3) +
   geom_errorbar(aes(ymin=survival - survival_se,
                     ymax = survival + survival_se),
@@ -141,10 +148,8 @@ ggplot(survival_by_year, aes(x=original_census_year, y= survival, group = Site, 
   theme_classic() 
 
 #with site on X
-#order by elevation
-survival_by_year$siteorder <- factor(survival_by_year$Site, levels = c("TM2", "WL1", "WL2", "WL3", "CP2"))
 
-ggplot(survival_by_year, aes(x=siteorder, y= survival, group = as.factor(original_census_year), color = as.factor(original_census_year))) +
+ggplot(survival_by_year_tograph, aes(x=siteorder, y= survival, group = as.factor(original_census_year), color = as.factor(original_census_year))) +
   geom_point(size = 3) +
   geom_errorbar(aes(ymin=survival - survival_se,
                     ymax = survival + survival_se),
@@ -155,6 +160,9 @@ ggplot(survival_by_year, aes(x=siteorder, y= survival, group = as.factor(origina
     y = "Proportion surviving to age 2",
     color = "Original census year"
   ) +
-  theme_classic() 
+  theme_classic() + labs(color = "Year")
+
+ggsave("plots/Year2Survival_bysiteandyear.jpg", width = 10, height = 6, dpi = 300)
 ```
+
 ```
