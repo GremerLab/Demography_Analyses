@@ -160,9 +160,11 @@ ggplot(survival_by_year_tograph, aes(x=siteorder, y= survival, group = as.factor
     y = "Proportion surviving to age 2",
     color = "Original census year"
   ) +
-  theme_classic() + labs(color = "Year")
+  scale_color_brewer(palette = "Dark2") +
+  theme_classic() + labs(color = "Year") #+ ylim(0,0.75)
 
 ggsave("plots/Year2Survival_bysiteandyear.jpg", width = 10, height = 6, dpi = 300)
+ggsave("plots/Year2Survival_bysiteandyear.pdf", width = 10, height = 6, dpi = 300)
 ```
 
 ```
