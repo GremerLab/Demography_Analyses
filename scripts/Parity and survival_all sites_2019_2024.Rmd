@@ -1,0 +1,68 @@
+---
+title: "Parity and survival_all sites_all years"
+author: "JR Gremer"
+date: "2026-09-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+```
+
+Code for standard error of the mean 
+NOTE: will need to update this to get SE on logit scale...
+```{r}
+sem <- function(x, na.rm=FALSE) {           #for calculating standard error
+  sd(x,na.rm=na.rm)/sqrt(length(na.omit(x)))
+} 
+```
+
+Load data, created in Prep_merging_allpopsandyears.Rmd
+```{r}
+alldat = read_csv("../input/Cleaned/AllSites_cleaned.csv")
+summary(alldat)
+```
+data are already filtered for only years in which band number and color are recorded (see Prep script)
+
+Score for survival
+```{r}
+all_survival <- alldat %>%
+  mutate(plant_id = paste(Site, Transect_plot, Quad, original_census_year, Band_color, Band_num, sep = "_"), #need to update plant_id with original census year
+         alive = as.integer(!is.na(Phenology) & Phenology != "X")) %>%
+  arrange(plant_id, Census_year) %>%
+  group_by(plant_id) %>%
+mutate(age = row_number(),
+       next_year = Census_year + 1,
+       alive_next_year = lead(alive),
+         survived_to_next = as.integer(next_year == Census_year + 1 & alive == 1 & alive_next_year == 1)) %>%
+  ungroup()
+```
+Update any pheno = NA to X after confirming no missing plants come back to life - still need to deal with the WL2_201C plant (see survival_allsites_allyears.Rmd for details)
+
+```{r}
+unique(all_survival$Phenology)
+
+all_survival %>%
+  filter(Phenology %in% c("*", "A", "XX", "S", NA))
+#Note for row with * = *found plant in this spot that looks like a perennial, the BB is lost, we tagged it #58 and took data
+#Note for row with A = not found, disturbed by small mammals/gophers
+#Notes for rows with NA = rattlesnake on this transcet not surveying, band missing/missing band, not found, missing, plant and band not found, Plant and tag NRL, No data taken, 
+#No note for XX, I think this should just be X
+#Protocol says S should only be for TM2, but this individual with S was measured at YOSE1
+
+summary(all_survival)
+
+```
+
+Code to get number of times a plant flowered  
+first - get column of whether a plant flowered in a given year
+then group by unique ID and get number of times they flowered (sum of of flowered for each individual)
+
+Also add chunk to get at probability of surviving|flowering (iteroparity)?  
