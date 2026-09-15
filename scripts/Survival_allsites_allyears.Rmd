@@ -168,3 +168,6 @@ ggsave("plots/Year2Survival_bysiteandyear.pdf", width = 10, height = 6, dpi = 30
 ```
 
 ```
+
+```
+Next add in chunk for lifespan (max(age))

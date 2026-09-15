@@ -66,3 +66,5 @@ first - get column of whether a plant flowered in a given year
 then group by unique ID and get number of times they flowered (sum of of flowered for each individual)
 
 Also add chunk to get at probability of surviving|flowering (iteroparity)?  
+
+Also add in chunk to get age at first reproduction.  That will be trickier. 
