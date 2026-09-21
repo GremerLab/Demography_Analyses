@@ -163,11 +163,48 @@ ggplot(survival_by_year_tograph, aes(x=siteorder, y= survival, group = as.factor
   scale_color_brewer(palette = "Dark2") +
   theme_classic() + labs(color = "Year") #+ ylim(0,0.75)
 
-ggsave("plots/Year2Survival_bysiteandyear.jpg", width = 10, height = 6, dpi = 300)
-ggsave("plots/Year2Survival_bysiteandyear.pdf", width = 10, height = 6, dpi = 300)
+ggsave("../plots/Year2Survival_bysiteandyear.jpg", width = 10, height = 6, dpi = 300)
+ggsave("../plots/Year2Survival_bysiteandyear.pdf", width = 10, height = 6, dpi = 300)
 ```
+Graphing lifespan
+```{r}
+#filter to live plants and get max age
+all_lifespan <- all_survival %>%
+                filter(alive == 1) %>%
+                filter(original_census_year < 2024) %>%
+              #for sites except WL2, 2024 is the last year, so we don't know if this is their lifespan or not? Might need to filter earlier
+                group_by(plant_id, Site, Transect_plot, Quad) %>% #took out census year, since that makes duplicate plants.  Prob can't look at lifespan through time
+                summarize(lifespan = max(age, na.rm=T))
+  
+  
+all_meanlifespan <- all_lifespan %>%
+                 group_by(Site) %>%
+                 summarize(mean_lifespan = mean(lifespan),
+                 lifespan_se = sem(lifespan),
+                n=n(),
+                .groups = "drop")  
+   
+
+#order by elevation
+all_meanlifespan$siteorder <- factor(all_meanlifespan$Site, levels = c("TM2", "BH", "WL1", "WL2", "WL3", "YOSE1", "CP2", "YOSE7", "YOSE8"))
+
+
+ggplot(all_meanlifespan, aes(x=siteorder, y= mean_lifespan)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin=mean_lifespan - lifespan_se,
+                    ymax = mean_lifespan + lifespan_se),
+                width = 0.15) +
+  #scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Site",
+    y = "Mean lifespan"
+  ) +
+ # scale_color_brewer(palette = "Dark2") +
+  theme_classic() + labs(color = "Year") #+ ylim(0,0.75)
+
+#ggsave("../plots/lifespan_bysiteandyear.jpg", width = 10, height = 6, dpi = 300)
+#ggsave("../plots/lifespan_bysiteandyear.pdf", width = 10, height = 6, dpi = 300)
+
+#could make this a box and whisker?
 
 ```
-
-```
-Next add in chunk for lifespan (max(age))
