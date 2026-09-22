@@ -73,6 +73,9 @@ all_survival %>%
   ungroup() %>%
   filter(is.na(Phenology), !is.na(Pheno_next), Pheno_next != "X") %>%
   View()
+
+#save updated survival dataframe
+#write.csv(all_survival, "../input/Cleaned/AllSites_cleaned_survival)
 ```
 
 YES! We can update any pheno = NA to X after confirming no missing plants come back to life - still need to deal with the WL2_201C plant (see above)
