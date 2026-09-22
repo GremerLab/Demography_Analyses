@@ -886,6 +886,8 @@ WL2_23 <- read_excel("../input/Annual census data/WL2_annualcensus_2023_finished
 WL2_24 <- read_excel("../input/Annual census data/WL2_annualcensus_2024_verified_cleaned.xlsx")
 
 WL2_25 <- read_csv("../input/Annual census data/WL2_annualcensus_20250731.csv")
+
+WL2_26 <- read_csv("../input/Annual census data/WL2_annualcensus_20260813.csv")
 ```
 
 ##### Check colnames are the same for all WL2 dataframes
@@ -901,7 +903,8 @@ WL2_col_check <- list(
   WL2_22 = colnames(WL2_22),
   WL2_23 = colnames(WL2_23),
   WL2_24 = colnames(WL2_24),
-  WL2_25 = colnames(WL2_25)
+  WL2_25 = colnames(WL2_25),
+  WL2_26 = colnames(WL2_26)
 )
 WL2_all_col <- unique(unlist(WL2_col_check))
 WL2_col_presence <- map_dfr(WL2_all_col, function(col) {
@@ -1043,12 +1046,21 @@ WL2_23 <- WL2_23 %>%
    mutate(Longest_fruit_cm = ifelse(Band_num == "51", "0.5", Longest_fruit_cm),) %>%
    mutate(Longest_fruit_cm = ifelse(Band_num == "848", "0.6", Longest_fruit_cm),) %>%
    mutate(Longest_fruit_cm = ifelse(Band_num == "164", "0.7", Longest_fruit_cm),) 
+
+
+WL2_25 <- WL2_25 %>%
+  mutate(Census_date = lubridate::mdy(Census_date))
+
+WL2_26 <- WL2_26 %>%
+  mutate(Census_date = lubridate::mdy(Census_date)) %>%
+  mutate(Date_entered = lubridate::mdy(Date_entered))
+  
 ```
 
 ##### Add a new column Stem_diam_mm_UFA that is numeric - convert \<1 and \~1 to numerics
 
 ```{r}
-WL2_list <- list(WL2_16, WL2_17, WL2_18, WL2_19, WL2_20, WL2_21, WL2_22, WL2_23, WL2_24, WL2_25)
+WL2_list <- list(WL2_16, WL2_17, WL2_18, WL2_19, WL2_20, WL2_21, WL2_22, WL2_23, WL2_24, WL2_25, WL2_26)
 
 #Loop over each dataset in WL2_list to add a new column called Stem_diam_mm_UFA where the "<1", "~1", and also numeric values <1 are changed to 0.5 and 1 so they can be used for analysis
 for(i in seq_along(WL2_list)) {
@@ -1091,6 +1103,7 @@ write.csv(WL2_16_23, "../input/Cleaned/WL2_cleaned_16_23.csv", row.names = FALSE
 WL2_cleaned_24 <- WL2_all %>%   filter(Census_year == 2024)  
 
 write.csv(WL2_cleaned_24, "../input/Cleaned/WL2_cleaned_24.csv", row.names = FALSE)
+#The two individuals with the same band color and number in 2026 census are being dropped because they have characters in their band number (94A and 94B). Notes column identifies these rows
 ```
 
 #### WL3 2017-2023, abv 2024
