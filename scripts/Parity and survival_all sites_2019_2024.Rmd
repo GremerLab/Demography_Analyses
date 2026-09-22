@@ -77,8 +77,6 @@ ggplot(reprotimes, aes(x=siteorder, y= timesrepro)) +
 #probably need to filter somehow or summarize.  Lots of plants don't repro at all.  
 ```
 
-first - get column of whether a plant flowered in a given year
-then group by unique ID and get number of times they flowered (sum of of flowered for each individual)
 
 Also add chunk to get at probability of surviving|flowering (iteroparity)?  
 
